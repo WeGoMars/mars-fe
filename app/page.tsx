@@ -1,16 +1,19 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Search, X, Menu, ChevronLeft } from "lucide-react"
-import Image from "next/image"
+import { useState } from 'react';
+import { Search, X, Menu, ChevronLeft } from 'lucide-react';
+import Image from 'next/image';
+import StockChart from '@/components/StockChart';
 
 export default function FinanceDashboard() {
-  const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수")
-  const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "분">("일")
-  const [activeRightTab, setActiveRightTab] = useState<"종목정보 상세" | "내 계좌" | "AI 추천">("종목정보 상세")
-  const [searchQuery, setSearchQuery] = useState<string>("")
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState<'매수' | '매도'>('매수');
+  const [activePeriod, setActivePeriod] = useState<'일' | '주' | '월' | '분'>('일');
+  const [activeRightTab, setActiveRightTab] = useState<'종목정보 상세' | '내 계좌' | 'AI 추천'>(
+    '종목정보 상세'
+  );
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -20,7 +23,13 @@ export default function FinanceDashboard() {
           <button className="lg:hidden mr-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             <Menu className="w-6 h-6 text-gray-700" />
           </button>
-          <Image src="/orange-planet-logo.png" alt="Mars 로고" width={40} height={40} className="rounded-full" />
+          <Image
+            src="/orange-planet-logo.png"
+            alt="Mars 로고"
+            width={40}
+            height={40}
+            className="rounded-full"
+          />
           <span className="text-lg font-medium">mars</span>
         </div>
 
@@ -43,12 +52,14 @@ export default function FinanceDashboard() {
         <div className="lg:hidden bg-white p-4 border-b">
           <div className="flex flex-col space-y-3">
             <div className="text-sm text-gray-600">oo님 mars 모투에 오신걸 환영합니다</div>
-            <button className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full">로그아웃</button>
+            <button className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full">
+              로그아웃
+            </button>
             <button
               className="flex items-center justify-center gap-2 bg-[#f0f0f0] p-3 rounded-xl w-full"
               onClick={() => {
-                setMobileSidebarOpen(true)
-                setMobileMenuOpen(false)
+                setMobileSidebarOpen(true);
+                setMobileMenuOpen(false);
               }}
             >
               <span className="text-sm">해외종목 목록 보기</span>
@@ -69,23 +80,23 @@ export default function FinanceDashboard() {
 
           <div className="space-y-6">
             {[
-              { symbol: "MSFT", name: "Microsoft Corp.", price: "$213.10", change: "+2.5%" },
-              { symbol: "GOOGL", name: "Alphabet Inc.", price: "$213.10", change: "+1.1%" },
-              { symbol: "SPOT", name: "Microsoft Corp.", price: "$213.10", change: "+2.5%" },
-              { symbol: "MSFT", name: "Microsoft Corp.", price: "$213.10", change: "+2.5%" },
-              { symbol: "GOOGL", name: "Alphabet Inc.", price: "$213.10", change: "+1.1%" },
-              { symbol: "SPOT", name: "Microsoft Corp.", price: "$213.10", change: "+2.5%" },
-              { symbol: "MSFT", name: "Microsoft Corp.", price: "$213.10", change: "+2.5%" },
-              { symbol: "GOOGL", name: "Alphabet Inc.", price: "$213.10", change: "+1.1%" },
-              { symbol: "SPOT", name: "Microsoft Corp.", price: "$213.10", change: "+2.5%" },
-              { symbol: "MSFT", name: "Microsoft Corp.", price: "$213.10", change: "+2.5%" },
-              { symbol: "GOOGL", name: "Alphabet Inc.", price: "$213.10", change: "+1.1%" },
-              { symbol: "SPOT", name: "Microsoft Corp.", price: "$213.10", change: "+2.5%" },
+              { symbol: 'MSFT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
+              { symbol: 'GOOGL', name: 'Alphabet Inc.', price: '$213.10', change: '+1.1%' },
+              { symbol: 'SPOT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
+              { symbol: 'MSFT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
+              { symbol: 'GOOGL', name: 'Alphabet Inc.', price: '$213.10', change: '+1.1%' },
+              { symbol: 'SPOT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
+              { symbol: 'MSFT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
+              { symbol: 'GOOGL', name: 'Alphabet Inc.', price: '$213.10', change: '+1.1%' },
+              { symbol: 'SPOT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
+              { symbol: 'MSFT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
+              { symbol: 'GOOGL', name: 'Alphabet Inc.', price: '$213.10', change: '+1.1%' },
+              { symbol: 'SPOT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
             ].map((stock, index) => (
               <div key={index} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8">
-                    {stock.symbol === "MSFT" && (
+                    {stock.symbol === 'MSFT' && (
                       <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
                         <div className="bg-[#f25022]"></div>
                         <div className="bg-[#7fba00]"></div>
@@ -93,8 +104,12 @@ export default function FinanceDashboard() {
                         <div className="bg-[#ffb900]"></div>
                       </div>
                     )}
-                    {stock.symbol === "GOOGL" && <Image src="/google-logo.png" alt="Google" width={32} height={32} />}
-                    {stock.symbol === "SPOT" && <Image src="/spotify-logo.png" alt="Spotify" width={32} height={32} />}
+                    {stock.symbol === 'GOOGL' && (
+                      <Image src="/google-logo.png" alt="Google" width={32} height={32} />
+                    )}
+                    {stock.symbol === 'SPOT' && (
+                      <Image src="/spotify-logo.png" alt="Spotify" width={32} height={32} />
+                    )}
                   </div>
                   <div>
                     <div className="font-bold text-base">{stock.symbol}</div>
@@ -123,23 +138,23 @@ export default function FinanceDashboard() {
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
               {[
-                { symbol: "MSFT", name: "Microsoft Corp.", price: "$213.10", change: "+2.5%" },
-                { symbol: "GOOGL", name: "Alphabet Inc.", price: "$213.10", change: "+1.1%" },
-                { symbol: "SPOT", name: "Microsoft Corp.", price: "$213.10", change: "+2.5%" },
-                { symbol: "MSFT", name: "Microsoft Corp.", price: "$213.10", change: "+2.5%" },
-                { symbol: "GOOGL", name: "Alphabet Inc.", price: "$213.10", change: "+1.1%" },
-                { symbol: "SPOT", name: "Microsoft Corp.", price: "$213.10", change: "+2.5%" },
-                { symbol: "MSFT", name: "Microsoft Corp.", price: "$213.10", change: "+2.5%" },
-                { symbol: "GOOGL", name: "Alphabet Inc.", price: "$213.10", change: "+1.1%" },
-                { symbol: "SPOT", name: "Microsoft Corp.", price: "$213.10", change: "+2.5%" },
-                { symbol: "MSFT", name: "Microsoft Corp.", price: "$213.10", change: "+2.5%" },
-                { symbol: "GOOGL", name: "Alphabet Inc.", price: "$213.10", change: "+1.1%" },
-                { symbol: "SPOT", name: "Microsoft Corp.", price: "$213.10", change: "+2.5%" },
+                { symbol: 'MSFT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
+                { symbol: 'GOOGL', name: 'Alphabet Inc.', price: '$213.10', change: '+1.1%' },
+                { symbol: 'SPOT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
+                { symbol: 'MSFT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
+                { symbol: 'GOOGL', name: 'Alphabet Inc.', price: '$213.10', change: '+1.1%' },
+                { symbol: 'SPOT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
+                { symbol: 'MSFT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
+                { symbol: 'GOOGL', name: 'Alphabet Inc.', price: '$213.10', change: '+1.1%' },
+                { symbol: 'SPOT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
+                { symbol: 'MSFT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
+                { symbol: 'GOOGL', name: 'Alphabet Inc.', price: '$213.10', change: '+1.1%' },
+                { symbol: 'SPOT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
               ].map((stock, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8">
-                      {stock.symbol === "MSFT" && (
+                      {stock.symbol === 'MSFT' && (
                         <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
                           <div className="bg-[#f25022]"></div>
                           <div className="bg-[#7fba00]"></div>
@@ -147,8 +162,10 @@ export default function FinanceDashboard() {
                           <div className="bg-[#ffb900]"></div>
                         </div>
                       )}
-                      {stock.symbol === "GOOGL" && <Image src="/google-logo.png" alt="Google" width={32} height={32} />}
-                      {stock.symbol === "SPOT" && (
+                      {stock.symbol === 'GOOGL' && (
+                        <Image src="/google-logo.png" alt="Google" width={32} height={32} />
+                      )}
+                      {stock.symbol === 'SPOT' && (
                         <Image src="/spotify-logo.png" alt="Spotify" width={32} height={32} />
                       )}
                     </div>
@@ -183,7 +200,7 @@ export default function FinanceDashboard() {
                 />
                 {searchQuery && (
                   <button
-                    onClick={() => setSearchQuery("")}
+                    onClick={() => setSearchQuery('')}
                     className="bg-[#e0e0e0] rounded-full p-1.5 ml-2 hover:bg-gray-300 transition-colors"
                   >
                     <X className="text-gray-600 w-4 h-4" />
@@ -209,17 +226,17 @@ export default function FinanceDashboard() {
               <div className="flex flex-wrap gap-2">
                 {/* Buy/Sell Tabs */}
                 <button
-                  onClick={() => setActiveTab("매수")}
+                  onClick={() => setActiveTab('매수')}
                   className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                    activeTab === "매수" ? "bg-[#fce7e7]" : "bg-white hover:bg-gray-50"
+                    activeTab === '매수' ? 'bg-[#fce7e7]' : 'bg-white hover:bg-gray-50'
                   }`}
                 >
                   매수
                 </button>
                 <button
-                  onClick={() => setActiveTab("매도")}
+                  onClick={() => setActiveTab('매도')}
                   className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                    activeTab === "매도" ? "bg-[#e7ecfc]" : "bg-white hover:bg-gray-50"
+                    activeTab === '매도' ? 'bg-[#e7ecfc]' : 'bg-white hover:bg-gray-50'
                   }`}
                 >
                   매도
@@ -227,12 +244,12 @@ export default function FinanceDashboard() {
 
                 {/* Time Period Tabs */}
                 <div className="flex ml-0 md:ml-2 bg-[#f5f7f9] rounded-full">
-                  {(["월", "주", "일", "분"] as const).map((period) => (
+                  {(['월', '주', '일', '분'] as const).map((period) => (
                     <button
                       key={period}
                       onClick={() => setActivePeriod(period)}
                       className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                        activePeriod === period ? "bg-white shadow-sm" : "hover:bg-gray-100"
+                        activePeriod === period ? 'bg-white shadow-sm' : 'hover:bg-gray-100'
                       }`}
                     >
                       {period}
@@ -246,18 +263,19 @@ export default function FinanceDashboard() {
             <div className="mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl md:text-3xl font-bold">4,566.48</span>
-                <span className="text-[#41c3a9] bg-[#e6f7f4] px-2 py-0.5 rounded-md text-sm">+1.66%</span>
+                <span className="text-[#41c3a9] bg-[#e6f7f4] px-2 py-0.5 rounded-md text-sm">
+                  +1.66%
+                </span>
               </div>
             </div>
 
-            <div className="text-xs text-gray-500 mb-6">Oct 25, 5:26:38PM UTC-4 · INDEXSP · Disclaimer</div>
+            <div className="text-xs text-gray-500 mb-6">
+              Oct 25, 5:26:38PM UTC-4 · INDEXSP · Disclaimer
+            </div>
 
             {/* Empty Chart Area (for user to add their own chart) */}
-            <div className="h-60 md:h-80 mb-6 flex items-center justify-center">
-              <div className="text-gray-400 text-center">
-                <p>차트 영역</p>
-                <p className="text-sm">이 부분에 차트를 직접 추가하세요</p>
-              </div>
+            <div className="mb-6 flex items-center justify-center" style={{ height: 400 }}>
+              <StockChart symbol="SPY" period={activePeriod} />
             </div>
 
             {/* Volume Chart */}
@@ -282,12 +300,12 @@ export default function FinanceDashboard() {
           <div className="bg-white rounded-xl p-4 md:p-5 shadow-sm flex-1 overflow-auto flex flex-col">
             {/* 종목정보 상세, 내 계좌, AI 추천 탭 */}
             <div className="flex justify-between gap-1 md:gap-2 mb-4 overflow-x-auto">
-              {(["종목정보 상세", "내 계좌", "AI 추천"] as const).map((tab) => (
+              {(['종목정보 상세', '내 계좌', 'AI 추천'] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveRightTab(tab)}
                   className={`px-2 md:px-4 py-2 rounded-xl font-medium text-xs md:text-sm whitespace-nowrap transition-colors ${
-                    activeRightTab === tab ? "bg-[#f5f7f9]" : "bg-[#f5f7f9] hover:bg-gray-200"
+                    activeRightTab === tab ? 'bg-[#f5f7f9]' : 'bg-[#f5f7f9] hover:bg-gray-200'
                   }`}
                 >
                   {tab}
@@ -305,11 +323,15 @@ export default function FinanceDashboard() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="font-bold">$213.10</div>
-                <div className="text-xs text-[#41c3a9] bg-[#e6f7f4] px-2 py-0.5 rounded-md">↑ 1.1%</div>
+                <div className="text-xs text-[#41c3a9] bg-[#e6f7f4] px-2 py-0.5 rounded-md">
+                  ↑ 1.1%
+                </div>
               </div>
             </div>
 
-            <div className="text-sm text-gray-500 mb-4">S&P 500에 투자하여 배당금을 제공하는 ETF</div>
+            <div className="text-sm text-gray-500 mb-4">
+              S&P 500에 투자하여 배당금을 제공하는 ETF
+            </div>
 
             {/* Stock Details */}
             <div className="space-y-3 mb-4">
@@ -366,5 +388,5 @@ export default function FinanceDashboard() {
         </div>
       </div>
     </div>
-  )
+  );
 }
