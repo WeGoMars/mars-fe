@@ -1,49 +1,49 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from "react"
-import Image from "next/image"
-import { getStockDetails, getStockNews } from "@/lib/api"
-import type { StockDetails as StockDetailsType, NewsItem } from "@/lib/types"
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { getStockDetails, getStockNews } from '@/lib/api';
+import type { StockDetails as StockDetailsType, NewsItem } from '@/lib/types';
 
 interface StockDetailsProps {
-  symbol: string
-  activeTab: "종목정보 상세" | "내 계좌" | "AI 추천"
-  onTabChange: (tab: "종목정보 상세" | "내 계좌" | "AI 추천") => void
+  symbol: string;
+  activeTab: '종목정보 상세' | '내 계좌' | 'AI 추천';
+  onTabChange: (tab: '종목정보 상세' | '내 계좌' | 'AI 추천') => void;
 }
 
 export default function StockDetails({ symbol, activeTab, onTabChange }: StockDetailsProps) {
-  const [details, setDetails] = useState<StockDetailsType | null>(null)
-  const [news, setNews] = useState<NewsItem[]>([])
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
+  const [details, setDetails] = useState<StockDetailsType | null>(null);
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true)
-      setError(null)
+      setIsLoading(true);
+      setError(null);
       try {
-        const detailsData = await getStockDetails(symbol)
-        setDetails(detailsData)
+        const detailsData = await getStockDetails(symbol);
+        setDetails(detailsData);
 
-        const newsData = await getStockNews(symbol)
-        setNews(newsData)
+        const newsData = await getStockNews(symbol);
+        setNews(newsData);
       } catch (err) {
-        setError("데이터를 불러오는 중 오류가 발생했습니다.")
-        console.error("Failed to fetch stock details:", err)
+        setError('데이터를 불러오는 중 오류가 발생했습니다.');
+        console.error('Failed to fetch stock details:', err);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchData()
-  }, [symbol])
+    fetchData();
+  }, [symbol]);
 
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-gray-400">데이터 로딩 중...</div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -51,19 +51,19 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
       <div className="flex-1 flex items-center justify-center">
         <div className="text-red-500">{error}</div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="flex-1 overflow-auto flex flex-col">
       {/* 종목정보 상세, 내 계좌, AI 추천 탭 */}
       <div className="flex justify-between gap-1 md:gap-2 mb-4 overflow-x-auto">
-        {(["종목정보 상세", "내 계좌", "AI 추천"] as const).map((tab) => (
+        {(['종목정보 상세', '내 계좌', 'AI 추천'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => onTabChange(tab)}
             className={`px-2 md:px-4 py-2 rounded-xl font-medium text-xs md:text-sm whitespace-nowrap transition-colors ${
-              activeTab === tab ? "bg-[#f5f7f9]" : "bg-[#f5f7f9] hover:bg-gray-200"
+              activeTab === tab ? 'bg-[#f5f7f9]' : 'bg-[#f5f7f9] hover:bg-gray-200'
             }`}
           >
             {tab}
@@ -84,9 +84,9 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
             <div>
               <div className="font-bold text-right">{details.price}</div>
               <div
-                className={`text-xs text-right ${details.change.startsWith("+") ? "text-[#41c3a9]" : "text-red-500"}`}
+                className={`text-xs text-right ${details.change.startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}
               >
-                {details.change.startsWith("+") ? "↑" : "↓"} {details.changePercent}
+                {details.change.startsWith('+') ? '↑' : '↓'} {details.changePercent}
               </div>
             </div>
           </div>
@@ -94,7 +94,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
           <div className="text-sm text-gray-500 mb-4">{details.description}</div>
 
           {/* Stock Details */}
-          {activeTab === "종목정보 상세" && (
+          {activeTab === '종목정보 상세' && (
             <div className="space-y-3 mb-4">
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">시가총액</span>
@@ -119,7 +119,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
             </div>
           )}
 
-          {activeTab === "내 계좌" && (
+          {activeTab === '내 계좌' && (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-gray-400 text-center">
                 <p>계좌 정보</p>
@@ -128,7 +128,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
             </div>
           )}
 
-          {activeTab === "AI 추천" && (
+          {activeTab === 'AI 추천' && (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-gray-400 text-center">
                 <p>AI 추천 정보</p>
@@ -138,7 +138,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
           )}
 
           {/* News */}
-          {activeTab === "종목정보 상세" && (
+          {activeTab === '종목정보 상세' && (
             <div className="mt-4 flex-1 flex flex-col">
               <div className="py-2 md:py-2.5 px-3 md:px-4 bg-[#f5f7f9] rounded-full mb-3">
                 <h3 className="font-medium text-sm">주요 뉴스</h3>
@@ -149,7 +149,10 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
                     <div key={item.id} className="flex gap-3">
                       <div className="w-14 h-14 md:w-16 md:h-16 bg-[#f5f7f9] rounded-xl flex items-center justify-center">
                         <Image
-                          src={item.imageUrl || "/placeholder.svg?height=56&width=56&query=financial news"}
+                          src={
+                            item.imageUrl ||
+                            '/placeholder.svg?height=56&width=56&query=financial news'
+                          }
                           alt="뉴스 이미지"
                           width={56}
                           height={56}
@@ -173,5 +176,5 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
         </>
       )}
     </div>
-  )
+  );
 }
