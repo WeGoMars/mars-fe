@@ -3,6 +3,13 @@
 import { useState } from "react"
 import { Search, X, Menu, ChevronLeft } from "lucide-react"
 import Image from "next/image"
+import LoginModal from "@/src/features/auth/components/login-modal"
+import LoginButton from "@/src/features/auth/components/login-button"
+
+import Link from "next/link"
+
+
+
 
 export default function FinanceDashboard() {
   const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수")
@@ -11,6 +18,7 @@ export default function FinanceDashboard() {
   const [searchQuery, setSearchQuery] = useState<string>("")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
+  const [loginOpen, setLoginOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -28,9 +36,18 @@ export default function FinanceDashboard() {
           <button className="border border-[#006ffd] text-[#006ffd] px-4 py-2 rounded-md hover:bg-[#f0f7ff] transition-colors">
             회원가입
           </button>
-          <button className="bg-[#006ffd] text-white px-4 py-2 rounded-md hover:bg-[#0057cc] transition-colors">
-            로그인
-          </button>
+          {/* 모달/새창/새창인데모달처럼보이게  */}
+          {/* <Link href="/login">
+            <button 
+             className="bg-[#006ffd] text-white px-4 py-2 rounded-md hover:bg-[#0057cc] transition-colors">
+              로그인
+            </button>
+          </Link> */}
+          <button onClick={() => setLoginOpen(true)}
+             className= "bg-[#006ffd] text-white px-4 py-2 rounded-md hover:bg-[#0057cc] transition-colors">
+              로그인
+            </button>
+          <LoginModal open={loginOpen} onOpenChange={setLoginOpen} />
         </div>
 
         <div className="md:hidden">
