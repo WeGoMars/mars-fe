@@ -359,7 +359,6 @@ export default function FinanceDashboard() {
               </div>
             </div>
           </div>
-
           {/* Main Chart Area */}
           <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm flex-1 overflow-auto">
             {/* S&P 500 Header with Tabs - Styled like the image */}
@@ -428,16 +427,15 @@ export default function FinanceDashboard() {
             <div className="text-xs text-gray-500 mb-6">
               Oct 25, 5:26:38PM UTC-4 · INDEXSP · Disclaimer
             </div>
-
-            {/* Empty Chart Area (for user to add their own chart) */}
-            <div className="h-96 flex flex-col items-center justify-center bg-white border rounded-lg shadow">
-              <div
-                id="chart-container"
-                className="w-full flex flex-col items-center justify-center"
-              >
-                <StockChart symbol="SPY" period={activePeriod} />
-              </div>
+             {/* Empty Chart Area (for user to add their own chart) */}
+          <div className="h-[740px] flex flex-col items-center justify-center">
+            <div
+              id="chart-container"
+              className="w-full h-full flex flex-col items-center justify-center"
+            >
+              <StockChart symbol="SPY" period={activePeriod} />
             </div>
+          </div>
           </div>
         </div>
 
