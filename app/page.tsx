@@ -1,17 +1,19 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Search, X, Menu, ChevronLeft } from 'lucide-react';
-import Image from 'next/image';
-import StockChart from '@/components/StockChart';
+import { useState } from "react";
+import { Search, X, Menu, ChevronLeft } from "lucide-react";
+import Image from "next/image";
+import StockChart from "@/components/StockChart";
 
 export default function FinanceDashboard() {
-  const [activeTab, setActiveTab] = useState<'매수' | '매도'>('매수');
-  const [activePeriod, setActivePeriod] = useState<'일' | '주' | '월' | '분'>('일');
-  const [activeRightTab, setActiveRightTab] = useState<'종목정보 상세' | '내 계좌' | 'AI 추천'>(
-    '종목정보 상세'
+  const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
+  const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "분">(
+    "일"
   );
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [activeRightTab, setActiveRightTab] = useState<
+    "종목정보 상세" | "내 계좌" | "AI 추천"
+  >("종목정보 상세");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
@@ -20,7 +22,10 @@ export default function FinanceDashboard() {
       {/* Header */}
       <header className="flex items-center justify-between p-4 bg-white border-b">
         <div className="flex items-center gap-2">
-          <button className="lg:hidden mr-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+          <button
+            className="lg:hidden mr-2"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
             <Menu className="w-6 h-6 text-gray-700" />
           </button>
           <Image
@@ -34,7 +39,7 @@ export default function FinanceDashboard() {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <button className="border border-[#006ffd] text-[#006ffd] px-4 py-2 rounded-md hover:bg-[#f0f7ff] transition-colors">
+          <button className="bg-[#006ffd] text-white px-4 py-2 rounded-md hover:bg-[#0057cc] transition-colors">
             회원가입
           </button>
           <button className="bg-[#006ffd] text-white px-4 py-2 rounded-md hover:bg-[#0057cc] transition-colors">
@@ -51,7 +56,9 @@ export default function FinanceDashboard() {
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white p-4 border-b">
           <div className="flex flex-col space-y-3">
-            <div className="text-sm text-gray-600">oo님 mars 모투에 오신걸 환영합니다</div>
+            <div className="text-sm text-gray-600">
+              oo님 mars 모투에 오신걸 환영합니다
+            </div>
             <button className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full">
               로그아웃
             </button>
@@ -72,7 +79,10 @@ export default function FinanceDashboard() {
       {mobileSidebarOpen && (
         <div className="fixed inset-0 bg-white z-50 p-4 overflow-auto lg:hidden">
           <div className="flex items-center mb-4">
-            <button className="mr-2" onClick={() => setMobileSidebarOpen(false)}>
+            <button
+              className="mr-2"
+              onClick={() => setMobileSidebarOpen(false)}
+            >
               <ChevronLeft className="w-6 h-6 text-gray-700" />
             </button>
             <h2 className="text-lg font-medium">해외종목 목록</h2>
@@ -80,23 +90,83 @@ export default function FinanceDashboard() {
 
           <div className="space-y-6">
             {[
-              { symbol: 'MSFT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
-              { symbol: 'GOOGL', name: 'Alphabet Inc.', price: '$213.10', change: '+1.1%' },
-              { symbol: 'SPOT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
-              { symbol: 'MSFT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
-              { symbol: 'GOOGL', name: 'Alphabet Inc.', price: '$213.10', change: '+1.1%' },
-              { symbol: 'SPOT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
-              { symbol: 'MSFT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
-              { symbol: 'GOOGL', name: 'Alphabet Inc.', price: '$213.10', change: '+1.1%' },
-              { symbol: 'SPOT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
-              { symbol: 'MSFT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
-              { symbol: 'GOOGL', name: 'Alphabet Inc.', price: '$213.10', change: '+1.1%' },
-              { symbol: 'SPOT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
+              {
+                symbol: "MSFT",
+                name: "Microsoft Corp.",
+                price: "$213.10",
+                change: "+2.5%",
+              },
+              {
+                symbol: "GOOGL",
+                name: "Alphabet Inc.",
+                price: "$213.10",
+                change: "+1.1%",
+              },
+              {
+                symbol: "SPOT",
+                name: "Microsoft Corp.",
+                price: "$213.10",
+                change: "+2.5%",
+              },
+              {
+                symbol: "MSFT",
+                name: "Microsoft Corp.",
+                price: "$213.10",
+                change: "+2.5%",
+              },
+              {
+                symbol: "GOOGL",
+                name: "Alphabet Inc.",
+                price: "$213.10",
+                change: "+1.1%",
+              },
+              {
+                symbol: "SPOT",
+                name: "Microsoft Corp.",
+                price: "$213.10",
+                change: "+2.5%",
+              },
+              {
+                symbol: "MSFT",
+                name: "Microsoft Corp.",
+                price: "$213.10",
+                change: "+2.5%",
+              },
+              {
+                symbol: "GOOGL",
+                name: "Alphabet Inc.",
+                price: "$213.10",
+                change: "+1.1%",
+              },
+              {
+                symbol: "SPOT",
+                name: "Microsoft Corp.",
+                price: "$213.10",
+                change: "+2.5%",
+              },
+              {
+                symbol: "MSFT",
+                name: "Microsoft Corp.",
+                price: "$213.10",
+                change: "+2.5%",
+              },
+              {
+                symbol: "GOOGL",
+                name: "Alphabet Inc.",
+                price: "$213.10",
+                change: "+1.1%",
+              },
+              {
+                symbol: "SPOT",
+                name: "Microsoft Corp.",
+                price: "$213.10",
+                change: "+2.5%",
+              },
             ].map((stock, index) => (
               <div key={index} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8">
-                    {stock.symbol === 'MSFT' && (
+                    {stock.symbol === "MSFT" && (
                       <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
                         <div className="bg-[#f25022]"></div>
                         <div className="bg-[#7fba00]"></div>
@@ -104,11 +174,21 @@ export default function FinanceDashboard() {
                         <div className="bg-[#ffb900]"></div>
                       </div>
                     )}
-                    {stock.symbol === 'GOOGL' && (
-                      <Image src="/google-logo.png" alt="Google" width={32} height={32} />
+                    {stock.symbol === "GOOGL" && (
+                      <Image
+                        src="/google-logo.png"
+                        alt="Google"
+                        width={32}
+                        height={32}
+                      />
                     )}
-                    {stock.symbol === 'SPOT' && (
-                      <Image src="/spotify-logo.png" alt="Spotify" width={32} height={32} />
+                    {stock.symbol === "SPOT" && (
+                      <Image
+                        src="/spotify-logo.png"
+                        alt="Spotify"
+                        width={32}
+                        height={32}
+                      />
                     )}
                   </div>
                   <div>
@@ -138,23 +218,83 @@ export default function FinanceDashboard() {
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
               {[
-                { symbol: 'MSFT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
-                { symbol: 'GOOGL', name: 'Alphabet Inc.', price: '$213.10', change: '+1.1%' },
-                { symbol: 'SPOT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
-                { symbol: 'MSFT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
-                { symbol: 'GOOGL', name: 'Alphabet Inc.', price: '$213.10', change: '+1.1%' },
-                { symbol: 'SPOT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
-                { symbol: 'MSFT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
-                { symbol: 'GOOGL', name: 'Alphabet Inc.', price: '$213.10', change: '+1.1%' },
-                { symbol: 'SPOT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
-                { symbol: 'MSFT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
-                { symbol: 'GOOGL', name: 'Alphabet Inc.', price: '$213.10', change: '+1.1%' },
-                { symbol: 'SPOT', name: 'Microsoft Corp.', price: '$213.10', change: '+2.5%' },
+                {
+                  symbol: "MSFT",
+                  name: "Microsoft Corp.",
+                  price: "$213.10",
+                  change: "+2.5%",
+                },
+                {
+                  symbol: "GOOGL",
+                  name: "Alphabet Inc.",
+                  price: "$213.10",
+                  change: "+1.1%",
+                },
+                {
+                  symbol: "SPOT",
+                  name: "Microsoft Corp.",
+                  price: "$213.10",
+                  change: "+2.5%",
+                },
+                {
+                  symbol: "MSFT",
+                  name: "Microsoft Corp.",
+                  price: "$213.10",
+                  change: "+2.5%",
+                },
+                {
+                  symbol: "GOOGL",
+                  name: "Alphabet Inc.",
+                  price: "$213.10",
+                  change: "+1.1%",
+                },
+                {
+                  symbol: "SPOT",
+                  name: "Microsoft Corp.",
+                  price: "$213.10",
+                  change: "+2.5%",
+                },
+                {
+                  symbol: "MSFT",
+                  name: "Microsoft Corp.",
+                  price: "$213.10",
+                  change: "+2.5%",
+                },
+                {
+                  symbol: "GOOGL",
+                  name: "Alphabet Inc.",
+                  price: "$213.10",
+                  change: "+1.1%",
+                },
+                {
+                  symbol: "SPOT",
+                  name: "Microsoft Corp.",
+                  price: "$213.10",
+                  change: "+2.5%",
+                },
+                {
+                  symbol: "MSFT",
+                  name: "Microsoft Corp.",
+                  price: "$213.10",
+                  change: "+2.5%",
+                },
+                {
+                  symbol: "GOOGL",
+                  name: "Alphabet Inc.",
+                  price: "$213.10",
+                  change: "+1.1%",
+                },
+                {
+                  symbol: "SPOT",
+                  name: "Microsoft Corp.",
+                  price: "$213.10",
+                  change: "+2.5%",
+                },
               ].map((stock, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8">
-                      {stock.symbol === 'MSFT' && (
+                      {stock.symbol === "MSFT" && (
                         <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
                           <div className="bg-[#f25022]"></div>
                           <div className="bg-[#7fba00]"></div>
@@ -162,11 +302,21 @@ export default function FinanceDashboard() {
                           <div className="bg-[#ffb900]"></div>
                         </div>
                       )}
-                      {stock.symbol === 'GOOGL' && (
-                        <Image src="/google-logo.png" alt="Google" width={32} height={32} />
+                      {stock.symbol === "GOOGL" && (
+                        <Image
+                          src="/google-logo.png"
+                          alt="Google"
+                          width={32}
+                          height={32}
+                        />
                       )}
-                      {stock.symbol === 'SPOT' && (
-                        <Image src="/spotify-logo.png" alt="Spotify" width={32} height={32} />
+                      {stock.symbol === "SPOT" && (
+                        <Image
+                          src="/spotify-logo.png"
+                          alt="Spotify"
+                          width={32}
+                          height={32}
+                        />
                       )}
                     </div>
                     <div>
@@ -200,7 +350,7 @@ export default function FinanceDashboard() {
                 />
                 {searchQuery && (
                   <button
-                    onClick={() => setSearchQuery('')}
+                    onClick={() => setSearchQuery("")}
                     className="bg-[#e0e0e0] rounded-full p-1.5 ml-2 hover:bg-gray-300 transition-colors"
                   >
                     <X className="text-gray-600 w-4 h-4" />
@@ -226,17 +376,21 @@ export default function FinanceDashboard() {
               <div className="flex flex-wrap gap-2">
                 {/* Buy/Sell Tabs */}
                 <button
-                  onClick={() => setActiveTab('매수')}
+                  onClick={() => setActiveTab("매수")}
                   className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                    activeTab === '매수' ? 'bg-[#fce7e7]' : 'bg-white hover:bg-gray-50'
+                    activeTab === "매수"
+                      ? "bg-[#fce7e7]"
+                      : "bg-white hover:bg-gray-50"
                   }`}
                 >
                   매수
                 </button>
                 <button
-                  onClick={() => setActiveTab('매도')}
+                  onClick={() => setActiveTab("매도")}
                   className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                    activeTab === '매도' ? 'bg-[#e7ecfc]' : 'bg-white hover:bg-gray-50'
+                    activeTab === "매도"
+                      ? "bg-[#e7ecfc]"
+                      : "bg-white hover:bg-gray-50"
                   }`}
                 >
                   매도
@@ -244,12 +398,14 @@ export default function FinanceDashboard() {
 
                 {/* Time Period Tabs */}
                 <div className="flex ml-0 md:ml-2 bg-[#f5f7f9] rounded-full">
-                  {(['월', '주', '일', '분'] as const).map((period) => (
+                  {(["월", "주", "일", "분"] as const).map((period) => (
                     <button
                       key={period}
                       onClick={() => setActivePeriod(period)}
                       className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                        activePeriod === period ? 'bg-white shadow-sm' : 'hover:bg-gray-100'
+                        activePeriod === period
+                          ? "bg-white shadow-sm"
+                          : "hover:bg-gray-100"
                       }`}
                     >
                       {period}
@@ -274,18 +430,14 @@ export default function FinanceDashboard() {
             </div>
 
             {/* Empty Chart Area (for user to add their own chart) */}
-            <div className="mb-6 flex items-center justify-center" style={{ height: 400 }}>
-              <StockChart symbol="SPY" period={activePeriod} />
-            </div>
-
-            {/* Volume Chart */}
-            <div className="h-32 md:h-40 flex items-center justify-center border-t pt-4">
-              <div className="text-gray-400 text-center">
-                <p>거래량 차트 영역</p>
+            <div className="h-96 flex flex-col items-center justify-center bg-white border rounded-lg shadow">
+              <div
+                id="chart-container"
+                className="w-full flex flex-col items-center justify-center"
+              >
+                <StockChart symbol="SPY" period={activePeriod} />
               </div>
             </div>
-
-            <div className="text-xs text-gray-500 text-right mt-4">2025.5.13 17:18:37 기준</div>
           </div>
         </div>
 
@@ -300,12 +452,14 @@ export default function FinanceDashboard() {
           <div className="bg-white rounded-xl p-4 md:p-5 shadow-sm flex-1 overflow-auto flex flex-col">
             {/* 종목정보 상세, 내 계좌, AI 추천 탭 */}
             <div className="flex justify-between gap-1 md:gap-2 mb-4 overflow-x-auto">
-              {(['종목정보 상세', '내 계좌', 'AI 추천'] as const).map((tab) => (
+              {(["종목정보 상세", "내 계좌", "AI 추천"] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveRightTab(tab)}
                   className={`px-2 md:px-4 py-2 rounded-xl font-medium text-xs md:text-sm whitespace-nowrap transition-colors ${
-                    activeRightTab === tab ? 'bg-[#f5f7f9]' : 'bg-[#f5f7f9] hover:bg-gray-200'
+                    activeRightTab === tab
+                      ? "bg-[#f5f7f9]"
+                      : "bg-[#f5f7f9] hover:bg-gray-200"
                   }`}
                 >
                   {tab}
@@ -378,7 +532,9 @@ export default function FinanceDashboard() {
                       <h4 className="text-xs md:text-sm font-medium">
                         홍콩그룹과 경영권 분쟁 가능성에...한진칼 상한가
                       </h4>
-                      <div className="text-xs text-gray-500 mt-1">1시간 전 / 한국경제</div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        1시간 전 / 한국경제
+                      </div>
                     </div>
                   </div>
                 ))}

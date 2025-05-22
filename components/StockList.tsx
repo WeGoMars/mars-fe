@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import type { Stock } from "@/lib/types"
+import { useState } from "react";
+import Image from "next/image";
+import type { Stock } from "@/lib/types";
 
 interface StockListProps {
-  stocks: Stock[]
-  onSelectStock: (symbol: string) => void
+  stocks: Stock[];
+  onSelectStock: (symbol: string) => void;
 }
 
 export default function StockList({ stocks, onSelectStock }: StockListProps) {
-  const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null)
+  const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
 
   const handleSelectStock = (symbol: string) => {
-    setSelectedSymbol(symbol)
-    onSelectStock(symbol)
-  }
+    setSelectedSymbol(symbol);
+    onSelectStock(symbol);
+  };
 
   return (
     <div className="space-y-6">
@@ -55,7 +55,9 @@ export default function StockList({ stocks, onSelectStock }: StockListProps) {
               )}
               {!["MSFT", "GOOGL", "SPOT"].includes(stock.symbol) && (
                 <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                  <span className="text-xs font-bold">{stock.symbol.substring(0, 2)}</span>
+                  <span className="text-xs font-bold">
+                    {stock.symbol.substring(0, 2)}
+                  </span>
                 </div>
               )}
             </div>
@@ -66,12 +68,14 @@ export default function StockList({ stocks, onSelectStock }: StockListProps) {
           </div>
           <div className="text-right">
             <div className="font-bold text-base">{stock.price}</div>
-            <div className={`text-xs ${stock.change.startsWith("+") ? "text-[#41c3a9]" : "text-red-500"}`}>
+            <div
+              className={`text-xs ${stock.change.startsWith("+") ? "text-[#41c3a9]" : "text-red-500"}`}
+            >
               {stock.change}
             </div>
           </div>
         </div>
       ))}
     </div>
-  )
+  );
 }
