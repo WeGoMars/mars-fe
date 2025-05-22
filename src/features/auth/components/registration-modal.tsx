@@ -79,11 +79,12 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    console.log("회원가입 버튼 클릭됨") // 👉 버튼 눌렀는지 확인
 
     if (validateForm()) {
       // If validation passes, you would typically send the data to your server here
       console.log("Form submitted:", formData)
-      alert("Registration successful!")
+      alert("회원가입 완료.!")
       onClose()
     }
   }
@@ -172,15 +173,23 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
                 id="phoneNumber"
                 name="phoneNumber"
                 inputMode="numeric"
-                pattern="[0-9]*"
+                // pattern="[0-9]*"
                 value={formData.phoneNumber}
                 // onChange={handleChange}
                 onChange={(e) => {
-                    const onlyNumbers = e.target.value.replace(/[^0-9]/g, "")
-                    setFormData((prev) => ({
+                  const raw = e.target.value.replace(/[^0-9]/g, "").slice(0, 11) // 최대 11자리
+                  let formatted = raw
+                
+                  if (raw.length >= 4 && raw.length < 8) {
+                    formatted = raw.slice(0, 3) + "-" + raw.slice(3)
+                  } else if (raw.length >= 8) {
+                    formatted = raw.slice(0, 3) + "-" + raw.slice(3, 7) + "-" + raw.slice(7)
+                  }
+                
+                  setFormData((prev) => ({
                     ...prev,
-                    phoneNumber: onlyNumbers,
-                    }))
+                    phoneNumber: formatted,
+                  }))
                 }}
                 className={`w-full rounded bg-[#bfdbfe]/30 p-3 outline-none ${errors.phoneNumber ? "border border-red-500" : ""}`}
               />
