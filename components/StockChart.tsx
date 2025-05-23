@@ -23,16 +23,17 @@ export default function StockChart({ symbol, period }: StockChartProps) {
   const volumeChartRef = useRef<HTMLDivElement>(null);
 
   // 캔들차트용 목데이터(API 나오면 대체)
-  const mockData = Array.from({ length: 50 }, (_, i) => {
-    const base = 210 + i * 2;
-    const day = (i % 30) + 1;
-    const month = i < 30 ? "06" : "07";
+  const mockData = Array.from({ length: 200 }, (_, i) => {
+    const date = new Date(2024, 0, 1); // 2024-01-01
+    date.setDate(date.getDate() + i);
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
     return {
-      time: `2024-${month}-${day.toString().padStart(2, "0")}`,
-      open: base,
-      high: base + 5,
-      low: base - 2,
-      close: base + Math.floor(Math.random() * 6) - 3,
+      time: `2024-${month}-${day}`,
+      open: 210 + i * 2,
+      high: 215 + i * 2,
+      low: 208 + i * 2,
+      close: 212 + i * 2 + Math.floor(Math.random() * 6) - 3,
       volume: 10 + Math.floor(Math.random() * 40),
     };
   });
