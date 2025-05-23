@@ -8,7 +8,37 @@ import LoginModal from "@/src/features/auth/components/login-modal";
 import RegistrationModal from "@/src/features/auth/components/registration-modal"
 import Link from "next/link";
 
+import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 export default function FinanceDashboard() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  useEffect(() => {
+    const modal = searchParams.get("modal")
+
+    if (modal === "register") {
+      setLoginOpen(false)
+      setRegisterOpen(true)
+    } else if (modal ==="login") {
+      setRegisterOpen(false)
+      setLoginOpen(true)
+    } else {
+      setLoginOpen(false)
+      setRegisterOpen(false)
+    }
+  }, [searchParams])
+  const clearModalQuery = () => {
+  const url = new URL(window.location.href)
+  url.searchParams.delete("modal")
+  router.replace(url.pathname + url.search, { scroll: false })
+
+  setLoginOpen(false)
+  setRegisterOpen(false)
+  }
+
+
   const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
   const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "분">(
     "일"
@@ -48,7 +78,15 @@ export default function FinanceDashboard() {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <button onClick={() => setRegisterOpen(true)}
+          {/* <button onClick={() => setRegisterOpen(true)} */}
+          <button
+            type="button"
+            onClick={() => {
+              const url = new URL(window.location.href)
+              url.searchParams.set("modal", "register")
+              router.push(url.toString())
+            }}
+          
            className="border border-[#006ffd] text-[#006ffd] px-4 py-2 rounded-md hover:bg-[#f0f7ff] transition-colors">
             회원가입
           </button>
@@ -58,8 +96,19 @@ export default function FinanceDashboard() {
           >
             로그인
           </button>
-          <LoginModal open={loginOpen} onOpenChange={setLoginOpen} />
-          <RegistrationModal isOpen={registerOpen} onClose={() => setRegisterOpen(false)} />
+          {/* <LoginModal open={loginOpen} onOpenChange={setLoginOpen} /> */}
+          <LoginModal
+            open={loginOpen}
+            onOpenChange={(open) => {
+              if (!open) clearModalQuery()
+            }}
+          />
+          {/* <RegistrationModal isOpen={registerOpen} onClose={() => setRegisterOpen(false)} /> */}
+          {/* <RegistrationModal isOpen={registerOpen} onClose={() => router.back()} /> */}
+          <RegistrationModal
+            isOpen={registerOpen}
+            onClose={clearModalQuery}
+          />
         </div>
 
         <div className="md:hidden">

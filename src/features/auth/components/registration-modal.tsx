@@ -82,9 +82,29 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
     console.log("회원가입 버튼 클릭됨") // 👉 버튼 눌렀는지 확인
 
     if (validateForm()) {
-      // If validation passes, you would typically send the data to your server here
+      
       console.log("Form submitted:", formData)
+      const existingUsers = JSON.parse(localStorage.getItem("users") || "[]")
+
+      //이메일 중복 확인
+      const emailDuplicate =existingUsers.some((user: any) => user.email === formData)
+      if (emailDuplicate) {
+        alert("이미 등록된 이메일입니다.")
+        return
+      }
+      
+      const updatedUsers = [...existingUsers, formData]
+      localStorage.setItem("users",JSON.stringify(updatedUsers))
+      
       alert("회원가입 완료.!")
+
+      // 초기화 
+      setFormData({
+        email: "",
+        password: "",
+        nickname: "",
+        phoneNumber: "010-",
+      })
       onClose()
     }
   }
@@ -111,7 +131,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
       >
         <div className="p-8">
           <div className="mb-6 text-center">
-            <div className="mb-4 text-3xl font-light text-[#bfdbfe]">Logo Here</div>
+            {/* <div className="mb-4 text-3xl font-light text-[#bfdbfe]">Logo Here</div> */}
             <p className="text-sm text-[#3c3c43]">MARS 모의투자에 오신걸 환영합니다 !!!</p>
           </div>
 

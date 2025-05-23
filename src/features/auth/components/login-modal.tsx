@@ -25,7 +25,31 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     console.log("Login attempt with:", email, password)
-    alert(`Login attempt with: ${email}`)
+    
+    const users = JSON.parse(localStorage.getItem("users") || "[]")
+
+    const matchUser = users.find(
+      (user:any) => user.email === email && user.password === password
+    )
+
+    if (matchUser) {
+      alert(`환영합니다, ${matchUser.nickname}님!`)
+
+      // 로그인 상태를 localStorage에 저장할 수도 있음
+      localStorage.setItem("logInUser", JSON.stringify(matchUser))
+
+      // 초기화 및 모달 닫기
+      setEmail("")
+      setPassword("")
+      onOpenChange(false)
+
+      // 필요하면 페이지 이동도 가능
+      // router.push("/dashboard")
+    }else{
+      alert("이메일  또는 비밀번호가 올바르지 않습니다.")
+    }
+
+
   }
 
   const handleGoBack = () => {
