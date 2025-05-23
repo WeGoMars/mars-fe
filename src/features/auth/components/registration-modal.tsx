@@ -117,7 +117,11 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[#eff5ff] via-[#e9f0ff] to-[#dfe8ff] backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
+    {/* <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}> */}
       {/* Close button positioned in the top-right corner of the modal window frame */}
       <button
         onClick={onClose}
@@ -137,7 +141,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
             <p className="text-sm text-[#3c3c43]">MARS 모의투자에 오신걸 환영합니다 !!!</p>
           </div>
 
-          <h1 className="mb-6 text-3xl font-bold text-[#000000]">회원가입</h1>
+          <h1 className="mb-6 text-3xl font-bold text-[#000000] text-center">회원가입</h1>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
