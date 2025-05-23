@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, X, Menu, ChevronLeft } from "lucide-react";
+import { Search, X, Menu, ChevronLeft, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import StockChart from "@/components/StockChart";
 
@@ -16,6 +16,8 @@ export default function FinanceDashboard() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [showPanel, setShowPanel] = useState<false | 'buy' | 'sell'>(false);
+  const [panelTab, setPanelTab] = useState<'매수' | '내 계좌'>('매수');
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -375,7 +377,7 @@ export default function FinanceDashboard() {
               <div className="flex flex-wrap gap-2">
                 {/* Buy/Sell Tabs */}
                 <button
-                  onClick={() => setActiveTab("매수")}
+                  onClick={() => setShowPanel('buy')}
                   className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
                     activeTab === "매수"
                       ? "bg-[#fce7e7]"
@@ -385,12 +387,8 @@ export default function FinanceDashboard() {
                   매수
                 </button>
                 <button
-                  onClick={() => setActiveTab("매도")}
-                  className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                    activeTab === "매도"
-                      ? "bg-[#e7ecfc]"
-                      : "bg-white hover:bg-gray-50"
-                  }`}
+                  onClick={() => setShowPanel('sell')}
+                  className="px-4 py-1.5 rounded-full font-medium text-xs transition-colors bg-[#b3c6e6]"
                 >
                   매도
                 </button>
@@ -446,99 +444,214 @@ export default function FinanceDashboard() {
             <div className="h-11"></div>
           </div>
 
-          {/* Stock Details with tabs inside the white box */}
-          <div className="bg-white rounded-xl p-4 md:p-5 shadow-sm flex-1 overflow-auto flex flex-col">
-            {/* 종목정보 상세, 내 계좌, AI 추천 탭 */}
-            <div className="flex justify-between gap-1 md:gap-2 mb-4 overflow-x-auto">
-              {(["종목정보 상세", "내 계좌", "AI 추천"] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveRightTab(tab)}
-                  className={`px-2 md:px-4 py-2 rounded-xl font-medium text-xs md:text-sm whitespace-nowrap transition-colors ${
-                    activeRightTab === tab
-                      ? "bg-[#f5f7f9]"
-                      : "bg-[#f5f7f9] hover:bg-gray-200"
-                  }`}
-                >
-                  {tab}
+          {/* showPanel이 true일 때 매수/매도 화면을 위아래로 동시에 보여줌 */}
+          {showPanel ? (
+            <div className="bg-white rounded-3xl border border-gray-200 p-6 w-full max-w-md md:max-w-md lg:max-w-md xl:max-w-lg flex flex-col fixed top-0 right-0 h-full z-50 shadow-lg transform transition-transform duration-500 animate-slide-in-right">
+              {/* 매수/매도 영역 */}
+              <div className="flex items-center justify-center mb-8 relative">
+                <span className="px-8 py-2 rounded-full bg-[#f4f5f9] text-base font-semibold text-center">
+                  {showPanel === 'buy' ? '매수' : '매도'}
+                </span>
+                <button onClick={() => setShowPanel(false)} className="absolute right-0 top-1/2 -translate-y-1/2">
+                  <X className="w-5 h-5 text-gray-500" />
                 </button>
-              ))}
-            </div>
-
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs">
-                  <span className="text-[10px]">S&P</span>
-                  <span className="text-[10px]">500</span>
-                </div>
-                <h3 className="text-lg md:text-xl font-bold">S&P 500</h3>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="font-bold">$213.10</div>
-                <div className="text-xs text-[#41c3a9] bg-[#e6f7f4] px-2 py-0.5 rounded-md">
-                  ↑ 1.1%
-                </div>
-              </div>
-            </div>
-
-            <div className="text-sm text-gray-500 mb-4">
-              S&P 500에 투자하여 배당금을 제공하는 ETF
-            </div>
-
-            {/* Stock Details */}
-            <div className="space-y-3 mb-4">
-              <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">시가총액</span>
-                <span className="text-sm font-medium">4.4조원</span>
-              </div>
-              <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">운용사</span>
-                <span className="text-sm font-medium">삼성자산운용(ETF)</span>
-              </div>
-              <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">상장일</span>
-                <span className="text-sm font-medium">2021년 4월 9일</span>
-              </div>
-              <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">운용자산</span>
-                <span className="text-sm font-medium">4.4조원</span>
-              </div>
-              <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">발행주수</span>
-                <span className="text-sm font-medium">230,800,000주</span>
-              </div>
-            </div>
-
-            {/* News */}
-            <div className="mt-4 flex-1 flex flex-col">
-              <div className="py-2 md:py-2.5 px-3 md:px-4 bg-[#f5f7f9] rounded-full mb-3">
-                <h3 className="font-medium text-sm">주요 뉴스</h3>
-              </div>
-              <div className="space-y-3 flex-1">
-                {[1, 2, 3].map((item) => (
-                  <div key={item} className="flex gap-3">
-                    <div className="w-14 h-14 md:w-16 md:h-16 bg-[#f5f7f9] rounded-xl flex items-center justify-center">
-                      <Image
-                        src="/financial-news.png"
-                        alt="뉴스 이미지"
-                        width={56}
-                        height={56}
-                        className="md:w-16 md:h-16"
-                      />
-                    </div>
-                    <div>
-                      <h4 className="text-xs md:text-sm font-medium">
-                        홍콩그룹과 경영권 분쟁 가능성에...한진칼 상한가
-                      </h4>
-                      <div className="text-xs text-gray-500 mt-1">
-                        1시간 전 / 한국경제
+              {showPanel === 'buy' && (
+                <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
+                      <div className="text-center">
+                        <div className="text-xs font-bold">S&P</div>
+                        <div className="text-xs">500</div>
                       </div>
                     </div>
+                    <h2 className="text-xl font-extrabold">S&P 500</h2>
                   </div>
-                ))}
+                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 채투자하는 ETF</p>
+                  <div className="flex items-center justify-between mt-6">
+                    <div className="font-bold text-base">수량</div>
+                    <div className="flex items-center gap-4">
+                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      <span className="text-lg font-bold">1</span>
+                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="text-lg font-extrabold">€ 12.00</div>
+                  </div>
+                  <button className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6">매수</button>
+                </div>
+              )}
+              {showPanel === 'sell' && (
+                <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
+                      <div className="text-center">
+                        <div className="text-xs font-bold">S&P</div>
+                        <div className="text-xs">500</div>
+                      </div>
+                    </div>
+                    <h2 className="text-xl font-extrabold">S&P 500</h2>
+                  </div>
+                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 채투자하는 ETF</p>
+                  <div className="flex items-center justify-between mt-6">
+                    <div className="font-bold text-base">수량</div>
+                    <div className="flex items-center gap-4">
+                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      <span className="text-lg font-bold">1</span>
+                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="text-lg font-extrabold">€ 12.00</div>
+                  </div>
+                  <button className="w-full py-4 bg-[#b3c6e6] rounded-2xl text-center font-bold text-base text-black mt-6">매도</button>
+                </div>
+              )}
+              {/* 내 계좌 영역 */}
+              <div>
+                <div className="flex justify-center mb-6">
+                  <span className="px-8 py-2 rounded-full bg-[#f4f5f9] text-base font-semibold text-center">내 계좌</span>
+                </div>
+                <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6">
+                  <div className="flex justify-between items-center">
+                    <div className="font-bold text-base">총자산</div>
+                    <div>
+                      <span className="text-[#006ffd] text-xs mr-1">$</span>
+                      <span className="text-[#006ffd] text-xl font-bold">2850.75</span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="font-bold text-base">현금자산</div>
+                    <div>
+                      <span className="text-[#006ffd] text-xs mr-1">$</span>
+                      <span className="text-[#006ffd] text-xl font-bold">999.75</span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="font-bold text-base">시드머니</div>
+                    <div>
+                      <span className="text-[#006ffd] text-xs mr-1">$</span>
+                      <span className="text-[#006ffd] text-xl font-bold">2850.75</span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="font-bold text-base">투자금액</div>
+                    <div>
+                      <span className="text-[#439a86] text-xs mr-1">$</span>
+                      <span className="text-[#439a86] text-xl font-bold">1500.50</span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="font-bold text-base">평가손익</div>
+                    <div className="flex items-center">
+                      <span className="text-[#bb4430] text-xs mr-1">$</span>
+                      <span className="text-[#bb4430] text-3sl font-bold">350.60</span>
+                      <span className="text-[#bb4430] ml-2">+5.5%</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            // 기존 카드 내용
+            <div className="bg-white rounded-xl p-4 md:p-5 shadow-sm flex-1 overflow-auto flex flex-col">
+              {/* 종목정보 상세, 내 계좌, AI 추천 탭 */}
+              <div className="flex justify-between gap-1 md:gap-2 mb-4 overflow-x-auto">
+                {(["종목정보 상세", "내 계좌", "AI 추천"] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveRightTab(tab)}
+                    className={`px-2 md:px-4 py-2 rounded-xl font-medium text-xs md:text-sm whitespace-nowrap transition-colors ${
+                      activeRightTab === tab
+                        ? "bg-[#f5f7f9]"
+                        : "bg-[#f5f7f9] hover:bg-gray-200"
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs">
+                    <span className="text-[10px]">S&P</span>
+                    <span className="text-[10px]">500</span>
+                  </div>
+                  <h3 className="text-lg md:text-xl font-bold">S&P 500</h3>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="font-bold">$213.10</div>
+                  <div className="text-xs text-[#41c3a9] bg-[#e6f7f4] px-2 py-0.5 rounded-md">
+                    ↑ 1.1%
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-sm text-gray-500 mb-4">
+                S&P 500에 투자하여 배당금을 제공하는 ETF
+              </div>
+
+              {/* Stock Details */}
+              <div className="space-y-3 mb-4">
+                <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
+                  <span className="text-sm text-gray-500">시가총액</span>
+                  <span className="text-sm font-medium">4.4조원</span>
+                </div>
+                <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
+                  <span className="text-sm text-gray-500">운용사</span>
+                  <span className="text-sm font-medium">삼성자산운용(ETF)</span>
+                </div>
+                <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
+                  <span className="text-sm text-gray-500">상장일</span>
+                  <span className="text-sm font-medium">2021년 4월 9일</span>
+                </div>
+                <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
+                  <span className="text-sm text-gray-500">운용자산</span>
+                  <span className="text-sm font-medium">4.4조원</span>
+                </div>
+                <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
+                  <span className="text-sm text-gray-500">발행주수</span>
+                  <span className="text-sm font-medium">230,800,000주</span>
+                </div>
+              </div>
+
+              {/* News */}
+              <div className="mt-4 flex-1 flex flex-col">
+                <div className="py-2 md:py-2.5 px-3 md:px-4 bg-[#f5f7f9] rounded-full mb-3">
+                  <h3 className="font-medium text-sm">주요 뉴스</h3>
+                </div>
+                <div className="space-y-3 flex-1">
+                  {[1, 2, 3].map((item) => (
+                    <div key={item} className="flex gap-3">
+                      <div className="w-14 h-14 md:w-16 md:h-16 bg-[#f5f7f9] rounded-xl flex items-center justify-center">
+                        <Image
+                          src="/financial-news.png"
+                          alt="뉴스 이미지"
+                          width={56}
+                          height={56}
+                          className="md:w-16 md:h-16"
+                        />
+                      </div>
+                      <div>
+                        <h4 className="text-xs md:text-sm font-medium">
+                          홍콩그룹과 경영권 분쟁 가능성에...한진칼 상한가
+                        </h4>
+                        <div className="text-xs text-gray-500 mt-1">
+                          1시간 전 / 한국경제
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
