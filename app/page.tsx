@@ -4,6 +4,9 @@ import { useState } from "react";
 import { Search, X, Menu, ChevronLeft, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import StockChart from "@/components/StockChart";
+import LoginModal from "@/src/features/auth/components/login-modal";
+import RegistrationModal from "@/src/features/auth/components/registration-modal"
+import Link from "next/link";
 
 export default function FinanceDashboard() {
   const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
@@ -16,8 +19,12 @@ export default function FinanceDashboard() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [registerOpen, setRegisterOpen] = useState(false);
   const [showPanel, setShowPanel] = useState<false | 'buy' | 'sell'>(false);
   const [panelTab, setPanelTab] = useState<'매수' | '내 계좌'>('매수');
+
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -31,22 +38,28 @@ export default function FinanceDashboard() {
             <Menu className="w-6 h-6 text-gray-700" />
           </button>
           <Image
-            src="/orange-planet-logo.png"
+            src="/marslogo.png"
             alt="Mars 로고"
-            width={40}
-            height={40}
+            width={30}
+            height={30}
             className="rounded-full"
           />
           <span className="text-lg font-medium">mars</span>
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <button className="bg-[#006ffd] text-white px-4 py-2 rounded-md hover:bg-[#0057cc] transition-colors">
+          <button onClick={() => setRegisterOpen(true)}
+           className="border border-[#006ffd] text-[#006ffd] px-4 py-2 rounded-md hover:bg-[#f0f7ff] transition-colors">
             회원가입
           </button>
-          <button className="bg-[#006ffd] text-white px-4 py-2 rounded-md hover:bg-[#0057cc] transition-colors">
+          <button
+            onClick={() => setLoginOpen(true)}
+            className="bg-[#006ffd] text-white px-4 py-2 rounded-md hover:bg-[#0057cc] transition-colors"
+          >
             로그인
           </button>
+          <LoginModal open={loginOpen} onOpenChange={setLoginOpen} />
+          <RegistrationModal isOpen={registerOpen} onClose={() => setRegisterOpen(false)} />
         </div>
 
         <div className="md:hidden">
