@@ -19,188 +19,24 @@ export default function StockChart({ symbol, period }: StockChartProps) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const chartContainerRef = useRef<HTMLDivElement>(null);
-  const volumeContainerRef = useRef<HTMLDivElement>(null);
+  const mainChartRef = useRef<HTMLDivElement>(null);
+  const volumeChartRef = useRef<HTMLDivElement>(null);
 
   // 캔들차트용 목데이터(API 나오면 대체)
-  const mockData = [
-    {
-      time: "2024-06-01",
-      open: 210,
-      high: 215,
-      low: 208,
-      close: 213,
-      volume: 1000,
-    },
-    {
-      time: "2024-06-02",
-      open: 213,
-      high: 218,
-      low: 212,
-      close: 217,
-      volume: 1200,
-    },
-    {
-      time: "2024-06-03",
-      open: 217,
-      high: 220,
-      low: 215,
-      close: 218,
-      volume: 1500,
-    },
-    {
-      time: "2024-06-04",
-      open: 218,
-      high: 222,
-      low: 216,
-      close: 221,
-      volume: 1300,
-    },
-    {
-      time: "2024-06-05",
-      open: 221,
-      high: 225,
-      low: 220,
-      close: 224,
-      volume: 1400,
-    },
-    {
-      time: "2024-06-06",
-      open: 224,
-      high: 228,
-      low: 223,
-      close: 227,
-      volume: 1600,
-    },
-    {
-      time: "2024-06-07",
-      open: 227,
-      high: 230,
-      low: 225,
-      close: 229,
-      volume: 1700,
-    },
-    {
-      time: "2024-06-08",
-      open: 227,
-      high: 230,
-      low: 225,
-      close: 229,
-      volume: 1800,
-    },
-    {
-      time: "2024-06-09",
-      open: 227,
-      high: 230,
-      low: 225,
-      close: 229,
-      volume: 1900,
-    },
-    {
-      time: "2024-06-10",
-      open: 227,
-      high: 230,
-      low: 225,
-      close: 229,
-      volume: 2000,
-    },
-    {
-      time: "2024-06-11",
-      open: 227,
-      high: 230,
-      low: 225,
-      close: 229,
-      volume: 2100,
-    },
-    {
-      time: "2024-06-12",
-      open: 227,
-      high: 230,
-      low: 225,
-      close: 229,
-      volume: 2200,
-    },
-    {
-      time: "2024-06-13",
-      open: 227,
-      high: 230,
-      low: 225,
-      close: 229,
-      volume: 2300,
-    },
-    {
-      time: "2024-06-14",
-      open: 227,
-      high: 230,
-      low: 225,
-      close: 229,
-      volume: 2400,
-    },
-    {
-      time: "2024-06-15",
-      open: 227,
-      high: 230,
-      low: 225,
-      close: 229,
-      volume: 2500,
-    },
-    {
-      time: "2024-06-16",
-      open: 227,
-      high: 230,
-      low: 225,
-      close: 229,
-      volume: 2600,
-    },
-    {
-      time: "2024-06-17",
-      open: 227,
-      high: 230,
-      low: 225,
-      close: 229,
-      volume: 2700,
-    },
-    {
-      time: "2024-06-18",
-      open: 227,
-      high: 230,
-      low: 225,
-      close: 229,
-      volume: 2800,
-    },
-    {
-      time: "2024-06-19",
-      open: 227,
-      high: 230,
-      low: 225,
-      close: 229,
-      volume: 2900,
-    },
-    {
-      time: "2024-06-20",
-      open: 227,
-      high: 230,
-      low: 225,
-      close: 229,
-      volume: 3000,
-    },
-    {
-      time: "2024-06-21",
-      open: 227,
-      high: 230,
-      low: 225,
-      close: 229,
-      volume: 3100,
-    },
-    {
-      time: "2024-06-22",
-      open: 227,
-      high: 230,
-      low: 225,
-      close: 229,
-      volume: 3200,
-    },
-  ];
+  const mockData = Array.from({ length: 200 }, (_, i) => {
+    const date = new Date(2024, 0, 1); // 2024-01-01
+    date.setDate(date.getDate() + i);
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return {
+      time: `2024-${month}-${day}`,
+      open: 210 + i * 2,
+      high: 215 + i * 2,
+      low: 208 + i * 2,
+      close: 212 + i * 2 + Math.floor(Math.random() * 6) - 3,
+      volume: 10 + Math.floor(Math.random() * 40),
+    };
+  });
 
   useEffect(() => {
     const fetchChartData = async () => {
@@ -238,90 +74,112 @@ export default function StockChart({ symbol, period }: StockChartProps) {
   }, [symbol, period]);
 
   useEffect(() => {
-    if (!chartContainerRef.current || !volumeContainerRef.current) return;
+    if (!mainChartRef.current || !volumeChartRef.current) return;
 
-    const container = chartContainerRef.current;
-    const volumeContainer = volumeContainerRef.current;
-    const width = container.clientWidth;
-    const height = container.clientHeight;
-    const volumeHeight = 150; // 거래량 차트 높이
-
-    // 캔들스틱 차트 생성
-    const chart = createChart(container, {
-      width: width,
-      height: height,
+    // 메인 차트(캔들)
+    const mainChart = createChart(mainChartRef.current, {
+      width: mainChartRef.current.clientWidth,
+      height: mainChartRef.current.clientHeight,
       layout: {
-        background: { color: "#ffffff" },
+        background: { color: "transparent" },
         textColor: "#333",
       },
       grid: {
         vertLines: { color: "#f0f0f0" },
         horzLines: { color: "#f0f0f0" },
       },
-    });
-
-    // 거래량 차트 생성
-    const volumeChart = createChart(volumeContainer, {
-      width: width,
-      height: volumeHeight,
-      layout: {
-        background: { color: "#ffffff" },
-        textColor: "#333",
+      rightPriceScale: {
+        scaleMargins: {
+          top: 0.1,
+          bottom: 0.1,
+        },
       },
-      grid: {
-        vertLines: { color: "#f0f0f0" },
-        horzLines: { color: "#f0f0f0" },
+      leftPriceScale: {
+        visible: false,
+      },
+      timeScale: {
+        borderColor: "#eee",
       },
     });
-
-    // 캔들스틱 차트 추가
-    const candlestickSeries = chart.addSeries(CandlestickSeries);
-    candlestickSeries.setData(mockData);
-
-    // 거래량 차트 추가
-    const volumeSeries = volumeChart.addSeries(HistogramSeries, {
-      priceFormat: {
-        type: "volume",
-      },
-      priceScaleId: "",
-    });
-
-    // 거래량 데이터 설정
-    const volumeData = mockData.map((item) => ({
-      time: item.time,
-      value: item.volume,
-      // 거래량(캔들 차트 색상 변경하는 곳)
-      color: item.close >= item.open ? "#ff6b6b" : "#4dabf7", // 상한가는 빨간색, 하한가는 파란색으로 변경
-    }));
-    volumeSeries.setData(volumeData);
-
-    // 스타일 설정(캔들 차트 색상 변경하는 곳)
-    candlestickSeries.applyOptions({
+    const candlestickSeries = mainChart.addSeries(CandlestickSeries, {
       upColor: "#ff6b6b",
       downColor: "#4dabf7",
       wickUpColor: "#ff6b6b",
       wickDownColor: "#4dabf7",
       borderVisible: false,
     });
+    candlestickSeries.setData(mockData);
 
-    // 차트 크기 조정 이벤트 리스너
+    // 거래량 차트
+    const volumeChart = createChart(volumeChartRef.current, {
+      width: volumeChartRef.current.clientWidth,
+      height: 120,
+      layout: {
+        background: { color: "transparent" },
+        textColor: "#333",
+      },
+      grid: {
+        vertLines: { color: "#f0f0f0" },
+        horzLines: { color: "#f0f0f0" },
+      },
+      rightPriceScale: {
+        scaleMargins: {
+          top: 0.2,
+          bottom: 0.1,
+        },
+      },
+      leftPriceScale: {
+        visible: false,
+      },
+      timeScale: {
+        borderColor: "#eee",
+      },
+    });
+    const volumeSeries = volumeChart.addSeries(HistogramSeries, {
+      priceFormat: { type: "volume" },
+      color: "#888",
+    });
+    const volumeData = mockData.map((item) => ({
+      time: item.time,
+      value: item.volume,
+      color: item.close >= item.open ? "#ff6b6b" : "#4dabf7",
+    }));
+    volumeSeries.setData(volumeData);
+
+    // === x축(시간축) 동기화 ===
+    const mainTimeScale = mainChart.timeScale();
+    const volumeTimeScale = volumeChart.timeScale();
+    let isSyncing = false;
+    mainTimeScale.subscribeVisibleLogicalRangeChange((range) => {
+      if (isSyncing || !range) return;
+      isSyncing = true;
+      volumeTimeScale.setVisibleLogicalRange(range);
+      isSyncing = false;
+    });
+    volumeTimeScale.subscribeVisibleLogicalRangeChange((range) => {
+      if (isSyncing || !range) return;
+      isSyncing = true;
+      mainTimeScale.setVisibleLogicalRange(range);
+      isSyncing = false;
+    });
+
+    // 리사이즈 이벤트
     const handleResize = () => {
-      chart.applyOptions({
-        width: container.clientWidth,
-        height: container.clientHeight,
+      mainChart.applyOptions({
+        width: mainChartRef.current?.clientWidth || 0,
+        height: 400,
       });
       volumeChart.applyOptions({
-        width: volumeContainer.clientWidth,
-        height: volumeHeight,
+        width: volumeChartRef.current?.clientWidth || 0,
+        height: 120,
       });
     };
-
     window.addEventListener("resize", handleResize);
 
     // cleanup
     return () => {
       window.removeEventListener("resize", handleResize);
-      chart.remove();
+      mainChart.remove();
       volumeChart.remove();
     };
   }, [mockData]);
@@ -343,23 +201,46 @@ export default function StockChart({ symbol, period }: StockChartProps) {
   }
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full h-full">
+      <span
+        style={{
+          marginLeft: 8,
+          marginBottom: 2,
+          fontWeight: 600,
+          color: "#333",
+        }}
+      >
+        차트
+      </span>
       <div
-        ref={chartContainerRef}
+        ref={mainChartRef}
         style={{
           width: "100%",
-          height: "400px",
+          height: "100%",
           position: "relative",
           zIndex: 1,
+          margin: 0,
+          marginTop: 0,
+          marginBottom: 0,
+          padding: 0,
         }}
       />
+      <span
+        style={{ marginLeft: 8, marginTop: 2, fontWeight: 600, color: "#333" }}
+      >
+        거래량
+      </span>
       <div
-        ref={volumeContainerRef}
+        ref={volumeChartRef}
         style={{
           width: "100%",
-          height: "150px",
+          height: "120px",
           position: "relative",
           zIndex: 1,
+          margin: 0,
+          marginTop: 0,
+          marginBottom: 0,
+          padding: 0,
         }}
       />
     </div>
