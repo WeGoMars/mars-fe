@@ -5,7 +5,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
-import { X } from "lucide-react"
+// import { X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog"
@@ -106,18 +106,25 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
                 <span className="ml-2">→</span>
               </Button>
 
-              <div className="text-center text-sm">
+              {/* <div className="text-center text-sm">
                 <span className="text-[#747480] dark:text-gray-400">아직회원이 아니신가요?</span>{" "}
                 <Link href="#" className="text-[#5f80f8] dark:text-blue-400 hover:underline">
                   join us
                 </Link>
+              </div> */}
+              <div className="text-center text-sm">
+                <span className="text-[#747480] dark:text-gray-400">아직회원이 아니신가요?</span>{" "}
+                <button
+                  type="button"
+                  onClick={() => router.push("?modal=register")}
+                  className="text-[#5f80f8] dark:text-blue-400 hover:underline"
+                >
+                  join us
+                </button>
               </div>
             </form>
 
             <div className="mt-8 text-center">
-              {/* <Link href="/" className="text-sm text-[#747480] dark:text-gray-400 hover:text-[#5f80f8] dark:hover:text-blue-400">
-                ← Back to Home
-              </Link> */}
             </div>
           </div>
         </main>
