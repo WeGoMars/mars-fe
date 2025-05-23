@@ -44,7 +44,7 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
       onOpenChange(false)
 
       // 필요하면 페이지 이동도 가능
-      // router.push("/dashboard")
+      router.push("/dashboard")
     }else{
       alert("이메일  또는 비밀번호가 올바르지 않습니다.")
     }

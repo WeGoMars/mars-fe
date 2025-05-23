@@ -24,8 +24,28 @@ export default function Dashboard() {
   >("종목정보 상세");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [nickname, setNickname] = useState<string | null>(null)
 
   useEffect(() => {
+    // 
+    const user = localStorage.getItem("logInUser")
+      if (!user) {
+        window.location.href = "/"  // 로그인 안 했으면 홈으로 이동
+      }
+    const saveUser = localStorage.getItem("logInUser") 
+    if (saveUser) {
+      try {
+        const user = JSON.parse(saveUser)
+        setNickname(user.nickname)
+
+      }catch (err) {
+        console.error("failed to parse user:" , err)
+      }
+    }else {
+
+    }
+
+
     const fetchStocks = async () => {
       setIsLoading(true);
       setError(null);
@@ -73,7 +93,7 @@ export default function Dashboard() {
 
         <div className="hidden md:flex items-center gap-4">
           <div className="text-sm text-gray-600">
-            oo님 mars 모투에 오신걸 환영합니다
+            {nickname ? `${nickname}님 환영합니다 `:"mars 모투에 오신걸 환영합니다"}
           </div>
           <div className="w-8 h-8 bg-gray-100 rounded-full"></div>
           <button className="bg-[#006ffd] text-white px-4 py-2 rounded-md">
