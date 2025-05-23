@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { X } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 interface RegistrationModalProps {
   isOpen: boolean
@@ -18,6 +19,7 @@ type FormErrors = {
 }
 
 export default function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
+  const router = useRouter()
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -224,12 +226,26 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
             </button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-[#747480]">
+          {/* <div className="mt-6 text-center text-sm text-[#747480]">
             이미 계정이 있으신가요?{" "}
             <a href="#" className="text-[#5f80f8] hover:underline">
               Login
             </a>
-          </div>
+          </div> */}
+          <div className="text-center text-sm">
+            <span className="text-[#747480] dark:text-gray-400">이미 계정이 있으신가요?</span>{" "}
+            <button
+              type="button"
+              onClick={() => {
+                const url = new URL(window.location.href)
+                url.searchParams.set("modal", "login")
+                router.push(url.toString())
+              }}
+              className="text-[#5f80f8] hover:underline dark:text-blue-400"
+            >
+              Login
+            </button>
+</div>
         </div>
       </div>
     </div>
