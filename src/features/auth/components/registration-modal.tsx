@@ -105,7 +105,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
       </button>
 
       <div
-        className="relative max-h-[90vh] w-full max-w-md overflow-auto rounded-lg bg-white shadow-lg"
+        className="relative max-h-[90vh] w-full max-w-md overflow -auto rounded-lg bg-white shadow-lg"
         onClick={handleModalClick}
       >
         <div className="p-8">
