@@ -7,6 +7,8 @@ import StockChart from "@/components/StockChart";
 import LoginModal from "@/src/features/auth/components/login-modal";
 import RegistrationModal from "@/src/features/auth/components/registration-modal"
 import Link from "next/link";
+import BuyConfirmModal from "@/components/BuyConfirmModal";
+import SellConfirmModal from "@/components/SellConfirmModal";
 
 export default function FinanceDashboard() {
   const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
@@ -24,6 +26,8 @@ export default function FinanceDashboard() {
   const [registerOpen, setRegisterOpen] = useState(false);
   const [showPanel, setShowPanel] = useState<false | 'buy' | 'sell'>(false);
   const [panelTab, setPanelTab] = useState<'매수' | '내 계좌'>('매수');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSellConfirmModal, setShowSellConfirmModal] = useState(false);
 
 
   return (
@@ -494,7 +498,12 @@ export default function FinanceDashboard() {
                     </div>
                     <div className="text-lg font-extrabold">€ 12.00</div>
                   </div>
-                  <button className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6">매수</button>
+                  <button 
+                    className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
+                    onClick={() => setShowConfirmModal(true)}
+                  >
+                    매수
+                  </button>
                 </div>
               )}
               {showPanel === 'sell' && (
@@ -522,7 +531,12 @@ export default function FinanceDashboard() {
                     </div>
                     <div className="text-lg font-extrabold">€ 12.00</div>
                   </div>
-                  <button className="w-full py-4 bg-[#b3c6e6] rounded-2xl text-center font-bold text-base text-black mt-6">매도</button>
+                  <button 
+                    className="w-full py-4 bg-[#b3c6e6] rounded-2xl text-center font-bold text-base text-black mt-6"
+                    onClick={() => setShowSellConfirmModal(true)}
+                  >
+                    매도
+                  </button>
                 </div>
               )}
               {/* 내 계좌 영역 */}
@@ -667,6 +681,26 @@ export default function FinanceDashboard() {
           )}
         </div>
       </div>
+
+      {/* BuyConfirmModal과 SellConfirmModal 추가 */}
+      <BuyConfirmModal 
+        open={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={() => {
+          // TODO: 매수 로직 구현
+          setShowConfirmModal(false);
+          setShowPanel(false);
+        }}
+      />
+      <SellConfirmModal 
+        open={showSellConfirmModal}
+        onClose={() => setShowSellConfirmModal(false)}
+        onConfirm={() => {
+          // TODO: 매도 로직 구현
+          setShowSellConfirmModal(false);
+          setShowPanel(false);
+        }}
+      />
     </div>
   );
 }
