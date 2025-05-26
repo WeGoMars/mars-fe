@@ -232,7 +232,7 @@ export default function FinanceDashboard() {
         <div className="hidden lg:flex lg:w-64 flex-col">
           {/* 해외종목 목록 보기 */}
           <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center">
-            <span className="text-sm">해외종목 목록 보기</span>
+            <span className="text-sm">오늘의 핫 종목</span>
           </div>
 
           {/* Stock List */}
