@@ -54,6 +54,11 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
     );
   }
 
+  const handleTabClick = (tab: '종목정보 상세' | '내 계좌' | 'AI 추천') => {
+    console.log('Tab clicked:', tab);
+    onTabChange(tab);
+  };
+
   return (
     <div className="flex-1 overflow-auto flex flex-col">
       {/* 종목정보 상세, 내 계좌, AI 추천 탭 */}
@@ -61,7 +66,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
         {(['종목정보 상세', '내 계좌', 'AI 추천'] as const).map((tab) => (
           <button
             key={tab}
-            onClick={() => onTabChange(tab)}
+            onClick={() => handleTabClick(tab)}
             className={`px-2 md:px-4 py-2 rounded-xl font-medium text-xs md:text-sm whitespace-nowrap transition-colors ${
               activeTab === tab ? 'bg-[#f5f7f9]' : 'bg-[#f5f7f9] hover:bg-gray-200'
             }`}
@@ -71,30 +76,76 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
         ))}
       </div>
 
-      {details && (
-        <>
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs">
-                <span className="text-[10px]">{symbol.substring(0, 2)}</span>
-                <span className="text-[10px]">{symbol.substring(2, 4)}</span>
+      {activeTab === '내 계좌' ? (
+        <div className="flex-1 flex flex-col mt-12">
+          {/* Financial Information */}
+          <div className="space-y-8">
+            {/* Total Assets */}
+            <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
+              <span className="text-sm text-gray-500">총자산</span>
+              <div>
+                <span className="text-[#197bbd] text-xs mr-1">$</span>
+                <span className="text-[#197bbd] text-sm font-medium">2850.75</span>
               </div>
-              <h3 className="text-lg md:text-xl font-bold">{details.name}</h3>
             </div>
-            <div>
-              <div className="font-bold text-right">{details.price}</div>
-              <div
-                className={`text-xs text-right ${details.change.startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}
-              >
-                {details.change.startsWith('+') ? '↑' : '↓'} {details.changePercent}
+
+            {/* Investment Amount */}
+            <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
+              <span className="text-sm text-gray-500">투자금액</span>
+              <div>
+                <span className="text-[#439a86] text-xs mr-1">$</span>
+                <span className="text-[#439a86] text-sm font-medium">1500.50</span>
               </div>
+            </div>
+
+            {/* Unrealized P&L */}
+            <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
+              <span className="text-sm text-gray-500">평가손익</span>
+              <div className="flex items-center">
+                <span className="text-[#bb4430] text-xs mr-1">$</span>
+                <span className="text-[#bb4430] text-sm font-medium">350.60</span>
+                <span className="text-[#bb4430] ml-2 text-xs">+5.5%</span>
+              </div>
+            </div>
+
+            {/* Return Rate */}
+            <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
+              <span className="text-sm text-gray-500">수익률</span>
+              <span className="text-sm font-medium">+5.5%</span>
             </div>
           </div>
+        </div>
+      ) : activeTab === 'AI 추천' ? (
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-gray-400 text-center">
+            <p>AI 추천 정보</p>
+            <p className="text-sm">준비 중입니다</p>
+          </div>
+        </div>
+      ) : (
+        details && (
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs">
+                  <span className="text-[10px]">{symbol.substring(0, 2)}</span>
+                  <span className="text-[10px]">{symbol.substring(2, 4)}</span>
+                </div>
+                <h3 className="text-lg md:text-xl font-bold">{details.name}</h3>
+              </div>
+              <div>
+                <div className="font-bold text-right">{details.price}</div>
+                <div
+                  className={`text-xs text-right ${details.change.startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}
+                >
+                  {details.change.startsWith('+') ? '↑' : '↓'} {details.changePercent}
+                </div>
+              </div>
+            </div>
 
-          <div className="text-sm text-gray-500 mb-4">{details.description}</div>
+            <div className="text-sm text-gray-500 mb-4">{details.description}</div>
 
-          {/* Stock Details */}
-          {activeTab === '종목정보 상세' && (
+            {/* Stock Details */}
             <div className="space-y-3 mb-4">
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">시가총액</span>
@@ -117,28 +168,8 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
                 <span className="text-sm font-medium">{details.shares}</span>
               </div>
             </div>
-          )}
 
-          {activeTab === '내 계좌' && (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-gray-400 text-center">
-                <p>계좌 정보</p>
-                <p className="text-sm">로그인이 필요합니다</p>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'AI 추천' && (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-gray-400 text-center">
-                <p>AI 추천 정보</p>
-                <p className="text-sm">준비 중입니다</p>
-              </div>
-            </div>
-          )}
-
-          {/* News */}
-          {activeTab === '종목정보 상세' && (
+            {/* News */}
             <div className="mt-4 flex-1 flex flex-col">
               <div className="py-2 md:py-2.5 px-3 md:px-4 bg-[#f5f7f9] rounded-full mb-3">
                 <h3 className="font-medium text-sm">주요 뉴스</h3>
@@ -172,8 +203,8 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
                 )}
               </div>
             </div>
-          )}
-        </>
+          </>
+        )
       )}
     </div>
   );
