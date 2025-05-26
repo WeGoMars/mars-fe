@@ -67,14 +67,16 @@ export default function FinanceDashboard() {
           >
             <Menu className="w-6 h-6 text-gray-700" />
           </button>
+          <Link href="/">
           <Image
             src="/marslogo.png"
             alt="Mars 로고"
             width={30}
             height={30}
-            className="rounded-full"
+            className="rounded-full cursor-pointer"
           />
-          <span className="text-lg font-medium">mars</span>
+          </Link>
+          <span className="text-lg font-medium">Mars</span>
         </div>
 
         <div className="hidden md:flex items-center gap-3">
@@ -123,7 +125,12 @@ export default function FinanceDashboard() {
             <div className="text-sm text-gray-600">
               oo님 mars 모투에 오신걸 환영합니다
             </div>
-            <button className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full">
+            <button onClick={() => {
+              localStorage.removeItem("logInUser") // 저장된 로그인정보 제거
+              alert("로그아웃 되었습니다.")
+              router.push("/")
+            }}
+              className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full">
               로그아웃
             </button>
             <button
