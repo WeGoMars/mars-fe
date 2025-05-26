@@ -8,7 +8,7 @@ import Image from "next/image"
 // import { X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogOverlay, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
@@ -60,6 +60,7 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
       )}
 
       <DialogContent className="p-0 border-none bg-transparent max-w-full">
+        <DialogTitle className="sr-only">로그인</DialogTitle>
         <main className="flex min-h-screen flex-col items-center justify-center bg-[#f5f7f9] dark:bg-gray-900 p-4 w-full">
           <div className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 p-8 shadow-lg">
             <div className="mb-6 text-center">
