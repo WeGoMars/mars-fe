@@ -10,6 +10,8 @@ import StockDetails from "@/components/StockDetails";
 import { getStockList } from "@/lib/api";
 import type { Stock } from "@/lib/types";
 import { useRouter } from "next/navigation"
+import Link from "next/link"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 
 
 export default function Dashboard() {
@@ -95,10 +97,24 @@ export default function Dashboard() {
         </div>
 
         <div className="hidden md:flex items-center gap-4">
-          <div className="text-sm text-gray-600">
+          {/* <div className="text-sm text-gray-600">
             {nickname ? `${nickname}님 환영합니다 `:"mars 모투에 오신걸 환영합니다"}
-          </div>
-          <div className="w-8 h-8 bg-gray-100 rounded-full"></div>
+          </div> */}
+          
+          <Link
+            href="dashboard/mypage"
+            className="flex items-center gap-2 text-sm text-gray-600 hover:opacity-80 transition-opacity"
+          >
+            {/* 닉네임 텍스트 */}
+            <span>{nickname ? `${nickname}님 환영합니다` : "mars 모투에 오신걸 환영합니다"}</span>
+
+            {/* 유저 아바타 */}
+            <Avatar className="w-8 h-8">
+              <AvatarImage src="/placeholder.svg?height=32&width=32&query=user+avatar" />
+              <AvatarFallback>M</AvatarFallback>
+            </Avatar>
+            </Link>  
+        
           <button onClick={() => {
               localStorage.removeItem("logInUser") // 저장된 로그인정보 제거
               alert("로그아웃 되었습니다.")

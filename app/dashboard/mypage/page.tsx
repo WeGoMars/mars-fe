@@ -1,16 +1,11 @@
 "use client"
-
-import { useState } from "react"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Search, X, TrendingUp, TrendingDown, ChevronRight } from "lucide-react"
+import { TrendingUp, TrendingDown, ChevronRight } from "lucide-react"
 
 export default function MyPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-
   const portfolioData = {
     totalAssets: 2850.75,
     investmentAmount: 1500.5,
@@ -93,29 +88,7 @@ export default function MyPage() {
       </header>
 
       <div className="max-w-7xl mx-auto p-6">
-        {/* Search Bar */}
-        <div className="mb-8">
-          <div className="relative max-w-md mx-auto">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#8f9098] h-4 w-4" />
-            <Input
-              type="text"
-              placeholder="종목 검색"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-10 py-3 bg-white border-[#e0e0e0] focus:border-[#5f80f8] focus:ring-[#5f80f8]"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#8f9098] hover:text-[#747480]"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
           {/* Left Sidebar - Watchlist */}
           <div className="lg:col-span-1">
             <Card className="bg-white border-[#e8e8e8]">
@@ -240,7 +213,7 @@ export default function MyPage() {
                   <Link href="/portfolio/profit-loss" className="group">
                     <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#bb4430] hover:shadow-md transition-all duration-200 cursor-pointer">
                       <div className="flex items-center justify-between mb-2">
-                        <div className="text-sm font-medium text-[#8f9098]">평가손익</div>
+                        <div className="text-sm font-medium text-[#8f9 করলো98]">평가손익</div>
                         <ChevronRight className="h-4 w-4 text-[#8f9098] group-hover:text-[#bb4430] transition-colors" />
                       </div>
                       <div className="text-2xl font-bold text-[#bb4430] group-hover:text-[#a73d2a] transition-colors flex items-center gap-1">
