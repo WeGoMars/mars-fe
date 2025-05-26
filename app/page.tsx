@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Search, X, Menu, ChevronLeft, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import StockChart from "@/components/StockChart";
-import LoginModal from "@/src/features/auth/components/login-modal";
-import RegistrationModal from "@/src/features/auth/components/registration-modal"
+import LoginModal from "@/components/common/LoginModal";
+import RegistrationModal from "@/components/common/RegistrationModal"
 import Link from "next/link";
 import BuyConfirmModal from "@/components/BuyConfirmModal";
 import SellConfirmModal from "@/components/SellConfirmModal";
