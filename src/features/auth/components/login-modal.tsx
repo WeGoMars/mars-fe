@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
+
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { X } from "lucide-react"
@@ -106,12 +107,15 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
             />
           </div>
 
+
           <div className="space-y-2">
             <div className="flex justify-between">
               <Label htmlFor="password" className="text-gray-700 dark:text-gray-300">Password</Label>
               <span className="text-xs text-[#747480] dark:text-gray-400 hover:text-[#5f80f8] dark:hover:text-blue-400 cursor-pointer">
                 비밀번호 찾기
               </span>
+
+      
             </div>
             <Input
               id="password"

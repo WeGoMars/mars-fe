@@ -7,6 +7,9 @@ import StockChart from "@/components/StockChart";
 import LoginModal from "@/src/features/auth/components/login-modal";
 import RegistrationModal from "@/src/features/auth/components/registration-modal"
 import Link from "next/link";
+import BuyConfirmModal from "@/components/BuyConfirmModal";
+import SellConfirmModal from "@/components/SellConfirmModal";
+import SearchBar from "@/components/SearchBar";
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -54,7 +57,10 @@ export default function FinanceDashboard() {
   const [registerOpen, setRegisterOpen] = useState(false);
   const [showPanel, setShowPanel] = useState<false | 'buy' | 'sell'>(false);
   const [panelTab, setPanelTab] = useState<'매수' | '내 계좌'>('매수');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSellConfirmModal, setShowSellConfirmModal] = useState(false);
 
+  console.log('searchQuery:', searchQuery)
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -282,7 +288,7 @@ export default function FinanceDashboard() {
         <div className="hidden lg:flex lg:w-64 flex-col">
           {/* 해외종목 목록 보기 */}
           <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center">
-            <span className="text-sm">해외종목 목록 보기</span>
+            <span className="text-sm">오늘의 핫 종목</span>
           </div>
 
           {/* Stock List */}
@@ -410,24 +416,7 @@ export default function FinanceDashboard() {
           {/* Search Bar - Styled like the screenshot */}
           <div className="flex justify-center mb-4">
             <div className="relative w-full max-w-2xl">
-              <div className="flex items-center bg-[#f0f0f0] rounded-full px-4 py-3">
-                <Search className="text-gray-500 w-5 h-5 mr-3" />
-                <input
-                  type="text"
-                  placeholder="종목 검색"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 bg-transparent border-0 focus:outline-none text-base text-gray-700 placeholder-gray-500"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="bg-[#e0e0e0] rounded-full p-1.5 ml-2 hover:bg-gray-300 transition-colors"
-                  >
-                    <X className="text-gray-600 w-4 h-4" />
-                  </button>
-                )}
-              </div>
+              <SearchBar onSelectStock={(symbol) => setSearchQuery(symbol)} />
             </div>
           </div>
           {/* Main Chart Area */}
@@ -550,7 +539,12 @@ export default function FinanceDashboard() {
                     </div>
                     <div className="text-lg font-extrabold">€ 12.00</div>
                   </div>
-                  <button className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6">매수</button>
+                  <button 
+                    className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
+                    onClick={() => setShowConfirmModal(true)}
+                  >
+                    매수
+                  </button>
                 </div>
               )}
               {showPanel === 'sell' && (
@@ -578,7 +572,12 @@ export default function FinanceDashboard() {
                     </div>
                     <div className="text-lg font-extrabold">€ 12.00</div>
                   </div>
-                  <button className="w-full py-4 bg-[#b3c6e6] rounded-2xl text-center font-bold text-base text-black mt-6">매도</button>
+                  <button 
+                    className="w-full py-4 bg-[#b3c6e6] rounded-2xl text-center font-bold text-base text-black mt-6"
+                    onClick={() => setShowSellConfirmModal(true)}
+                  >
+                    매도
+                  </button>
                 </div>
               )}
               {/* 내 계좌 영역 */}
@@ -723,6 +722,26 @@ export default function FinanceDashboard() {
           )}
         </div>
       </div>
+
+      {/* BuyConfirmModal과 SellConfirmModal 추가 */}
+      <BuyConfirmModal 
+        open={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={() => {
+          // TODO: 매수 로직 구현
+          setShowConfirmModal(false);
+          setShowPanel(false);
+        }}
+      />
+      <SellConfirmModal 
+        open={showSellConfirmModal}
+        onClose={() => setShowSellConfirmModal(false)}
+        onConfirm={() => {
+          // TODO: 매도 로직 구현
+          setShowSellConfirmModal(false);
+          setShowPanel(false);
+        }}
+      />
     </div>
   );
 }
