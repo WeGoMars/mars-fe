@@ -11,7 +11,37 @@ import BuyConfirmModal from "@/components/BuyConfirmModal";
 import SellConfirmModal from "@/components/SellConfirmModal";
 import SearchBar from "@/components/SearchBar";
 
+import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 export default function FinanceDashboard() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  useEffect(() => {
+    const modal = searchParams.get("modal")
+
+    if (modal === "register") {
+      setLoginOpen(false)
+      setRegisterOpen(true)
+    } else if (modal ==="login") {
+      setRegisterOpen(false)
+      setLoginOpen(true)
+    } else {
+      setLoginOpen(false)
+      setRegisterOpen(false)
+    }
+  }, [searchParams])
+  const clearModalQuery = () => {
+  const url = new URL(window.location.href)
+  url.searchParams.delete("modal")
+  router.replace(url.pathname + url.search, { scroll: false })
+
+  setLoginOpen(false)
+  setRegisterOpen(false)
+  }
+
+
   const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
   const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "분">(
     "일"
@@ -43,18 +73,28 @@ export default function FinanceDashboard() {
           >
             <Menu className="w-6 h-6 text-gray-700" />
           </button>
+          <Link href="/">
           <Image
             src="/marslogo.png"
             alt="Mars 로고"
             width={30}
             height={30}
-            className="rounded-full"
+            className="rounded-full cursor-pointer"
           />
-          <span className="text-lg font-medium">mars</span>
+          </Link>
+          <span className="text-lg font-medium">Mars</span>
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <button onClick={() => setRegisterOpen(true)}
+          {/* <button onClick={() => setRegisterOpen(true)} */}
+          <button
+            type="button"
+            onClick={() => {
+              const url = new URL(window.location.href)
+              url.searchParams.set("modal", "register")
+              router.push(url.toString())
+            }}
+          
            className="border border-[#006ffd] text-[#006ffd] px-4 py-2 rounded-md hover:bg-[#f0f7ff] transition-colors">
             회원가입
           </button>
@@ -64,8 +104,19 @@ export default function FinanceDashboard() {
           >
             로그인
           </button>
-          <LoginModal open={loginOpen} onOpenChange={setLoginOpen} />
-          <RegistrationModal isOpen={registerOpen} onClose={() => setRegisterOpen(false)} />
+          {/* <LoginModal open={loginOpen} onOpenChange={setLoginOpen} /> */}
+          <LoginModal
+            open={loginOpen}
+            onOpenChange={(open) => {
+              if (!open) clearModalQuery()
+            }}
+          />
+          {/* <RegistrationModal isOpen={registerOpen} onClose={() => setRegisterOpen(false)} /> */}
+          {/* <RegistrationModal isOpen={registerOpen} onClose={() => router.back()} /> */}
+          <RegistrationModal
+            isOpen={registerOpen}
+            onClose={clearModalQuery}
+          />
         </div>
 
         <div className="md:hidden">
@@ -80,7 +131,12 @@ export default function FinanceDashboard() {
             <div className="text-sm text-gray-600">
               oo님 mars 모투에 오신걸 환영합니다
             </div>
-            <button className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full">
+            <button onClick={() => {
+              localStorage.removeItem("logInUser") // 저장된 로그인정보 제거
+              alert("로그아웃 되었습니다.")
+              router.push("/")
+            }}
+              className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full">
               로그아웃
             </button>
             <button
