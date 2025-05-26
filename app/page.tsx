@@ -9,6 +9,7 @@ import RegistrationModal from "@/src/features/auth/components/registration-modal
 import Link from "next/link";
 import BuyConfirmModal from "@/components/BuyConfirmModal";
 import SellConfirmModal from "@/components/SellConfirmModal";
+import SearchBar from "@/components/SearchBar";
 
 export default function FinanceDashboard() {
   const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
@@ -29,6 +30,7 @@ export default function FinanceDashboard() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSellConfirmModal, setShowSellConfirmModal] = useState(false);
 
+  console.log('searchQuery:', searchQuery)
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -358,24 +360,7 @@ export default function FinanceDashboard() {
           {/* Search Bar - Styled like the screenshot */}
           <div className="flex justify-center mb-4">
             <div className="relative w-full max-w-2xl">
-              <div className="flex items-center bg-[#f0f0f0] rounded-full px-4 py-3">
-                <Search className="text-gray-500 w-5 h-5 mr-3" />
-                <input
-                  type="text"
-                  placeholder="종목 검색"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 bg-transparent border-0 focus:outline-none text-base text-gray-700 placeholder-gray-500"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="bg-[#e0e0e0] rounded-full p-1.5 ml-2 hover:bg-gray-300 transition-colors"
-                  >
-                    <X className="text-gray-600 w-4 h-4" />
-                  </button>
-                )}
-              </div>
+              <SearchBar onSelectStock={(symbol) => setSearchQuery(symbol)} />
             </div>
           </div>
           {/* Main Chart Area */}
