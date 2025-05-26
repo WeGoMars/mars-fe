@@ -17,7 +17,7 @@ type FormErrors = {
   email?: string
   password?: string
   nickname?: string
-  phoneNumber?: string
+  
 }
 
 export default function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
@@ -26,7 +26,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
     email: "",
     password: "",
     nickname: "",
-    phoneNumber: "010-",
+    
   })
   const [errors, setErrors] = useState<FormErrors>({})
 
@@ -70,13 +70,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
       newErrors.nickname = "Nickname must be at least 2 characters"
     }
 
-    // Phone number validation
-    if (!formData.phoneNumber) {
-      newErrors.phoneNumber = "Phone number is required"
-    } else if (!/^010-\d{4}-\d{4}$/.test(formData.phoneNumber)) {
-      newErrors.phoneNumber = "Phone number must be in format 010-XXXX-XXXX"
-    }
-
+    
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -91,7 +85,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
       const existingUsers = JSON.parse(localStorage.getItem("users") || "[]")
 
       //이메일 중복 확인
-      const emailDuplicate =existingUsers.some((user: any) => user.email === formData)
+      const emailDuplicate =existingUsers.some((user: any) => user.email === formData.email)
       if (emailDuplicate) {
         alert("이미 등록된 이메일입니다.")
         return
@@ -99,6 +93,8 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
       
       const updatedUsers = [...existingUsers, formData]
       localStorage.setItem("users",JSON.stringify(updatedUsers))
+
+      localStorage.setItem("logInUser", JSON.stringify(formData));
       
       alert("회원가입 완료.!")
 
@@ -107,9 +103,10 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
         email: "",
         password: "",
         nickname: "",
-        phoneNumber: "010-",
+        
       })
       onClose()
+      window.location.href = "/";
     }
   }
 
@@ -207,38 +204,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
               {errors.nickname && <p className="mt-1 text-xs text-red-500">{errors.nickname}</p>}
             </div>
 
-            <div>
-              <label htmlFor="phoneNumber" className="mb-1 block text-sm font-medium text-[#3c3c43]">
-                phone Number
-              </label>
-              <input
-                type="text"
-                id="phoneNumber"
-                name="phoneNumber"
-                inputMode="numeric"
-                // pattern="[0-9]*"
-                value={formData.phoneNumber}
-                // onChange={handleChange}
-                onChange={(e) => {
-                  const raw = e.target.value.replace(/[^0-9]/g, "").slice(0, 11) // 최대 11자리
-                  let formatted = raw
-                
-                  if (raw.length >= 4 && raw.length < 8) {
-                    formatted = raw.slice(0, 3) + "-" + raw.slice(3)
-                  } else if (raw.length >= 8) {
-                    formatted = raw.slice(0, 3) + "-" + raw.slice(3, 7) + "-" + raw.slice(7)
-                  }
-                
-                  setFormData((prev) => ({
-                    ...prev,
-                    phoneNumber: formatted,
-                  }))
-                }}
-                className={`w-full rounded bg-[#bfdbfe]/30 p-3 outline-none ${errors.phoneNumber ? "border border-red-500" : ""}`}
-              />
-              {errors.phoneNumber && <p className="mt-1 text-xs text-red-500">{errors.phoneNumber}</p>}
-            </div>
-
+            
             <button
               type="submit"
               className="mt-6 w-full rounded-full bg-[#5f80f8] py-3 text-white hover:bg-[#5f80f8]/90"
@@ -247,12 +213,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
             </button>
           </form>
 
-          {/* <div className="mt-6 text-center text-sm text-[#747480]">
-            이미 계정이 있으신가요?{" "}
-            <a href="#" className="text-[#5f80f8] hover:underline">
-              Login
-            </a>
-          </div> */}
+         
           <div className="text-center text-sm">
             <span className="text-[#747480] dark:text-gray-400">이미 계정이 있으신가요?</span>{" "}
             <button
