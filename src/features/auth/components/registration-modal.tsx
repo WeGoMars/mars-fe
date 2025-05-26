@@ -5,6 +5,8 @@ import type React from "react"
 import { useState } from "react"
 import { X } from "lucide-react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
+import Image from "next/image";
 
 interface RegistrationModalProps {
   isOpen: boolean
@@ -121,16 +123,31 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
       className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[#eff5ff] via-[#e9f0ff] to-[#dfe8ff] backdrop-blur-sm p-4"
       onClick={onClose}
     >
+       {/* ✅ 마크 링크: 가장 먼저, 가장 위에! */}
+    <Link
+      href="/"
+      className="fixed left-4 top-4 z-[9999]"
+      title="홈으로 이동"
+    >
+      <Image
+        src="/marslogo.png"
+        alt="Mars 로고"
+        width={40}
+        height={40}
+        className="rounded-full cursor-pointer"
+      />
+    </Link>
+    <span className="fixed left-14 top-8 text-lg font-medium">Mars</span>
     {/* <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}> */}
       {/* Close button positioned in the top-right corner of the modal window frame */}
       <button
         onClick={onClose}
-        className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
+        className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm hover:bg-black/20"
         aria-label="Close"
       >
         <X size={20} />
       </button>
-
+      
       <div
         className="relative max-h-[90vh] w-full max-w-md overflow -auto rounded-lg bg-white shadow-lg"
         onClick={handleModalClick}
