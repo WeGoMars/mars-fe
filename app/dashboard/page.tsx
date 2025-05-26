@@ -31,6 +31,7 @@ export default function Dashboard() {
   
   useEffect(() => {
     // 
+    
     const user = localStorage.getItem("logInUser")
       if (!user) {
         window.location.href = "/"  // 로그인 안 했으면 홈으로 이동
@@ -47,8 +48,7 @@ export default function Dashboard() {
     }else {
 
     }
-
-
+  
     const fetchStocks = async () => {
       setIsLoading(true);
       setError(null);
