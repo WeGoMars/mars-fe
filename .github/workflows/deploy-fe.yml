@@ -25,7 +25,9 @@ jobs:
       - name: Prepare build directory
         run: |
           mkdir build
-          cp -r .next public package.json package-lock.json build/
+          cp -r .next build/
+          cp -r public build/
+          cp package.json pnpm-lock.yaml build/
 
       - name: Clean server build directory
         uses: appleboy/ssh-action@v1.0.3
