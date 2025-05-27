@@ -55,7 +55,7 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[#eff5ff] via-[#e9f0ff] to-[#dfe8ff] backdrop-blur-sm p-4"
-      onClick={handleClose}
+      
     >
       {/* 마크 로고 */}
       <Link

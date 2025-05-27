@@ -118,7 +118,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[#eff5ff] via-[#e9f0ff] to-[#dfe8ff] backdrop-blur-sm p-4"
-      onClick={onClose}
+      
     >
        {/* ✅ 마크 링크: 가장 먼저, 가장 위에! */}
     <Link
