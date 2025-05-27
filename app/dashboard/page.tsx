@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button";
-
+import MyPage from "@/components/common/profile"
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([]);
@@ -75,6 +75,12 @@ export default function Dashboard() {
   const selectStock = (symbol: string) => {
     setSelectedStock(symbol);
   };
+  
+  const handleAvatarClick = () => {
+    const url = new URL(window.location.href)
+    url.searchParams.set("modal", "edit")
+    router.push(url.toString())
+  }
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -88,7 +94,7 @@ export default function Dashboard() {
             <Menu className="w-6 h-6 text-gray-700" />
           </button>
           <Image
-            src="/orange-planet-logo.png"
+            src="/bbb1.png"
             alt="Mars 로고"
             width={40}
             height={40}
@@ -104,18 +110,21 @@ export default function Dashboard() {
           
           <Link
             href="dashboard/mypage"
+            className="flex items-center gap-2 text-sm text-gray-600 hover:opacity-80 transition-opacity">
+            <span>{nickname ? `${nickname}님 환영합니다` : "mars 모투에 오신걸 환영합니다"}</span>
+          </Link>
+
+          <Avatar className="w-8 h-8 cursor-pointer hover:opacity-80" onClick={handleAvatarClick}>
+            <AvatarImage src="/placeholder.svg?height=32&width=32&query=user+avatar" />
+            <AvatarFallback>M</AvatarFallback>
+          </Avatar>
+
+          <Link
+            href="dashboard/mypage"
             className="flex items-center gap-2 text-sm text-gray-600 hover:opacity-80 transition-opacity"
           >
-            {/* 닉네임 텍스트 */}
-            <span>{nickname ? `${nickname}님 환영합니다` : "mars 모투에 오신걸 환영합니다"}</span>
-
-            {/* 유저 아바타 */}
-            <Avatar className="w-8 h-8">
-              <AvatarImage src="/placeholder.svg?height=32&width=32&query=user+avatar" />
-              <AvatarFallback>M</AvatarFallback>
-            </Avatar>
-            </Link>  
-        
+            내계좌
+          </Link>
            <Button variant="default" size="sm" className="bg-[#5f80f8] hover:bg-[#4c6ef5] text-white"
              onClick={() => {
                 localStorage.removeItem("logInUser")
@@ -317,6 +326,8 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      <MyPage />
     </div>
+    
   );
 }
