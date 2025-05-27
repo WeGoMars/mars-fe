@@ -3,7 +3,12 @@ import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp, TrendingDown, ChevronRight } from "lucide-react"
+import { TrendingUp, TrendingDown, ChevronRight, Menu } from "lucide-react"
+import Image from "next/image";
+import { useRouter } from "next/navigation" 
+import { useEffect, useState } from "react"
+
+
 
 export default function MyPage() {
   const portfolioData = {
@@ -63,24 +68,55 @@ export default function MyPage() {
 
   const holdings = [{ name: "테슬라", purchasePrice: 300, currentPrice: 344, gain: 44, returnRate: 14.67 }]
 
+  const router = useRouter()
+  const [nickname, setNickname] = useState<string | null>(null)
+
+  useEffect(() => {
+  const storedUser = localStorage.getItem("logInUser")
+  if (storedUser) {
+    try {
+      const user = JSON.parse(storedUser)
+      setNickname(user.nickname)
+    } catch (err) {
+      console.error("유저 정보 파싱 실패:", err)
+    }
+  }
+}, [])
+  
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
-      {/* Header */}
-      <header className="bg-white border-b border-[#e8e8e8] px-6 py-4">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center gap-4">
-            <h1 className="text-xl font-semibold text-[#1c2730]">관심 종목</h1>
+      <header className="bg-white border-b">
+        <div className="flex items-center justify-between p-4">
+          <div className="flex items-center gap-2">
+            <Link href="/dashboard">
+            <Image
+              src="/marslogo.png"
+              alt="Mars 로고"
+              width={30}
+              height={30}
+              className="rounded-full cursor-pointer"
+            />
+            </Link>
+            <span className="text-lg font-medium">Mars</span>
           </div>
 
           <div className="flex items-center gap-4">
-            <span className="text-sm text-[#747480]">00님 mars 모투의 오신걸 환영합니다</span>
+            <span className="text-sm text-[#747480]">
+              {nickname ? `${nickname}님 환영합니다` : "mars 모투에 오신걸 환영합니다"}
+            </span>
             <Link href="/profile" className="hover:opacity-80 transition-opacity">
               <Avatar className="h-8 w-8">
                 <AvatarImage src="/placeholder.svg?height=32&width=32&query=user+avatar" />
                 <AvatarFallback className="bg-[#5f80f8] text-white">M</AvatarFallback>
               </Avatar>
             </Link>
-            <Button variant="default" size="sm" className="bg-[#5f80f8] hover:bg-[#4c6ef5] text-white">
+            <Button variant="default" size="sm" className="bg-[#5f80f8] hover:bg-[#4c6ef5] text-white"
+             onClick={() => {
+                localStorage.removeItem("logInUser")
+                alert("로그아웃 되었습니다.")
+                router.push("/")
+              }}
+            >
               로그아웃
             </Button>
           </div>

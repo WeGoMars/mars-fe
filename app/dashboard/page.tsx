@@ -12,6 +12,7 @@ import type { Stock } from "@/lib/types";
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button";
 
 
 export default function Dashboard() {
@@ -115,14 +116,15 @@ export default function Dashboard() {
             </Avatar>
             </Link>  
         
-          <button onClick={() => {
-              localStorage.removeItem("logInUser") // 저장된 로그인정보 제거
-              alert("로그아웃 되었습니다.")
-              router.push("/")
-            }}
-          className="bg-[#006ffd] text-white px-4 py-2 rounded-md">
-            로그아웃
-          </button>
+           <Button variant="default" size="sm" className="bg-[#5f80f8] hover:bg-[#4c6ef5] text-white"
+             onClick={() => {
+                localStorage.removeItem("logInUser")
+                alert("로그아웃 되었습니다.")
+                router.push("/")
+              }}
+            >
+              로그아웃
+            </Button>
         </div>
 
         <div className="md:hidden">
