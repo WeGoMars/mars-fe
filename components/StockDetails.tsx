@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { getStockDetails, getStockNews } from '@/lib/api';
 import type { StockDetails as StockDetailsType, NewsItem } from '@/lib/types';
+import { Check, ChevronDown, HelpCircle } from 'lucide-react';
 
 interface StockDetailsProps {
   symbol: string;
@@ -16,6 +17,8 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
   const [news, setNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [showResult, setShowResult] = useState<boolean>(false);
+  const [showReasonModal, setShowReasonModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -117,70 +120,131 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
         </div>
       ) : activeTab === 'AI 추천' ? (
         <div className="max-w-md mx-auto bg-white rounded-2xl p-6">
-          {/* Blue Message Box */}
-          <div className="bg-[#eaf2ff] border-2 border-[#006ffd] rounded-2xl p-4 mb-6 text-center">
-            <p className="text-[#006ffd] text-xs font-semibold leading-relaxed tracking-tight">
-              당신의 투자 성향, <span className="whitespace-nowrap">AI가 알고 싶어해요!</span><br />
-              알려주시면 딱 맞게 추천해드릴게요.
-            </p>
-          </div>
-
-          {/* Investment Preference Section */}
-          <div className="bg-[#e7f4e8] rounded-2xl p-4 mb-6">
-            <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 투자 성향</h2>
-            <div className="flex gap-2">
-              <button className="flex-1 bg-[#ffe2e5] rounded-xl py-2 px-2 flex items-center justify-center gap-1 whitespace-nowrap">
-                <div className="w-5 h-5 bg-[#ff616d] rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">!</span>
+          {!showResult ? (
+            <>
+              {/* Blue Message Box */}
+              <div className="bg-[#eaf2ff] border-2 border-[#006ffd] rounded-2xl p-4 mb-6 text-center">
+                <p className="text-[#006ffd] text-xs font-semibold leading-relaxed tracking-tight">
+                  당신의 투자 성향, <span className="whitespace-nowrap">AI가 알고 싶어해요!</span><br />
+                  알려주시면 딱 맞게 추천해드릴게요.
+                </p>
+              </div>
+              {/* Investment Preference Section */}
+              <div className="bg-[#e7f4e8] rounded-2xl p-4 mb-6">
+                <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 투자 성향</h2>
+                <div className="flex gap-2">
+                  <button className="flex-1 bg-[#ffe2e5] rounded-xl py-2 px-2 flex items-center justify-center gap-1 whitespace-nowrap">
+                    <div className="w-5 h-5 bg-[#ff616d] rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">!</span>
+                    </div>
+                    <span className="text-[#000000] font-medium text-sm tracking-tight">고위험</span>
+                  </button>
+                  <button className="flex-1 bg-[#c3e7f2] rounded-xl py-2 px-2 flex items-center justify-center gap-1 whitespace-nowrap">
+                    <div className="w-5 h-5 bg-[#006ffd] rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">↓</span>
+                    </div>
+                    <span className="text-[#000000] font-medium text-sm tracking-tight">저위험</span>
+                  </button>
                 </div>
-                <span className="text-[#000000] font-medium text-sm tracking-tight">고위험</span>
-              </button>
-              <button className="flex-1 bg-[#c3e7f2] rounded-xl py-2 px-2 flex items-center justify-center gap-1 whitespace-nowrap">
-                <div className="w-5 h-5 bg-[#006ffd] rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">↓</span>
+              </div>
+              {/* Preferred Strategy Section */}
+              <div className="bg-[#fff4e4] rounded-2xl p-4 mb-6">
+                <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 선호 전략</h2>
+                <div className="flex gap-2">
+                  <button className="flex-1 bg-[#ffffff] rounded-xl py-2 px-2 whitespace-nowrap">
+                    <span className="text-[#000000] font-medium text-sm tracking-tight">가치투자</span>
+                  </button>
+                  <button className="flex-1 bg-[#ffffff] rounded-xl py-2 px-2 whitespace-nowrap">
+                    <span className="text-[#000000] font-medium text-sm tracking-tight">성장투자</span>
+                  </button>
+                  <button className="flex-1 bg-[#ffffff] rounded-xl py-2 px-2 whitespace-nowrap">
+                    <span className="text-[#000000] font-medium text-sm tracking-tight">모멘텀</span>
+                  </button>
                 </div>
-                <span className="text-[#000000] font-medium text-sm tracking-tight">저위험</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Preferred Strategy Section */}
-          <div className="bg-[#fff4e4] rounded-2xl p-4 mb-6">
-            <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 선호 전략</h2>
-            <div className="flex gap-2">
-              <button className="flex-1 bg-[#ffffff] rounded-xl py-2 px-2 whitespace-nowrap">
-                <span className="text-[#000000] font-medium text-sm tracking-tight">가치투자</span>
-              </button>
-              <button className="flex-1 bg-[#ffffff] rounded-xl py-2 px-2 whitespace-nowrap">
-                <span className="text-[#000000] font-medium text-sm tracking-tight">성장투자</span>
-              </button>
-              <button className="flex-1 bg-[#ffffff] rounded-xl py-2 px-2 whitespace-nowrap">
-                <span className="text-[#000000] font-medium text-sm tracking-tight">모멘텀</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Interest Areas Section */}
-          <div className="bg-[#c3e7f2] rounded-2xl p-4 mb-6">
-            <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 관심 산업 분야</h2>
-            <div className="grid grid-cols-3 gap-2 max-h-32 overflow-y-auto overflow-x-hidden">
-              {[
-                '# 빅테크', '# 2차전지', '# 반도체', '# 바이오', '# 친환경', '# 클라우드', '# AI', '# 모빌리티',
-                '# 게임', '# 엔터', '# 금융', '# 로봇', '# 우주항공', '# 헬스케어', '# 에너지', '# 소재',
-                '# 유통', '# 소비재', '# 통신', '# 미디어', '# 여행', '# 식품', '# 건설', '# 부동산',
-                '# 패션', '# 교육', '# 물류', '# 광고', '# 데이터', '# 보안', '# IoT', '# 스마트팜',
-              ].map((tag, index) => (
-                <button key={index} className="bg-[#ffffff] rounded-xl py-1 px-2 whitespace-nowrap">
-                  <span className="text-[#000000] font-medium text-xs tracking-tight">{tag}</span>
+              </div>
+              {/* Interest Areas Section */}
+              <div className="bg-[#c3e7f2] rounded-2xl p-4 mb-6">
+                <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 관심 산업 분야</h2>
+                <div className="grid grid-cols-3 gap-2 max-h-32 overflow-y-auto overflow-x-hidden">
+                  {[
+                    '# 빅테크', '# 2차전지', '# 반도체', '# 바이오', '# 친환경', '# 클라우드', '# AI', '# 모빌리티',
+                    '# 게임', '# 엔터', '# 금융', '# 로봇', '# 우주항공', '# 헬스케어', '# 에너지', '# 소재',
+                    '# 유통', '# 소비재', '# 통신', '# 미디어', '# 여행', '# 식품', '# 건설', '# 부동산',
+                    '# 패션', '# 교육', '# 물류', '# 광고', '# 데이터', '# 보안', '# IoT', '# 스마트팜',
+                  ].map((tag, index) => (
+                    <button key={index} className="bg-[#ffffff] rounded-xl py-1 px-2 whitespace-nowrap">
+                      <span className="text-[#000000] font-medium text-xs tracking-tight">{tag}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {/* 제출 버튼 */}
+              <div className="bg-[#f4f5f9] rounded-2xl p-4 text-center">
+                <button
+                  className="text-[#71727a] font-medium text-sm tracking-tight border-2 border-[#2563eb] rounded-md px-4 py-2"
+                  onClick={() => setShowResult(true)}
+                >
+                  제출
                 </button>
-              ))}
+              </div>
+            </>
+          ) : (
+            <div>
+              <div className="bg-transparent border-2 border-[#006ffd] rounded-2xl p-3 mb-3">
+                <p className="text-[#006ffd] text-center font-medium text-sm">회원님의 투자 전략 알려드릴게요.</p>
+              </div>
+              <div className="bg-[#e7f4e8] border-0 rounded-2xl p-4 space-y-3 mb-3">
+                <h2 className="text-[#1f2024] text-base font-semibold text-center">현재 회원님의 투자 전략</h2>
+                <div className="flex gap-2 justify-center">
+                  <div className="bg-[#ffe2e5] px-3 py-1 rounded-full flex items-center gap-1">
+                    <div className="w-5 h-5 bg-[#ff9500] rounded-full flex items-center justify-center">
+                      <span className="text-white text-[10px] font-bold">!</span>
+                    </div>
+                    <span className="text-[#1f2024] text-xs font-medium">저위험</span>
+                  </div>
+                  <div className="bg-[#eaf2ff] px-3 py-1 rounded-full flex items-center gap-1">
+                    <div className="w-5 h-5 bg-[#006ffd] rounded-full flex items-center justify-center">
+                      <span className="text-white text-[10px] font-bold">!</span>
+                    </div>
+                    <span className="text-[#1f2024] text-xs font-medium">가치투자</span>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2 mb-3">
+                {[1, 2, 3, 4].map((index) => (
+                  <div key={index} className="bg-[#fff4e4] border-0 rounded-2xl p-3 mb-1">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-center gap-2">
+                        <span className="text-[#1f2024] text-base font-semibold">구글</span>
+                        <div className="grid grid-cols-2 gap-0.5 w-5 h-5">
+                          <div className="bg-red-500 rounded-sm"></div>
+                          <div className="bg-green-500 rounded-sm"></div>
+                          <div className="bg-blue-500 rounded-sm"></div>
+                          <div className="bg-yellow-500 rounded-sm"></div>
+                        </div>
+                        <span className="text-[#71727a] text-xs bg-gray-100 px-1.5 py-0.5 rounded-full">#빅테크</span>
+                      </div>
+                      <div className="border-t border-gray-200 pt-2">
+                        <div className="flex items-center justify-center gap-1 cursor-pointer hover:bg-gray-50 rounded-lg py-1 transition-colors">
+                          <span className="text-[#1f2024] font-medium text-sm flex items-center gap-1">AI의 추천 이유<ChevronDown className="w-4 h-4 text-[#71727a]" /></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="text-center space-y-2">
+                <p className="text-[#71727a] text-xs">좀 더 젊고 MZ한 종목으로 추천 해봐!</p>
+                <button
+                  className="bg-[#006ffd] hover:bg-[#0056cc] text-white rounded-full px-4 py-1.5 flex items-center gap-1 mx-auto text-sm"
+                  onClick={() => setShowResult(false)}
+                >
+                  다시 추천!
+                  <Check className="w-4 h-4" />
+                </button>
+              </div>
             </div>
-          </div>
-
-          {/* Submit Button */}
-          <div className="bg-[#f4f5f9] rounded-2xl p-4 text-center">
-            <button className="text-[#71727a] font-medium text-sm tracking-tight">제출</button>
-          </div>
+          )}
         </div>
       ) : (
         details && (
