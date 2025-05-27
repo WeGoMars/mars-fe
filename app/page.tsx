@@ -99,12 +99,15 @@ export default function FinanceDashboard() {
             회원가입
           </button>
           <button
-            onClick={() => setLoginOpen(true)}
+            onClick={() => {
+              const url = new URL(window.location.href)
+              url.searchParams.set("modal", "login")
+              router.push(url.toString())
+            }}
             className="bg-[#006ffd] text-white px-4 py-2 rounded-md hover:bg-[#0057cc] transition-colors"
-          >
+            >
             로그인
           </button>
-          {/* <LoginModal open={loginOpen} onOpenChange={setLoginOpen} /> */}
           <LoginModal
             open={loginOpen}
             onOpenChange={(open) => {
