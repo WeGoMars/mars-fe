@@ -10,6 +10,7 @@ import Link from "next/link";
 import BuyConfirmModal from "@/components/BuyConfirmModal";
 import SellConfirmModal from "@/components/SellConfirmModal";
 import SearchBar from "@/components/SearchBar";
+import StockDetails from "@/components/StockDetails";
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -41,7 +42,7 @@ export default function FinanceDashboard() {
   setRegisterOpen(false)
   }
 
-
+  const [selectedStock, setSelectedStock] = useState<string>("SPY");
   const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
   const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "분">(
     "일"
@@ -61,6 +62,10 @@ export default function FinanceDashboard() {
   const [showSellConfirmModal, setShowSellConfirmModal] = useState(false);
 
   console.log('searchQuery:', searchQuery)
+
+  const handleStockSelect = (symbol: string) => {
+    setSelectedStock(symbol);
+  };
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -416,7 +421,7 @@ export default function FinanceDashboard() {
           {/* Search Bar - Styled like the screenshot */}
           <div className="flex justify-center mb-4">
             <div className="relative w-full max-w-2xl">
-              <SearchBar onSelectStock={(symbol) => setSearchQuery(symbol)} />
+              <SearchBar onSelectStock={handleStockSelect} />
             </div>
           </div>
           {/* Main Chart Area */}
@@ -628,96 +633,16 @@ export default function FinanceDashboard() {
           ) : (
             // 기존 카드 내용
             <div className="bg-white rounded-xl p-4 md:p-5 shadow-sm flex-1 overflow-auto flex flex-col">
-              {/* 종목정보 상세, 내 계좌, AI 추천 탭 */}
-              <div className="flex justify-between gap-1 md:gap-2 mb-4 overflow-x-auto">
-                {(["종목정보 상세", "내 계좌", "AI 추천"] as const).map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveRightTab(tab)}
-                    className={`px-2 md:px-4 py-2 rounded-xl font-medium text-xs md:text-sm whitespace-nowrap transition-colors ${
-                      activeRightTab === tab
-                        ? "bg-[#f5f7f9]"
-                        : "bg-[#f5f7f9] hover:bg-gray-200"
-                    }`}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs">
-                    <span className="text-[10px]">S&P</span>
-                    <span className="text-[10px]">500</span>
-                  </div>
-                  <h3 className="text-lg md:text-xl font-bold">S&P 500</h3>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="font-bold">$213.10</div>
-                  <div className="text-xs text-[#41c3a9] bg-[#e6f7f4] px-2 py-0.5 rounded-md">
-                    ↑ 1.1%
-                  </div>
-                </div>
-              </div>
-
-              <div className="text-sm text-gray-500 mb-4">
-                S&P 500에 투자하여 배당금을 제공하는 ETF
-              </div>
-
-              {/* Stock Details */}
-              <div className="space-y-3 mb-4">
-                <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
-                  <span className="text-sm text-gray-500">시가총액</span>
-                  <span className="text-sm font-medium">4.4조원</span>
-                </div>
-                <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
-                  <span className="text-sm text-gray-500">운용사</span>
-                  <span className="text-sm font-medium">삼성자산운용(ETF)</span>
-                </div>
-                <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
-                  <span className="text-sm text-gray-500">상장일</span>
-                  <span className="text-sm font-medium">2021년 4월 9일</span>
-                </div>
-                <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
-                  <span className="text-sm text-gray-500">운용자산</span>
-                  <span className="text-sm font-medium">4.4조원</span>
-                </div>
-                <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
-                  <span className="text-sm text-gray-500">발행주수</span>
-                  <span className="text-sm font-medium">230,800,000주</span>
-                </div>
-              </div>
-
-              {/* News */}
-              <div className="mt-4 flex-1 flex flex-col">
-                <div className="py-2 md:py-2.5 px-3 md:px-4 bg-[#f5f7f9] rounded-full mb-3">
-                  <h3 className="font-medium text-sm">주요 뉴스</h3>
-                </div>
-                <div className="space-y-3 flex-1">
-                  {[1, 2, 3].map((item) => (
-                    <div key={item} className="flex gap-3">
-                      <div className="w-14 h-14 md:w-16 md:h-16 bg-[#f5f7f9] rounded-xl flex items-center justify-center">
-                        <Image
-                          src="/financial-news.png"
-                          alt="뉴스 이미지"
-                          width={56}
-                          height={56}
-                          className="md:w-16 md:h-16"
-                        />
-                      </div>
-                      <div>
-                        <h4 className="text-xs md:text-sm font-medium">
-                          홍콩그룹과 경영권 분쟁 가능성에...한진칼 상한가
-                        </h4>
-                        <div className="text-xs text-gray-500 mt-1">
-                          1시간 전 / 한국경제
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              {selectedStock && (
+                <StockDetails
+                  symbol={selectedStock}
+                  activeTab={activeRightTab}
+                  onTabChange={(tab) => {
+                    console.log('Tab change requested:', tab);
+                    setActiveRightTab(tab);
+                  }}
+                />
+              )}
             </div>
           )}
         </div>
