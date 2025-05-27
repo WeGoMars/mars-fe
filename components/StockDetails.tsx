@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { getStockDetails, getStockNews } from '@/lib/api';
 import type { StockDetails as StockDetailsType, NewsItem } from '@/lib/types';
-import { Check, ChevronDown, HelpCircle } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, Heart } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface StockDetailsProps {
   symbol: string;
@@ -19,6 +21,8 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
   const [error, setError] = useState<string | null>(null);
   const [showResult, setShowResult] = useState<boolean>(false);
   const [showReasonModal, setShowReasonModal] = useState(false);
+  const [expandedReasons, setExpandedReasons] = useState<number[]>([]);
+  const [showReasonDetail, setShowReasonDetail] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,6 +65,103 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
     console.log('Tab clicked:', tab);
     onTabChange(tab);
   };
+
+  if (showReasonDetail) {
+    return (
+      <div className="flex-1 overflow-auto flex flex-col">
+        {/* Top Navigation with Gray Boxes */}
+        <div className="flex justify-between gap-1 md:gap-2 mb-4 overflow-x-auto">
+          {(['종목정보 상세', '내 계좌', 'AI 추천'] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => {
+                onTabChange(tab);
+                setShowReasonDetail(false);
+              }}
+              className={`px-2 md:px-4 py-2 rounded-xl font-medium text-xs md:text-sm whitespace-nowrap transition-colors ${
+                activeTab === tab ? 'bg-[#f5f7f9]' : 'bg-[#f5f7f9] hover:bg-gray-200'
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        <div className="max-w-md mx-auto bg-white rounded-2xl p-6">
+          {/* AI Recommendation Button */}
+          <div className="mb-8">
+            <Button
+              className="w-full h-12 bg-white border-2 border-[#006ffd] text-[#006ffd] hover:bg-[#eaf2ff] rounded-xl text-base font-medium"
+              variant="outline"
+            >
+              AI의 추천 이유
+            </Button>
+          </div>
+
+          {/* Google Section */}
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <div className="text-[#1f2024] text-base font-medium">구글</div>
+
+            {/* Microsoft-style logo */}
+            <div className="grid grid-cols-2 gap-0.5 w-6 h-6">
+              <div className="bg-[#ff4444] rounded-sm"></div>
+              <div className="bg-[#00aa00] rounded-sm"></div>
+              <div className="bg-[#0066ff] rounded-sm"></div>
+              <div className="bg-[#ffaa00] rounded-sm"></div>
+            </div>
+
+            <span className="text-[#71727a] text-xs bg-gray-100 px-1.5 py-0.5 rounded-full">#빅테크</span>
+          </div>
+
+          {/* Information Cards */}
+          <div className="space-y-4 mb-8">
+            {/* Portfolio Balance Card */}
+            <Card className="bg-[#fff4e4] border-none shadow-none">
+              <CardContent className="p-4">
+                <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
+                  포트폴리오 균형 기준
+                </div>
+                <p className="text-[#1f2024] text-center text-sm leading-relaxed">
+                  당신의 포트폴리오 상 XX주의 비중이 낮아 추천드립니다.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Industry Trends Card */}
+            <Card className="bg-[#fff4e4] border-none shadow-none">
+              <CardContent className="p-4">
+                <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
+                  최근 업계 동향 기준
+                </div>
+                <p className="text-[#1f2024] text-center text-sm leading-relaxed">
+                  당신의 포트폴리오 상 XX주의 비중이 낮아 추천드립니다.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* AI Estimation Card */}
+            <Card className="bg-[#fff4e4] border-none shadow-none">
+              <CardContent className="p-4">
+                <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
+                  AI의 추정
+                </div>
+                <p className="text-[#1f2024] text-center text-sm leading-relaxed">
+                  당신의 포트폴리오 상 XX주의 비중이 낮아 추천드립니다.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Bottom Action */}
+          <div className="flex items-center justify-center gap-2">
+            <ChevronLeft className="w-5 h-5 text-[#006ffd] cursor-pointer" onClick={() => setShowReasonDetail(false)} />
+            <span className="text-[#1f2024] text-base font-medium">관심 종목으로 저장</span>
+            <Heart className="w-5 h-5 text-[#1f2024] cursor-pointer" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 overflow-auto flex flex-col">
@@ -225,8 +326,14 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
                         <span className="text-[#71727a] text-xs bg-gray-100 px-1.5 py-0.5 rounded-full">#빅테크</span>
                       </div>
                       <div className="border-t border-gray-200 pt-2">
-                        <div className="flex items-center justify-center gap-1 cursor-pointer hover:bg-gray-50 rounded-lg py-1 transition-colors">
-                          <span className="text-[#1f2024] font-medium text-sm flex items-center gap-1">AI의 추천 이유<ChevronDown className="w-4 h-4 text-[#71727a]" /></span>
+                        <div 
+                          className="flex items-center justify-center gap-1 cursor-pointer hover:bg-gray-50 rounded-lg py-1 transition-colors"
+                          onClick={() => setShowReasonDetail(true)}
+                        >
+                          <span className="text-[#1f2024] font-medium text-sm flex items-center gap-1">
+                            AI의 추천 이유
+                            <ChevronDown className="w-4 h-4 text-[#71727a]" />
+                          </span>
                         </div>
                       </div>
                     </div>
