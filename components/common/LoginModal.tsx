@@ -42,7 +42,35 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
       alert("이메일 또는 비밀번호가 올바르지 않습니다.")
     }
   }
+  // 백엔드 로그인 테스트 !!
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
 
+  //   try {
+  //     const response = await fetch("http://localhost:3000/users/login", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ email, password }),
+  //       credentials: "include",
+  //     });
+
+  //     if (!response.ok) {
+  //       alert("로그인 실패: 이메일 또는 비밀번호를 확인해주세요.");
+  //       return;
+  //     }
+
+  //     const data = await response.json();
+  //     localStorage.setItem("logInUser", JSON.stringify(data));
+  //     // alert(`환영합니다, ${data.nick}님!`);
+  //     setEmail("");
+  //     setPassword("");
+  //     onOpenChange(false);
+  //     router.push("/dashboard");
+  //   } catch (err) {
+  //     console.error("로그인 오류:", err);
+  //     alert("서버 오류가 발생했습니다.");
+  //   }
+  // };
   const handleClose = () => {
     onOpenChange(false)
     setTimeout(() => {
@@ -66,13 +94,13 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
         <Image
           src="/marslogo.png"
           alt="Mars 로고"
-          width={40}
-          height={40}
+          width={60}
+          height={60}
           className="rounded-full cursor-pointer"
         />
       </Link>
       {/* 마스로고 + 글자 크기랑 위치 수정 할수도잇음 */}
-      <span className="fixed left-14 top-8 text-lg font-medium" >Mars</span>
+      <span className="fixed left-7 top-4 text-lg font-medium" >Mars</span>
       <button
         onClick={handleClose}
         className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm hover:bg-black/20"
