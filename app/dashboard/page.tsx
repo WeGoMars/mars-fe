@@ -82,6 +82,11 @@ export default function Dashboard() {
     router.push(url.toString())
   }
 
+  const handleRightTabChange = (tab: "종목정보 상세" | "내 계좌" | "AI 추천") => {
+    console.log('Tab changed to:', tab); // 디버깅을 위한 로그 추가
+    setActiveRightTab(tab);
+  };
+
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
       {/* Header */}
@@ -320,7 +325,10 @@ export default function Dashboard() {
               <StockDetails
                 symbol={selectedStock}
                 activeTab={activeRightTab}
-                onTabChange={setActiveRightTab}
+                onTabChange={(tab) => {
+                  console.log('Tab change requested:', tab);
+                  setActiveRightTab(tab);
+                }}
               />
             )}
           </div>
