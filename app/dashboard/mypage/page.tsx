@@ -1,16 +1,17 @@
 "use client"
-
-import { useState } from "react"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Search, X, TrendingUp, TrendingDown, ChevronRight } from "lucide-react"
+import { TrendingUp, TrendingDown, ChevronRight, Menu } from "lucide-react"
+import Image from "next/image";
+import { useRouter } from "next/navigation" 
+import { useEffect, useState } from "react"
+import ProfileModal from "@/components/common/profile"
+
+
 
 export default function MyPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-
   const portfolioData = {
     totalAssets: 2850.75,
     investmentAmount: 1500.5,
@@ -66,26 +67,62 @@ export default function MyPage() {
     },
   ]
 
-  const holdings = [{ name: "테슬라", purchasePrice: 300, currentPrice: 344, gain: 44, returnRate: 14.67 }]
+  const holdings = [{ name: "테슬라", purchasePrice: 300, currentPrice: 344, Quantity: 2 , gain: 44, returnRate: 14.67 }]
 
+  const router = useRouter()
+  const [nickname, setNickname] = useState<string | null>(null)
+
+  const handleAvatarClick = () => {
+  const url = new URL(window.location.href)
+  url.searchParams.set("modal", "edit")
+  router.push(url.toString())
+  }
+
+
+  useEffect(() => {
+  const storedUser = localStorage.getItem("logInUser")
+  if (storedUser) {
+    try {
+      const user = JSON.parse(storedUser)
+      setNickname(user.nickname)
+    } catch (err) {
+      console.error("유저 정보 파싱 실패:", err)
+    }
+  }
+}, [])
+  
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
-      {/* Header */}
-      <header className="bg-white border-b border-[#e8e8e8] px-6 py-4">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center gap-4">
-            <h1 className="text-xl font-semibold text-[#1c2730]">관심 종목</h1>
+      <header className="bg-white border-b">
+        <div className="flex items-center justify-between p-4">
+          <div className="flex items-center gap-2">
+            <Link href="/dashboard">
+            <Image
+              src="/marslogo.png"
+              alt="Mars 로고"
+              width={30}
+              height={30}
+              className="rounded-full cursor-pointer"
+            />
+            </Link>
+            <span className="text-lg font-medium">Mars</span>
           </div>
 
           <div className="flex items-center gap-4">
-            <span className="text-sm text-[#747480]">00님 mars 모투의 오신걸 환영합니다</span>
-            <Link href="/profile" className="hover:opacity-80 transition-opacity">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="/placeholder.svg?height=32&width=32&query=user+avatar" />
-                <AvatarFallback className="bg-[#5f80f8] text-white">M</AvatarFallback>
-              </Avatar>
-            </Link>
-            <Button variant="default" size="sm" className="bg-[#5f80f8] hover:bg-[#4c6ef5] text-white">
+            <span className="text-sm text-[#747480]">
+              {nickname ? `${nickname}님 환영합니다` : "mars 모투에 오신걸 환영합니다"}
+            </span>
+            <Avatar className="w-8 h-8 cursor-pointer hover:opacity-80" onClick={handleAvatarClick}>
+            <AvatarImage src="/placeholder.svg?height=32&width=32&query=user+avatar" />
+            <AvatarFallback>M</AvatarFallback>
+            </Avatar>
+            <Button variant="default" size="sm" className="bg-[#5f80f8] hover:bg-[#4c6ef5] text-white"
+             onClick={() => {
+                localStorage.removeItem("logInUser")
+                alert("로그아웃 되었습니다.")
+                router.push("/")
+              }}
+            >
               로그아웃
             </Button>
           </div>
@@ -93,29 +130,7 @@ export default function MyPage() {
       </header>
 
       <div className="max-w-7xl mx-auto p-6">
-        {/* Search Bar */}
-        <div className="mb-8">
-          <div className="relative max-w-md mx-auto">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#8f9098] h-4 w-4" />
-            <Input
-              type="text"
-              placeholder="종목 검색"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-10 py-3 bg-white border-[#e0e0e0] focus:border-[#5f80f8] focus:ring-[#5f80f8]"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#8f9098] hover:text-[#747480]"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
           {/* Left Sidebar - Watchlist */}
           <div className="lg:col-span-1">
             <Card className="bg-white border-[#e8e8e8]">
@@ -190,7 +205,7 @@ export default function MyPage() {
           <div className="lg:col-span-3">
             {/* Welcome Message */}
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-[#1c2730] mb-2">오늘의 자산 현황 입니다.</h2>
+              <h2 className="text-2xl font-bold text-[#1c2730] mb-2">oo님 자산현황 입니다.</h2>
             </div>
 
             {/* Integrated Portfolio Overview Block */}
@@ -201,11 +216,10 @@ export default function MyPage() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {/* 총자산 */}
-                  <Link href="/portfolio/total" className="group">
+                  
                     <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#197bbd] hover:shadow-md transition-all duration-200 cursor-pointer">
                       <div className="flex items-center justify-between mb-2">
                         <div className="text-sm font-medium text-[#8f9098]">총자산</div>
-                        <ChevronRight className="h-4 w-4 text-[#8f9098] group-hover:text-[#197bbd] transition-colors" />
                       </div>
                       <div className="text-2xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
                         ${" "}
@@ -216,14 +230,13 @@ export default function MyPage() {
                       </div>
                       <div className="text-xs text-[#8f9098] mt-1">Total Assets</div>
                     </div>
-                  </Link>
+                  
 
                   {/* 투자금액 */}
-                  <Link href="/portfolio/investment" className="group">
+                  
                     <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#197bbd] hover:shadow-md transition-all duration-200 cursor-pointer">
                       <div className="flex items-center justify-between mb-2">
                         <div className="text-sm font-medium text-[#8f9098]">투자금액</div>
-                        <ChevronRight className="h-4 w-4 text-[#8f9098] group-hover:text-[#197bbd] transition-colors" />
                       </div>
                       <div className="text-2xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
                         ${" "}
@@ -234,14 +247,13 @@ export default function MyPage() {
                       </div>
                       <div className="text-xs text-[#8f9098] mt-1">Investment Amount</div>
                     </div>
-                  </Link>
+                  
 
                   {/* 평가손익 */}
-                  <Link href="/portfolio/profit-loss" className="group">
+                  
                     <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#bb4430] hover:shadow-md transition-all duration-200 cursor-pointer">
                       <div className="flex items-center justify-between mb-2">
-                        <div className="text-sm font-medium text-[#8f9098]">평가손익</div>
-                        <ChevronRight className="h-4 w-4 text-[#8f9098] group-hover:text-[#bb4430] transition-colors" />
+                        <div className="text-sm font-medium text-[#8f9 করলো98]">평가손익</div>
                       </div>
                       <div className="text-2xl font-bold text-[#bb4430] group-hover:text-[#a73d2a] transition-colors flex items-center gap-1">
                         <TrendingUp className="h-5 w-5" />${" "}
@@ -252,49 +264,46 @@ export default function MyPage() {
                       </div>
                       <div className="text-xs text-[#8f9098] mt-1">Profit & Loss</div>
                     </div>
-                  </Link>
+                  
 
                   {/* 수익률 */}
-                  <Link href="/portfolio/returns" className="group">
+                  
                     <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#63c89b] hover:shadow-md transition-all duration-200 cursor-pointer">
                       <div className="flex items-center justify-between mb-2">
                         <div className="text-sm font-medium text-[#8f9098]">수익률</div>
-                        <ChevronRight className="h-4 w-4 text-[#8f9098] group-hover:text-[#63c89b] transition-colors" />
                       </div>
                       <div className="text-2xl font-bold text-[#63c89b] group-hover:text-[#4caf50] transition-colors flex items-center gap-1">
                         <TrendingUp className="h-5 w-5" />+{portfolioData.returnRate}%
                       </div>
                       <div className="text-xs text-[#8f9098] mt-1">Return Rate</div>
                     </div>
-                  </Link>
+                  
 
                   {/* 제공시드머니 */}
-                  <Link href="/portfolio/seed-money" className="group">
+                  
                     <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#197bbd] hover:shadow-md transition-all duration-200 cursor-pointer">
                       <div className="flex items-center justify-between mb-2">
                         <div className="text-sm font-medium text-[#8f9098]">제공시드머니</div>
-                        <ChevronRight className="h-4 w-4 text-[#8f9098] group-hover:text-[#197bbd] transition-colors" />
                       </div>
                       <div className="text-2xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
                         $ 4,000
                       </div>
                       <div className="text-xs text-[#8f9098] mt-1">Provided Seed Money</div>
                     </div>
-                  </Link>
+                  
 
                   {/* 시드머니 문의 */}
-                  <Link href="/support/seed-money" className="group">
+                  
                     <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#f99f01] hover:shadow-md transition-all duration-200 cursor-pointer">
                       <div className="flex items-center justify-between mb-2">
                         <div className="text-sm font-medium text-[#8f9098]">시드머니 문의</div>
-                        <ChevronRight className="h-4 w-4 text-[#8f9098] group-hover:text-[#f99f01] transition-colors" />
                       </div>
                       <div className="text-lg font-semibold text-[#1c2730] group-hover:text-[#f99f01] transition-colors">
-                        문의하기
+                        챗봇에게 문의하기
                       </div>
                       <div className="text-xs text-[#8f9098] mt-1">Seed Money Inquiry</div>
                     </div>
-                  </Link>
+                  
                 </div>
 
                 {/* Summary Bar */}
@@ -339,6 +348,7 @@ export default function MyPage() {
                       <tr className="border-b border-[#e8e8e8]">
                         <th className="text-left py-3 text-sm font-medium text-[#8f9098]">상품/종목명</th>
                         <th className="text-right py-3 text-sm font-medium text-[#8f9098]">매수금액</th>
+                        <th className="text-right py-3 text-sm font-medium text-[#8f9098]">보유수량</th>
                         <th className="text-right py-3 text-sm font-medium text-[#8f9098]">평가금액</th>
                         <th className="text-right py-3 text-sm font-medium text-[#8f9098]">평가손익</th>
                         <th className="text-right py-3 text-sm font-medium text-[#8f9098]">수익률</th>
@@ -359,6 +369,7 @@ export default function MyPage() {
                             </Link>
                           </td>
                           <td className="text-right py-4 text-[#1c2730]">${holding.purchasePrice}</td>
+                          <td className="text-right py-4 text-[#63c89b]">{holding.Quantity}</td>
                           <td className="text-right py-4 text-[#1c2730]">${holding.currentPrice}</td>
                           <td className="text-right py-4 text-[#63c89b]">+${holding.gain}</td>
                           <td className="text-right py-4 text-[#63c89b]">+{holding.returnRate}%</td>
@@ -401,6 +412,7 @@ export default function MyPage() {
           </div>
         </div>
       </div>
+      <ProfileModal />
     </div>
   )
 }

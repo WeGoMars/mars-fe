@@ -10,7 +10,10 @@ import StockDetails from "@/components/StockDetails";
 import { getStockList } from "@/lib/api";
 import type { Stock } from "@/lib/types";
 import { useRouter } from "next/navigation"
-
+import Link from "next/link"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button";
+import MyPage from "@/components/common/profile"
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([]);
@@ -72,6 +75,12 @@ export default function Dashboard() {
   const selectStock = (symbol: string) => {
     setSelectedStock(symbol);
   };
+  
+  const handleAvatarClick = () => {
+    const url = new URL(window.location.href)
+    url.searchParams.set("modal", "edit")
+    router.push(url.toString())
+  }
 
   const handleRightTabChange = (tab: "종목정보 상세" | "내 계좌" | "AI 추천") => {
     console.log('Tab changed to:', tab); // 디버깅을 위한 로그 추가
@@ -90,7 +99,7 @@ export default function Dashboard() {
             <Menu className="w-6 h-6 text-gray-700" />
           </button>
           <Image
-            src="/orange-planet-logo.png"
+            src="/bbb1.png"
             alt="Mars 로고"
             width={40}
             height={40}
@@ -100,18 +109,36 @@ export default function Dashboard() {
         </div>
 
         <div className="hidden md:flex items-center gap-4">
-          <div className="text-sm text-gray-600">
+          {/* <div className="text-sm text-gray-600">
             {nickname ? `${nickname}님 환영합니다 `:"mars 모투에 오신걸 환영합니다"}
-          </div>
-          <div className="w-8 h-8 bg-gray-100 rounded-full"></div>
-          <button onClick={() => {
-              localStorage.removeItem("logInUser") // 저장된 로그인정보 제거
-              alert("로그아웃 되었습니다.")
-              router.push("/")
-            }}
-          className="bg-[#006ffd] text-white px-4 py-2 rounded-md">
-            로그아웃
-          </button>
+          </div> */}
+          
+          <Link
+            href="dashboard/mypage"
+            className="flex items-center gap-2 text-sm text-gray-600 hover:opacity-80 transition-opacity">
+            <span>{nickname ? `${nickname}님 환영합니다` : "mars 모투에 오신걸 환영합니다"}</span>
+          </Link>
+
+          <Avatar className="w-8 h-8 cursor-pointer hover:opacity-80" onClick={handleAvatarClick}>
+            <AvatarImage src="/placeholder.svg?height=32&width=32&query=user+avatar" />
+            <AvatarFallback>M</AvatarFallback>
+          </Avatar>
+
+          <Link
+            href="dashboard/mypage"
+            className="flex items-center gap-2 text-sm text-gray-600 hover:opacity-80 transition-opacity"
+          >
+            내계좌
+          </Link>
+           <Button variant="default" size="sm" className="bg-[#5f80f8] hover:bg-[#4c6ef5] text-white"
+             onClick={() => {
+                localStorage.removeItem("logInUser")
+                alert("로그아웃 되었습니다.")
+                router.push("/")
+              }}
+            >
+              로그아웃
+            </Button>
         </div>
 
         <div className="md:hidden">
@@ -307,6 +334,8 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      <MyPage />
     </div>
+    
   );
 }
