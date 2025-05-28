@@ -119,7 +119,6 @@ export default function SearchBar({ onSelectStock }: SearchBarProps) {
                   >
                     {/* Left side - Heart icon and number */}
                     <div className="flex items-center space-x-3 w-12">
-                      <Heart className="w-4 h-4 text-[#999898]" />
                       <span className="text-base font-medium text-[#049c6b]">
                         {index + 1}
                       </span>
