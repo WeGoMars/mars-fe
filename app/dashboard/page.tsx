@@ -16,6 +16,7 @@ import Link from "next/link"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button";
 import MyPage from "@/components/common/profile"
+import { Heart } from 'lucide-react';
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([]);
@@ -382,6 +383,7 @@ export default function Dashboard() {
                   <span className="text-[10px]">500</span>
                 </div>
                 <h2 className="text-xl font-bold">S&P 500</h2>
+                <Heart className="w-4 h-4 text-[#1f2024] cursor-pointer" />
               </div>
 
               {/* Buy/Sell and Time Period Tabs */}
