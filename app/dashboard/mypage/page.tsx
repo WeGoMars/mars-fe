@@ -313,7 +313,8 @@ export default function MyPage() {
     <div className="flex-1 max-w-6xl mx-auto px-4">
     
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-[#1c2730] mb-2">oo님 자산현황 입니다.</h2>
+        <span className="text-2xl font-bold text-[#1c2730] mb-2">
+          {nickname ? `${nickname} 자산현황 입니다.`:'자산현황 입니다'}</span>
       </div>
 
       {/* Integrated Portfolio Overview Block */}
