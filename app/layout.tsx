@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: "MARS(Market Analysis & Real-time Simulation)",
     generator: 'v0.dev',
   icons: {
-    icon: '/marslogo.png',
+    icon: '/mars-icon.png',
   }
 }
 
