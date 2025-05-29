@@ -11,6 +11,7 @@ import BuyConfirmModal from "@/components/BuyConfirmModal";
 import SellConfirmModal from "@/components/SellConfirmModal";
 import SearchBar from "@/components/SearchBar";
 import StockDetails from "@/components/StockDetails";
+import type { Stock } from "@/lib/types";
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -60,6 +61,7 @@ export default function FinanceDashboard() {
   const [panelTab, setPanelTab] = useState<'매수' | '내 계좌'>('매수');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSellConfirmModal, setShowSellConfirmModal] = useState(false);
+  const [favoriteStocks, setFavoriteStocks] = useState<Stock[]>([]);
 
   console.log('searchQuery:', searchQuery)
 
@@ -99,8 +101,7 @@ export default function FinanceDashboard() {
               url.searchParams.set("modal", "register")
               router.push(url.toString())
             }}
-          
-           className="border border-[#006ffd] text-[#006ffd] px-4 py-2 rounded-md hover:bg-[#f0f7ff] transition-colors">
+          className="border border-[#006ffd] text-[#006ffd] px-4 py-2 rounded-md hover:bg-[#f0f7ff] transition-colors">
             회원가입
           </button>
           <button
@@ -644,6 +645,8 @@ export default function FinanceDashboard() {
                     console.log('Tab change requested:', tab);
                     setActiveRightTab(tab);
                   }}
+                  favoriteStocks={favoriteStocks}
+                  setFavoriteStocks={setFavoriteStocks}
                 />
               )}
             </div>
