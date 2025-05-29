@@ -189,7 +189,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               className="flex items-center justify-center"
             >
               <Heart 
-                className={`w-5 h-5 cursor-pointer transition-colors ${
+                className={`w-4 h-4 cursor-pointer transition-colors ${
                   isHeartFilled ? 'text-red-500 fill-red-500' : 'text-[#1f2024]'
                 }`} 
               />
