@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { getStockDetails, getStockNews } from '@/lib/api';
-import type { StockDetails as StockDetailsType, NewsItem } from '@/lib/types';
+import type { StockDetails as StockDetailsType, NewsItem, Stock } from '@/lib/types';
 import { Check, ChevronDown, ChevronLeft, Heart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,9 +12,11 @@ interface StockDetailsProps {
   symbol: string;
   activeTab: '종목정보 상세' | '내 계좌' | 'AI 추천';
   onTabChange: (tab: '종목정보 상세' | '내 계좌' | 'AI 추천') => void;
+  favoriteStocks: Stock[];
+  setFavoriteStocks: React.Dispatch<React.SetStateAction<Stock[]>>;
 }
 
-export default function StockDetails({ symbol, activeTab, onTabChange }: StockDetailsProps) {
+export default function StockDetails({ symbol, activeTab, onTabChange, favoriteStocks, setFavoriteStocks }: StockDetailsProps) {
   const [details, setDetails] = useState<StockDetailsType | null>(null);
   const [news, setNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -25,6 +27,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
   const [showReasonDetail, setShowReasonDetail] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [aiSubmitted, setAiSubmitted] = useState(false);
+  const [isHeartFilled, setIsHeartFilled] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -162,7 +165,35 @@ export default function StockDetails({ symbol, activeTab, onTabChange }: StockDe
           <div className="flex items-center justify-center gap-2">
             <ChevronLeft className="w-5 h-5 text-[#006ffd] cursor-pointer" onClick={() => setShowReasonDetail(false)} />
             <span className="text-[#1f2024] text-base font-medium">관심 종목으로 저장</span>
-            <Heart className="w-5 h-5 text-[#1f2024] cursor-pointer" />
+            <button
+              onClick={() => {
+                const newIsHeartFilled = !isHeartFilled;
+                setIsHeartFilled(newIsHeartFilled);
+                
+                if (newIsHeartFilled) {
+                  // 구글 주식 정보를 직접 추가
+                  const googleStock: Stock = {
+                    symbol: 'GOOGL',
+                    name: 'Alphabet Inc.',
+                    price: '142.65',
+                    change: '+2.35',
+                    changePercent: '+1.67%'
+                  };
+                  if (!favoriteStocks.some(stock => stock.symbol === googleStock.symbol)) {
+                    setFavoriteStocks(prev => [...prev, googleStock]);
+                  }
+                } else {
+                  setFavoriteStocks(prev => prev.filter(stock => stock.symbol !== 'GOOGL'));
+                }
+              }}
+              className="flex items-center justify-center"
+            >
+              <Heart 
+                className={`w-5 h-5 cursor-pointer transition-colors ${
+                  isHeartFilled ? 'text-red-500 fill-red-500' : 'text-[#1f2024]'
+                }`} 
+              />
+            </button>
           </div>
         </div>
       </div>

@@ -605,10 +605,9 @@ export default function Dashboard() {
                 <StockDetails
                   symbol={selectedStock}
                   activeTab={activeRightTab}
-                  onTabChange={(tab) => {
-                    console.log('Tab change requested:', tab);
-                    setActiveRightTab(tab);
-                  }}
+                  onTabChange={setActiveRightTab}
+                  favoriteStocks={favoriteStocks}
+                  setFavoriteStocks={setFavoriteStocks}
                 />
               )}
             </div>
