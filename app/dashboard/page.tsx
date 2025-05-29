@@ -84,20 +84,27 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    const user = localStorage.getItem("logInUser")
-    if (!user) {
+      const fetchUser = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/users/whoami", {
+        credentials: "include", // 꼭 포함!
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        setNickname(data.nick)
+      } else {
+        // 로그인 안 되어 있으면 메인 페이지로 이동
+        window.location.href = "/"
+      }
+    } catch (err) {
+      console.error("유저 정보 불러오기 실패:", err)
       window.location.href = "/"
     }
-    const saveUser = localStorage.getItem("logInUser") 
-    if (saveUser) {
-      try {
-        const user = JSON.parse(saveUser)
-        setNickname(user.nickname)
-      } catch (err) {
-        console.error("failed to parse user:", err)
-      }
-    }
-  }, []);
+  }
+
+  fetchUser()
+}, [])
 
   const selectStock = (symbol: string) => {
     setSelectedStock(symbol);
