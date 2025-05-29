@@ -82,7 +82,7 @@ export default function MyPage() {
   useEffect(() => {
    const fetchUser = async () => {
     try {
-      const res = await fetch("http://localhost:3000/users/whoami", {
+      const res = await fetch("http://localhost:4000/users/whoami", {
         credentials: "include", // 꼭 포함!
       })
 
@@ -325,7 +325,7 @@ export default function MyPage() {
     
       <div className="text-center mb-8">
         <span className="text-2xl font-bold text-[#1c2730] mb-2">
-          {nickname ? `${nickname} 자산현황 입니다.`:'자산현황 입니다'}</span>
+          {`${nickname}님 자산현황 입니다.`}</span>
       </div>
 
       {/* Integrated Portfolio Overview Block */}

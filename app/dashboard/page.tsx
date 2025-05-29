@@ -86,7 +86,7 @@ export default function Dashboard() {
   useEffect(() => {
       const fetchUser = async () => {
     try {
-      const res = await fetch("http://localhost:3000/users/whoami", {
+      const res = await fetch("http://localhost:4000/users/whoami", {
         credentials: "include", // 꼭 포함!
       })
 
