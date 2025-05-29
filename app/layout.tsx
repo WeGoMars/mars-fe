@@ -6,9 +6,12 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "금융 대시보드",
-  description: "React, TypeScript, Tailwind CSS로 만든 금융 대시보드",
-    generator: 'v0.dev'
+  title: "MARS - Market Analysis & Real-time Simulation",
+  description: "MARS(Market Analysis & Real-time Simulation)",
+    generator: 'v0.dev',
+  icons: {
+    icon: '/mars-icon.png',
+  }
 }
 
 export default function RootLayout({

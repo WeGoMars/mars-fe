@@ -16,9 +16,32 @@ import Link from "next/link"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button";
 import MyPage from "@/components/common/profile"
+import { Heart } from 'lucide-react';
 
 export default function Dashboard() {
-  const [stocks, setStocks] = useState<Stock[]>([]);
+  const [stocks, setStocks] = useState<Stock[]>([
+    {
+      symbol: "SPY",
+      name: "S&P 500 ETF",
+      price: "$456.48",
+      change: "+1.66%",
+      changePercent: "+1.66%"
+    },
+    {
+      symbol: "AAPL",
+      name: "Apple Inc.",
+      price: "$175.04",
+      change: "+0.86%",
+      changePercent: "+0.86%"
+    },
+    {
+      symbol: "TSLA",
+      name: "Tesla Inc.",
+      price: "$238.45",
+      change: "-2.32%",
+      changePercent: "-2.32%"
+    }
+  ]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStock, setSelectedStock] = useState<string>("SPY");
@@ -32,6 +55,32 @@ export default function Dashboard() {
   const [showPanel, setShowPanel] = useState<false | 'buy' | 'sell'>(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSellConfirmModal, setShowSellConfirmModal] = useState(false);
+  const [isHeartFilled, setIsHeartFilled] = useState(false);
+  const [favoriteStocks, setFavoriteStocks] = useState<Stock[]>([
+    {
+      symbol: "MSFT",
+      name: "Microsoft Corp.",
+      price: "$213.10",
+      change: "+2.5%",
+      changePercent: "+2.5%"
+    },
+    {
+      symbol: "GOOGL",
+      name: "Alphabet Inc.",
+      price: "$213.10",
+      change: "+1.1%",
+      changePercent: "+1.1%"
+    },
+    {
+      symbol: "SPOT",
+      name: "Spotify Corp.",
+      price: "$213.10",
+      change: "+2.5%",
+      changePercent: "+2.5%"
+    }
+  ]);
+  const [showMinuteOptions, setShowMinuteOptions] = useState(false);
+  const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
   const router = useRouter();
 
   useEffect(() => {
@@ -48,25 +97,6 @@ export default function Dashboard() {
         console.error("failed to parse user:", err)
       }
     }
-
-    const fetchStocks = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const data = await getStockList();
-        setStocks(data);
-        if (data.length > 0 && !selectedStock) {
-          setSelectedStock(data[0].symbol);
-        }
-      } catch (err) {
-        setError("종목 목록을 불러오는 중 오류가 발생했습니다.");
-        console.error("Failed to fetch stocks:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchStocks();
   }, []);
 
   const selectStock = (symbol: string) => {
@@ -195,44 +225,7 @@ export default function Dashboard() {
 
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
-              {[
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                },
-                {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                },
-                {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-              ].map((stock, index) => (
+              {favoriteStocks.map((stock, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8">
@@ -382,6 +375,34 @@ export default function Dashboard() {
                   <span className="text-[10px]">500</span>
                 </div>
                 <h2 className="text-xl font-bold">S&P 500</h2>
+                <button
+                  onClick={() => {
+                    const newIsHeartFilled = !isHeartFilled;
+                    setIsHeartFilled(newIsHeartFilled);
+                    
+                    if (newIsHeartFilled) {
+                      // 현재 선택된 주식 정보를 가져옵니다
+                      const currentStock = stocks.find(stock => stock.symbol === selectedStock);
+                      console.log('Current stock:', currentStock); // 디버깅용
+                      console.log('Selected stock:', selectedStock); // 디버깅용
+                      
+                      if (currentStock && !favoriteStocks.some(stock => stock.symbol === currentStock.symbol)) {
+                        console.log('Adding to favorites:', currentStock); // 디버깅용
+                        setFavoriteStocks(prev => [...prev, currentStock]);
+                      }
+                    } else {
+                      console.log('Removing from favorites:', selectedStock); // 디버깅용
+                      setFavoriteStocks(prev => prev.filter(stock => stock.symbol !== selectedStock));
+                    }
+                  }}
+                  className="flex items-center justify-center"
+                >
+                  <Heart 
+                    className={`w-4 h-4 cursor-pointer transition-colors ${
+                      isHeartFilled ? 'text-red-500 fill-red-500' : 'text-[#1f2024]'
+                    }`} 
+                  />
+                </button>
               </div>
 
               {/* Buy/Sell and Time Period Tabs */}
@@ -405,20 +426,71 @@ export default function Dashboard() {
                 </button>
 
                 {/* Time Period Tabs */}
-                <div className="flex ml-0 md:ml-2 bg-[#f5f7f9] rounded-full">
-                  {(["월", "주", "일", "분"] as const).map((period) => (
-                    <button
-                      key={period}
-                      onClick={() => setActivePeriod(period)}
-                      className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                        activePeriod === period
-                          ? "bg-white shadow-sm"
-                          : "hover:bg-gray-100"
-                      }`}
-                    >
-                      {period}
-                    </button>
-                  ))}
+                <div className="flex ml-0 md:ml-2 bg-[#f5f7f9] rounded-full relative">
+                  {(["월", "주", "일", "분"] as const).map((period) => {
+                    if (period === "분") {
+                      return (
+                        <div key={period} className="relative">
+                          <button
+                            onClick={() => {
+                              if (activePeriod === "분") {
+                                setShowMinuteOptions((prev) => !prev);
+                              } else {
+                                setActivePeriod("분");
+                                setShowMinuteOptions(true);
+                              }
+                            }}
+                            className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
+                              activePeriod === period
+                                ? "bg-white shadow-sm"
+                                : "hover:bg-gray-100"
+                            }`}
+                          >
+                            {activePeriod === "분" ? selectedMinute : period}
+                          </button>
+                          {activePeriod === "분" && showMinuteOptions && (
+                            <div className="absolute left-1/2 -translate-x-1/2 mt-2 bg-white border rounded-xl shadow-lg z-10 w-24 flex flex-col">
+                              <button
+                                className={`py-2 px-4 text-sm hover:bg-gray-100 rounded-t-xl ${selectedMinute === "15분" ? "font-bold text-blue-600" : ""}`}
+                                onClick={() => {
+                                  setSelectedMinute("15분");
+                                  setShowMinuteOptions(false);
+                                }}
+                              >
+                                15분
+                              </button>
+                              <button
+                                className={`py-2 px-4 text-sm hover:bg-gray-100 rounded-b-xl ${selectedMinute === "1시간" ? "font-bold text-blue-600" : ""}`}
+                                onClick={() => {
+                                  setSelectedMinute("1시간");
+                                  setShowMinuteOptions(false);
+                                }}
+                              >
+                                1시간
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <button
+                          key={period}
+                          onClick={() => {
+                            setActivePeriod(period);
+                            setShowMinuteOptions(false);
+                          }}
+                          className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
+                            activePeriod === period
+                              ? "bg-white shadow-sm"
+                              : "hover:bg-gray-100"
+                          }`}
+                        >
+                          {period}
+                        </button>
+                      );
+                    }
+                  })}
                 </div>
               </div>
             </div>
@@ -586,10 +658,9 @@ export default function Dashboard() {
                 <StockDetails
                   symbol={selectedStock}
                   activeTab={activeRightTab}
-                  onTabChange={(tab) => {
-                    console.log('Tab change requested:', tab);
-                    setActiveRightTab(tab);
-                  }}
+                  onTabChange={setActiveRightTab}
+                  favoriteStocks={favoriteStocks}
+                  setFavoriteStocks={setFavoriteStocks}
                 />
               )}
             </div>
