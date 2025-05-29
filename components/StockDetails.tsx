@@ -52,17 +52,20 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
 
   useEffect(() => {
     const checkLoginStatus = () => {
-      setIsLoggedIn(!!localStorage.getItem("logInUser"));
+      const loginUser = localStorage.getItem("logInUser");
+      setIsLoggedIn(!!loginUser);
     };
 
     // 초기 로그인 상태 체크
     checkLoginStatus();
 
-    // 주기적으로 로그인 상태 체크
-    const interval = setInterval(checkLoginStatus, 1000);
+    // 로그인 상태 변경 감지를 위한 이벤트 리스너 추가
+    window.addEventListener('storage', checkLoginStatus);
 
-    // 컴포넌트 언마운트 시 인터벌 제거
-    return () => clearInterval(interval);
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('storage', checkLoginStatus);
+    };
   }, []);
 
   if (isLoading) {
