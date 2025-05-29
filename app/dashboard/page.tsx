@@ -19,7 +19,29 @@ import MyPage from "@/components/common/profile"
 import { Heart } from 'lucide-react';
 
 export default function Dashboard() {
-  const [stocks, setStocks] = useState<Stock[]>([]);
+  const [stocks, setStocks] = useState<Stock[]>([
+    {
+      symbol: "SPY",
+      name: "S&P 500 ETF",
+      price: "$456.48",
+      change: "+1.66%",
+      changePercent: "+1.66%"
+    },
+    {
+      symbol: "AAPL",
+      name: "Apple Inc.",
+      price: "$175.04",
+      change: "+0.86%",
+      changePercent: "+0.86%"
+    },
+    {
+      symbol: "TSLA",
+      name: "Tesla Inc.",
+      price: "$238.45",
+      change: "-2.32%",
+      changePercent: "-2.32%"
+    }
+  ]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStock, setSelectedStock] = useState<string>("SPY");
@@ -33,6 +55,30 @@ export default function Dashboard() {
   const [showPanel, setShowPanel] = useState<false | 'buy' | 'sell'>(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSellConfirmModal, setShowSellConfirmModal] = useState(false);
+  const [isHeartFilled, setIsHeartFilled] = useState(false);
+  const [favoriteStocks, setFavoriteStocks] = useState<Stock[]>([
+    {
+      symbol: "MSFT",
+      name: "Microsoft Corp.",
+      price: "$213.10",
+      change: "+2.5%",
+      changePercent: "+2.5%"
+    },
+    {
+      symbol: "GOOGL",
+      name: "Alphabet Inc.",
+      price: "$213.10",
+      change: "+1.1%",
+      changePercent: "+1.1%"
+    },
+    {
+      symbol: "SPOT",
+      name: "Spotify Corp.",
+      price: "$213.10",
+      change: "+2.5%",
+      changePercent: "+2.5%"
+    }
+  ]);
   const router = useRouter();
 
   useEffect(() => {
@@ -49,25 +95,6 @@ export default function Dashboard() {
         console.error("failed to parse user:", err)
       }
     }
-
-    const fetchStocks = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const data = await getStockList();
-        setStocks(data);
-        if (data.length > 0 && !selectedStock) {
-          setSelectedStock(data[0].symbol);
-        }
-      } catch (err) {
-        setError("종목 목록을 불러오는 중 오류가 발생했습니다.");
-        console.error("Failed to fetch stocks:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchStocks();
   }, []);
 
   const selectStock = (symbol: string) => {
@@ -196,44 +223,7 @@ export default function Dashboard() {
 
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
-              {[
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                },
-                {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                },
-                {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-              ].map((stock, index) => (
+              {favoriteStocks.map((stock, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8">
@@ -383,7 +373,34 @@ export default function Dashboard() {
                   <span className="text-[10px]">500</span>
                 </div>
                 <h2 className="text-xl font-bold">S&P 500</h2>
-                <Heart className="w-4 h-4 text-[#1f2024] cursor-pointer" />
+                <button
+                  onClick={() => {
+                    const newIsHeartFilled = !isHeartFilled;
+                    setIsHeartFilled(newIsHeartFilled);
+                    
+                    if (newIsHeartFilled) {
+                      // 현재 선택된 주식 정보를 가져옵니다
+                      const currentStock = stocks.find(stock => stock.symbol === selectedStock);
+                      console.log('Current stock:', currentStock); // 디버깅용
+                      console.log('Selected stock:', selectedStock); // 디버깅용
+                      
+                      if (currentStock && !favoriteStocks.some(stock => stock.symbol === currentStock.symbol)) {
+                        console.log('Adding to favorites:', currentStock); // 디버깅용
+                        setFavoriteStocks(prev => [...prev, currentStock]);
+                      }
+                    } else {
+                      console.log('Removing from favorites:', selectedStock); // 디버깅용
+                      setFavoriteStocks(prev => prev.filter(stock => stock.symbol !== selectedStock));
+                    }
+                  }}
+                  className="flex items-center justify-center"
+                >
+                  <Heart 
+                    className={`w-4 h-4 cursor-pointer transition-colors ${
+                      isHeartFilled ? 'text-red-500 fill-red-500' : 'text-[#1f2024]'
+                    }`} 
+                  />
+                </button>
               </div>
 
               {/* Buy/Sell and Time Period Tabs */}
