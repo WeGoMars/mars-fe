@@ -75,38 +75,78 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("회원가입 버튼 클릭됨") // 👉 버튼 눌렀는지 확인
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   console.log("회원가입 버튼 클릭됨") // 👉 버튼 눌렀는지 확인
 
-    if (validateForm()) {
+  //   if (validateForm()) {
       
-      console.log("Form submitted:", formData)
-      const existingUsers = JSON.parse(localStorage.getItem("users") || "[]")
+  //     console.log("Form submitted:", formData)
+  //     const existingUsers = JSON.parse(localStorage.getItem("users") || "[]")
 
-      //이메일 중복 확인
-      const emailDuplicate =existingUsers.some((user: any) => user.email === formData.email)
-      if (emailDuplicate) {
-        alert("이미 등록된 이메일입니다.")
-        return
-      }
+  //     //이메일 중복 확인
+  //     const emailDuplicate =existingUsers.some((user: any) => user.email === formData.email)
+  //     if (emailDuplicate) {
+  //       alert("이미 등록된 이메일입니다.")
+  //       return
+  //     }
       
-      const updatedUsers = [...existingUsers, formData]
-      localStorage.setItem("users",JSON.stringify(updatedUsers))
+  //     const updatedUsers = [...existingUsers, formData]
+  //     localStorage.setItem("users",JSON.stringify(updatedUsers))
 
-      localStorage.setItem("logInUser", JSON.stringify(formData));
+  //     localStorage.setItem("logInUser", JSON.stringify(formData));
       
-      alert("회원가입 완료.!")
+  //     alert("회원가입 완료.!")
 
-      // 초기화 
-      setFormData({
-        email: "",
-        password: "",
-        nickname: "",
+  //     // 초기화 
+  //     setFormData({
+  //       email: "",
+  //       password: "",
+  //       nickname: "",
         
-      })
-      onClose()
-      window.location.href = "/";
+  //     })
+  //     onClose()
+  //     window.location.href = "/";
+  //   }
+  // }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log("회원가입 버튼 클릭")
+
+    if (!validateForm()) 
+      return
+
+    try {
+      const res = await fetch("http://localhost:4000/users/",{
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          nick : formData.nickname,
+        
+        }),
+        credentials: "include",
+      }
+
+      )
+      const data = await res.json()
+      console.log("서버 응답:", data)
+
+      if (res.ok) {
+        alert("회원가입 완료.")
+        setFormData({email: "" , password: "", nickname: ""})
+        onClose()
+        window.location.href = "/"
+      }else{
+        alert(`회원가입 실패: ${data.message}`)
+      }
+    } catch (error){
+      console.error("회원가입 중 에러:", error)
+      alert("서버에 연결할 수 없습니다.")
     }
   }
 
