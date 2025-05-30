@@ -36,7 +36,7 @@ export default function MyPage() {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body:JSON.stringify({nick:nickname}),
+        body: JSON.stringify({ nick:nickname}),
       });
       
       const data = await response.json();
@@ -47,7 +47,7 @@ export default function MyPage() {
       }
       alert("닉네임이 성공적으로 변경되었습니다!");
       handleCloseModal();
-      window.location.reload();  
+      // window.location.reload();  
     }catch (error) {
       console.error("닉네임 수정 오류:", error);
       alert("서버 오류 발생");
@@ -123,16 +123,7 @@ export default function MyPage() {
                     placeholder="닉네임을 입력하세요"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#3c3c43] mb-2">Password</label>
-                  <Input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-[#bfdbfe] border-0 rounded-lg h-12 text-[#3c3c43] placeholder:text-[#747480]"
-                    placeholder="비밀번호를 입력하세요"
-                  />
-                </div>
+                
               </div>
 
               <div className="flex justify-end">

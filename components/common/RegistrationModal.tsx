@@ -75,40 +75,6 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
     return Object.keys(newErrors).length === 0
   }
 
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault()
-  //   console.log("회원가입 버튼 클릭됨") // 👉 버튼 눌렀는지 확인
-
-  //   if (validateForm()) {
-      
-  //     console.log("Form submitted:", formData)
-  //     const existingUsers = JSON.parse(localStorage.getItem("users") || "[]")
-
-  //     //이메일 중복 확인
-  //     const emailDuplicate =existingUsers.some((user: any) => user.email === formData.email)
-  //     if (emailDuplicate) {
-  //       alert("이미 등록된 이메일입니다.")
-  //       return
-  //     }
-      
-  //     const updatedUsers = [...existingUsers, formData]
-  //     localStorage.setItem("users",JSON.stringify(updatedUsers))
-
-  //     localStorage.setItem("logInUser", JSON.stringify(formData));
-      
-  //     alert("회원가입 완료.!")
-
-  //     // 초기화 
-  //     setFormData({
-  //       email: "",
-  //       password: "",
-  //       nickname: "",
-        
-  //     })
-  //     onClose()
-  //     window.location.href = "/";
-  //   }
-  // }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

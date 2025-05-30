@@ -84,23 +84,7 @@ export default function Dashboard() {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-  useEffect(() => {
-    const user = localStorage.getItem("logInUser")
-    if (!user) {
-      window.location.href = "/"
-    } else {
-      setIsLoggedIn(true);
-    }
-    const saveUser = localStorage.getItem("logInUser") 
-    if (saveUser) {
-      try {
-        const user = JSON.parse(saveUser)
-        setNickname(user.nickname)
-      } catch (err) {
-        console.error("failed to parse user:", err)
-      }
-    }
-  }, []);
+
 
   const selectStock = (symbol: string) => {
     setSelectedStock(symbol);
@@ -111,6 +95,28 @@ export default function Dashboard() {
     url.searchParams.set("modal", "edit")
     router.push(url.toString())
   }
+  useEffect(() => {
+   const fetchUser = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/users/whoami", {
+        credentials: "include", // 꼭 포함!
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        setNickname(data.nick)
+      } else {
+        // 로그인 안 되어 있으면 메인 페이지로 이동
+        window.location.href = "/"
+      }
+    } catch (err) { 
+      console.error("유저 정보 불러오기 실패:", err)
+      window.location.href = "/"
+    }
+  }
+
+  fetchUser()
+}, [])
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
