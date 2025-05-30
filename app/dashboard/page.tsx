@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button";
-import MyPage from "@/components/common/profile"
+import MyPage from "@/components/common/profileModal"
 import { Heart } from 'lucide-react';
 
 export default function Dashboard() {
