@@ -19,53 +19,8 @@ export default function MyPage() {
     returnRate: 5.5,
   }
 
-  const watchlistStocks = [
-    {
-      symbol: "MSFT",
-      company: "Microsoft Corp.",
-      price: 213.1,
-      change: 2.5,
-      logo: "/placeholder.svg?height=32&width=32&query=microsoft+logo",
-    },
-    {
-      symbol: "GOOGL",
-      company: "Alphabet Inc.",
-      price: 213.1,
-      change: 1.1,
-      logo: "/placeholder.svg?height=32&width=32&query=google+logo",
-    },
-    {
-      symbol: "SPOT",
-      company: "Spotify Corp.",
-      price: 213.1,
-      change: 2.5,
-      logo: "/placeholder.svg?height=32&width=32&query=spotify+logo",
-    },
-  ]
-
-  const myStocks = [
-    {
-      symbol: "MSFT",
-      company: "Microsoft Corp.",
-      price: 213.1,
-      change: 2.5,
-      logo: "/placeholder.svg?height=32&width=32&query=microsoft+logo",
-    },
-    {
-      symbol: "GOOGL",
-      company: "Alphabet Inc.",
-      price: 213.1,
-      change: 1.1,
-      logo: "/placeholder.svg?height=32&width=32&query=google+logo",
-    },
-    {
-      symbol: "SPOT",
-      company: "Spotify Corp.",
-      price: 213.1,
-      change: 2.5,
-      logo: "/placeholder.svg?height=32&width=32&query=spotify+logo",
-    },
-  ]
+  
+  
 
   const holdings = [{ name: "테슬라", purchasePrice: 300, currentPrice: 344, Quantity: 2 , gain: 44, returnRate: 14.67 }]
 
@@ -79,28 +34,28 @@ export default function MyPage() {
   }
 
 
-  useEffect(() => {
-   const fetchUser = async () => {
-    try {
-      const res = await fetch("http://localhost:4000/users/whoami", {
-        credentials: "include", // 꼭 포함!
-      })
+//   useEffect(() => {
+//    const fetchUser = async () => {
+//     try {
+//       const res = await fetch("http://localhost:4000/users/whoami", {
+//         credentials: "include", // 꼭 포함!
+//       })
 
-      if (res.ok) {
-        const data = await res.json()
-        setNickname(data.nick)
-      } else {
-        // 로그인 안 되어 있으면 메인 페이지로 이동
-        window.location.href = "/"
-      }
-    } catch (err) {
-      console.error("유저 정보 불러오기 실패:", err)
-      window.location.href = "/"
-    }
-  }
+//       if (res.ok) {
+//         const data = await res.json()
+//         setNickname(data.nick)
+//       } else {
+//         // 로그인 안 되어 있으면 메인 페이지로 이동
+//         window.location.href = "/"
+//       }
+//     } catch (err) { 
+//       console.error("유저 정보 불러오기 실패:", err)
+//       window.location.href = "/"
+//     }
+//   }
 
-  fetchUser()
-}, [])
+//   fetchUser()
+// }, [])
   
   return (
     <div className="min-h-screen bg-[#f5f7f9]">

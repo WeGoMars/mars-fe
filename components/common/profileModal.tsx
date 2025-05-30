@@ -28,10 +28,32 @@ export default function MyPage() {
     router.push(url.pathname)
   }
 
-  const handleSubmit = () => {
-    console.log("Profile updated:", { nickname, password })
-    handleCloseModal()
-  }
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch("http://localhost:4000/users", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body:JSON.stringify({nick:nickname}),
+      });
+      
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        alert("닉넴 수정 실패: " + (data.message || "오류발생"));
+        return
+      }
+      alert("닉네임이 성공적으로 변경되었습니다!");
+      handleCloseModal();
+      window.location.reload();  
+    }catch (error) {
+      console.error("닉네임 수정 오류:", error);
+      alert("서버 오류 발생");
+    }
+  
+  };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]

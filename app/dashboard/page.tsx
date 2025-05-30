@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button";
-import MyPage from "@/components/common/profile"
+import MyPage from "@/components/common/profileModal"
 import { Heart } from 'lucide-react';
 
 export default function Dashboard() {
@@ -83,28 +83,28 @@ export default function Dashboard() {
   const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
   const router = useRouter();
 
-  useEffect(() => {
-      const fetchUser = async () => {
-    try {
-      const res = await fetch("http://localhost:4000/users/whoami", {
-        credentials: "include", // 꼭 포함!
-      })
+//   useEffect(() => {
+//       const fetchUser = async () => {
+//     try {
+//       const res = await fetch("http://localhost:4000/users/whoami", {
+//         credentials: "include", // 꼭 포함!
+//       })
 
-      if (res.ok) {
-        const data = await res.json()
-        setNickname(data.nick)
-      } else {
-        // 로그인 안 되어 있으면 메인 페이지로 이동
-        window.location.href = "/"
-      }
-    } catch (err) {
-      console.error("유저 정보 불러오기 실패:", err)
-      window.location.href = "/"
-    }
-  }
+//       if (res.ok) {
+//         const data = await res.json()
+//         setNickname(data.nick)
+//       } else {
+//         // 로그인 안 되어 있으면 메인 페이지로 이동
+//         window.location.href = "/"
+//       }
+//     } catch (err) {
+//       console.error("유저 정보 불러오기 실패:", err)
+//       window.location.href = "/"
+//     }
+//   }
 
-  fetchUser()
-}, [])
+//   fetchUser()
+// }, [])
 
   const selectStock = (symbol: string) => {
     setSelectedStock(symbol);
