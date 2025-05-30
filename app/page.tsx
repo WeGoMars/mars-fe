@@ -19,6 +19,31 @@ import { useEffect } from "react";
 export default function FinanceDashboard() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      try {
+        const loginUser = localStorage.getItem("logInUser");
+        const isUserLoggedIn = loginUser !== null && loginUser !== undefined && loginUser !== '';
+        setIsLoggedIn(isUserLoggedIn);
+      } catch (error) {
+        console.error('로그인 상태 체크 중 오류 발생:', error);
+        setIsLoggedIn(false);
+      }
+    };
+
+    // 초기 로그인 상태 체크
+    checkLoginStatus();
+
+    // 로그인 상태 변경 감지를 위한 이벤트 리스너 추가
+    window.addEventListener('storage', checkLoginStatus);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('storage', checkLoginStatus);
+    };
+  }, []);
 
   useEffect(() => {
     const modal = searchParams.get("modal")
@@ -701,6 +726,7 @@ export default function FinanceDashboard() {
                   }}
                   favoriteStocks={favoriteStocks}
                   setFavoriteStocks={setFavoriteStocks}
+                  isLoggedIn={isLoggedIn}
                 />
               )}
             </div>

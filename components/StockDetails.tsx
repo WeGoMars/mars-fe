@@ -14,9 +14,10 @@ interface StockDetailsProps {
   onTabChange: (tab: '종목정보 상세' | '내 계좌' | 'AI 추천') => void;
   favoriteStocks: Stock[];
   setFavoriteStocks: React.Dispatch<React.SetStateAction<Stock[]>>;
+  isLoggedIn: boolean;
 }
 
-export default function StockDetails({ symbol, activeTab, onTabChange, favoriteStocks, setFavoriteStocks }: StockDetailsProps) {
+export default function StockDetails({ symbol, activeTab, onTabChange, favoriteStocks, setFavoriteStocks, isLoggedIn }: StockDetailsProps) {
   const [details, setDetails] = useState<StockDetailsType | null>(null);
   const [news, setNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -25,7 +26,6 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   const [showReasonModal, setShowReasonModal] = useState(false);
   const [expandedReasons, setExpandedReasons] = useState<number[]>([]);
   const [showReasonDetail, setShowReasonDetail] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [aiSubmitted, setAiSubmitted] = useState(false);
   const [isHeartFilled, setIsHeartFilled] = useState(false);
 
@@ -49,24 +49,6 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
 
     fetchData();
   }, [symbol]);
-
-  useEffect(() => {
-    const checkLoginStatus = () => {
-      const loginUser = localStorage.getItem("logInUser");
-      setIsLoggedIn(!!loginUser);
-    };
-
-    // 초기 로그인 상태 체크
-    checkLoginStatus();
-
-    // 로그인 상태 변경 감지를 위한 이벤트 리스너 추가
-    window.addEventListener('storage', checkLoginStatus);
-
-    // 컴포넌트 언마운트 시 이벤트 리스너 제거
-    return () => {
-      window.removeEventListener('storage', checkLoginStatus);
-    };
-  }, []);
 
   if (isLoading) {
     return (
