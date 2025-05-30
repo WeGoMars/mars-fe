@@ -554,7 +554,7 @@ export default function Dashboard() {
                     </div>
                     <h2 className="text-xl font-extrabold">S&P 500</h2>
                   </div>
-                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 채투자하는 ETF</p>
+                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 재투자하는 ETF</p>
                   <div className="flex items-center justify-between mt-6">
                     <div className="font-bold text-base">수량</div>
                     <div className="flex items-center gap-4">
@@ -587,7 +587,7 @@ export default function Dashboard() {
                     </div>
                     <h2 className="text-xl font-extrabold">S&P 500</h2>
                   </div>
-                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 채투자하는 ETF</p>
+                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 재투자하는 ETF</p>
                   <div className="flex items-center justify-between mt-6">
                     <div className="font-bold text-base">수량</div>
                     <div className="flex items-center gap-4">

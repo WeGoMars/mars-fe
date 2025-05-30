@@ -1,11 +1,11 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Search, X, Heart } from "lucide-react"
+import { Search, X } from "lucide-react"
 import type { Stock } from "@/lib/types"
 
 interface SearchBarProps {
-  onSelectStock: (symbol: string) => void
+  onSelectStock: (symbol: string) => void // 종목 선택 시 호출되는 콜백
 }
 
 // 목 데이터
@@ -17,6 +17,7 @@ const mockStocks: Stock[] = [
   { symbol: "TSLA", name: "Tesla Inc.", price: "177.77", change: "-1.2%", changePercent: "-1.2%" },
 ]
 
+// 상태 관리
 export default function SearchBar({ onSelectStock }: SearchBarProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<Stock[]>([])
@@ -40,7 +41,7 @@ export default function SearchBar({ onSelectStock }: SearchBarProps) {
     }
   }, [showResults])
 
-  // 검색어 입력 시 결과 필터링
+  // 검색어 입력 시 결과 필터링(검색 기능)
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (searchQuery.length > 0) {
@@ -71,6 +72,7 @@ export default function SearchBar({ onSelectStock }: SearchBarProps) {
   }
 
   return (
+    // 검색 입력 창
     <div className="relative w-full max-w-2xl" ref={wrapperRef}>
       <div className="flex items-center bg-[#f0f0f0] rounded-full px-4 py-3">
         <Search className="text-gray-500 w-5 h-5 mr-3" />

@@ -2,9 +2,9 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 
 interface SellConfirmModalProps {
-  open: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
+  open: boolean; // 모달 표시 여부
+  onClose: () => void; // 모달 닫기 함수
+  onConfirm: () => void; // 매도 확인 함수
 }
 
 export default function SellConfirmModal({ open, onClose, onConfirm }: SellConfirmModalProps) {

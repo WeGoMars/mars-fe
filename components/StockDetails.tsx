@@ -8,13 +8,15 @@ import { Check, ChevronDown, ChevronLeft, Heart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
+// 주식 상세 정보를 보여주는 컴포넌트
+
 interface StockDetailsProps {
-  symbol: string;
-  activeTab: '종목정보 상세' | '내 계좌' | 'AI 추천';
-  onTabChange: (tab: '종목정보 상세' | '내 계좌' | 'AI 추천') => void;
-  favoriteStocks: Stock[];
-  setFavoriteStocks: React.Dispatch<React.SetStateAction<Stock[]>>;
-  isLoggedIn: boolean;
+  symbol: string; // 주식 심볼
+  activeTab: '종목정보 상세' | '내 계좌' | 'AI 추천'; // 현재 활성화된 탭
+  onTabChange: (tab: '종목정보 상세' | '내 계좌' | 'AI 추천') => void; // 탭 변경 핸들러
+  favoriteStocks: Stock[]; // 관심 종목 목록
+  setFavoriteStocks: React.Dispatch<React.SetStateAction<Stock[]>>; // 관심 종목 설정 함수
+  isLoggedIn: boolean; // 로그인 상태
 }
 
 export default function StockDetails({ symbol, activeTab, onTabChange, favoriteStocks, setFavoriteStocks, isLoggedIn }: StockDetailsProps) {
