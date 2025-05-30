@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 
+// 매수, 매도 모달 컴포넌트
 interface BuyConfirmModalProps {
-  open: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
+  open: boolean; // 모달 표시 여부
+  onClose: () => void; // 모달 닫기 함수
+  onConfirm: () => void; // 매수 확인 함수
 }
 
 export default function BuyConfirmModal({ open, onClose, onConfirm }: BuyConfirmModalProps) {
@@ -13,6 +14,8 @@ export default function BuyConfirmModal({ open, onClose, onConfirm }: BuyConfirm
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="w-[343px] h-[400px] bg-gray-100 p-4 mx-auto rounded-3xl">
+
+        {/* 매수 클릭 시 "1주당 희망 가격..." 모달 창 */}
         {/* Header - 분리된 회색 박스 */}
         <div className="bg-[#eeeeee] rounded-3xl px-6 py-6 text-center mb-4">
           <div className="flex items-center justify-center gap-3">

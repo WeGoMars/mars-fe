@@ -34,28 +34,29 @@ export default function MyPage() {
   }
 
 
-//   useEffect(() => {
-//    const fetchUser = async () => {
-//     try {
-//       const res = await fetch("http://localhost:4000/users/whoami", {
-//         credentials: "include", // 꼭 포함!
-//       })
+  useEffect(() => {
+   const fetchUser = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/users/whoami", {
+        credentials: "include", // 꼭 포함!
+      })
 
-//       if (res.ok) {
-//         const data = await res.json()
-//         setNickname(data.nick)
-//       } else {
-//         // 로그인 안 되어 있으면 메인 페이지로 이동
-//         window.location.href = "/"
-//       }
-//     } catch (err) { 
-//       console.error("유저 정보 불러오기 실패:", err)
-//       window.location.href = "/"
-//     }
-//   }
+      if (res.ok) {
+        const data = await res.json()
+        setNickname(data.nick)
+      } else {
+        // 로그인 안 되어 있으면 메인 페이지로 이동
+        window.location.href = "/"
+      }
+    } catch (err) { 
+      console.error("유저 정보 불러오기 실패:", err)
+      window.location.href = "/"
+    }
+  }
 
-//   fetchUser()
-// }, [])
+  fetchUser()
+}, [])
+  
   
   return (
     <div className="min-h-screen bg-[#f5f7f9]">

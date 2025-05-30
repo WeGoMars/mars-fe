@@ -82,29 +82,9 @@ export default function Dashboard() {
   const [showMinuteOptions, setShowMinuteOptions] = useState(false);
   const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
   const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-//   useEffect(() => {
-//       const fetchUser = async () => {
-//     try {
-//       const res = await fetch("http://localhost:4000/users/whoami", {
-//         credentials: "include", // 꼭 포함!
-//       })
 
-//       if (res.ok) {
-//         const data = await res.json()
-//         setNickname(data.nick)
-//       } else {
-//         // 로그인 안 되어 있으면 메인 페이지로 이동
-//         window.location.href = "/"
-//       }
-//     } catch (err) {
-//       console.error("유저 정보 불러오기 실패:", err)
-//       window.location.href = "/"
-//     }
-//   }
-
-//   fetchUser()
-// }, [])
 
   const selectStock = (symbol: string) => {
     setSelectedStock(symbol);
@@ -115,6 +95,28 @@ export default function Dashboard() {
     url.searchParams.set("modal", "edit")
     router.push(url.toString())
   }
+  useEffect(() => {
+   const fetchUser = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/users/whoami", {
+        credentials: "include", // 꼭 포함!
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        setNickname(data.nick)
+      } else {
+        // 로그인 안 되어 있으면 메인 페이지로 이동
+        window.location.href = "/"
+      }
+    } catch (err) { 
+      console.error("유저 정보 불러오기 실패:", err)
+      window.location.href = "/"
+    }
+  }
+
+  fetchUser()
+}, [])
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -558,7 +560,7 @@ export default function Dashboard() {
                     </div>
                     <h2 className="text-xl font-extrabold">S&P 500</h2>
                   </div>
-                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 채투자하는 ETF</p>
+                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 재투자하는 ETF</p>
                   <div className="flex items-center justify-between mt-6">
                     <div className="font-bold text-base">수량</div>
                     <div className="flex items-center gap-4">
@@ -591,7 +593,7 @@ export default function Dashboard() {
                     </div>
                     <h2 className="text-xl font-extrabold">S&P 500</h2>
                   </div>
-                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 채투자하는 ETF</p>
+                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 재투자하는 ETF</p>
                   <div className="flex items-center justify-between mt-6">
                     <div className="font-bold text-base">수량</div>
                     <div className="flex items-center gap-4">
@@ -668,6 +670,7 @@ export default function Dashboard() {
                   onTabChange={setActiveRightTab}
                   favoriteStocks={favoriteStocks}
                   setFavoriteStocks={setFavoriteStocks}
+                  isLoggedIn={isLoggedIn}
                 />
               )}
             </div>

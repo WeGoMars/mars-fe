@@ -19,6 +19,31 @@ import { useEffect } from "react";
 export default function FinanceDashboard() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      try {
+        const loginUser = localStorage.getItem("logInUser");
+        const isUserLoggedIn = loginUser !== null && loginUser !== undefined && loginUser !== '';
+        setIsLoggedIn(isUserLoggedIn);
+      } catch (error) {
+        console.error('로그인 상태 체크 중 오류 발생:', error);
+        setIsLoggedIn(false);
+      }
+    };
+
+    // 초기 로그인 상태 체크
+    checkLoginStatus();
+
+    // 로그인 상태 변경 감지를 위한 이벤트 리스너 추가
+    window.addEventListener('storage', checkLoginStatus);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('storage', checkLoginStatus);
+    };
+  }, []);
 
   useEffect(() => {
     const modal = searchParams.get("modal")
@@ -295,15 +320,16 @@ export default function FinanceDashboard() {
         </div>
       )}
 
+      {/* 메인 컨텐츠 영역 */}
       <div className="flex flex-col lg:flex-row p-4 gap-4">
         {/* Left Column - Hidden on mobile, visible on lg screens */}
         <div className="hidden lg:flex lg:w-64 flex-col">
-          {/* 해외종목 목록 보기 */}
+          {/* 오늘의 핫 종목 목록 */}
           <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center">
             <span className="text-sm">오늘의 핫 종목</span>
           </div>
 
-          {/* Stock List */}
+          {/* 핫 종목 리스트 목 데이터 */}
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
               {[
@@ -423,7 +449,7 @@ export default function FinanceDashboard() {
           </div>
         </div>
 
-        {/* Middle Column */}
+        {/* 중앙 레이아웃 주식 차트 영역 */}
         <div className="flex-1 flex flex-col">
           {/* Search Bar - Styled like the screenshot */}
           <div className="flex justify-center mb-4">
@@ -533,7 +559,7 @@ export default function FinanceDashboard() {
               </div>
             </div>
 
-            {/* Price Display */}
+            {/* s&p500 아이콘, 주가, 변동률 표시 영역 */}
             <div className="mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl md:text-3xl font-bold">4,566.48</span>
@@ -558,6 +584,7 @@ export default function FinanceDashboard() {
           </div>
         </div>
 
+        {/* 반응형 코드 영역 */}
         {/* Right Column - Full width on mobile, normal width on lg screens */}
         <div className="w-full lg:w-80 flex flex-col mt-4 lg:mt-0">
           {/* 검색창과 동일한 높이의 여백 추가 - 데스크톱에서만 표시 */}
@@ -588,7 +615,7 @@ export default function FinanceDashboard() {
                     </div>
                     <h2 className="text-xl font-extrabold">S&P 500</h2>
                   </div>
-                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 채투자하는 ETF</p>
+                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 재투자하는 ETF</p>
                   <div className="flex items-center justify-between mt-6">
                     <div className="font-bold text-base">수량</div>
                     <div className="flex items-center gap-4">
@@ -621,7 +648,7 @@ export default function FinanceDashboard() {
                     </div>
                     <h2 className="text-xl font-extrabold">S&P 500</h2>
                   </div>
-                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 채투자하는 ETF</p>
+                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 재투자하는 ETF</p>
                   <div className="flex items-center justify-between mt-6">
                     <div className="font-bold text-base">수량</div>
                     <div className="flex items-center gap-4">
@@ -701,6 +728,7 @@ export default function FinanceDashboard() {
                   }}
                   favoriteStocks={favoriteStocks}
                   setFavoriteStocks={setFavoriteStocks}
+                  isLoggedIn={isLoggedIn}
                 />
               )}
             </div>

@@ -9,11 +9,13 @@ import {
   HistogramSeries,
 } from "lightweight-charts";
 
+// 주식 차트를 표시하는 컴포넌트
 interface StockChartProps {
-  symbol: string;
-  period: "일" | "주" | "월" | "분";
+  symbol: string; // 종목 심볼
+  period: "일" | "주" | "월" | "분"; // 차트 기간
 }
 
+// 상태 관리
 export default function StockChart({ symbol, period }: StockChartProps) {
   const [chartData, setChartData] = useState<ChartDataResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -22,7 +24,7 @@ export default function StockChart({ symbol, period }: StockChartProps) {
   const mainChartRef = useRef<HTMLDivElement>(null);
   const volumeChartRef = useRef<HTMLDivElement>(null);
 
-  // 캔들차트용 목데이터(API 나오면 대체)
+  // 캔들차트용 목 데이터(API 나오면 대체)
   const mockData = Array.from({ length: 200 }, (_, i) => {
     const date = new Date(2024, 0, 1); // 2024-01-01
     date.setDate(date.getDate() + i);
@@ -38,6 +40,7 @@ export default function StockChart({ symbol, period }: StockChartProps) {
     };
   });
 
+  // 차트 데이터 가져오기
   useEffect(() => {
     const fetchChartData = async () => {
       setIsLoading(true);

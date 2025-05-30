@@ -62,12 +62,7 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
       }
 
       const data = await response.json();
-      // localStorage.setItem("logInUser", JSON.stringify(data));
-      // alert(`환영합니다, ${data.nick}님!`);
-      
-      const res = await fetch("http://localhost:4000/users/whoami", {
-        credentials: "include",
-      });
+ 
       setEmail("");
       setPassword("");
       onOpenChange(false);
