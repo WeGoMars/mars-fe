@@ -82,11 +82,14 @@ export default function Dashboard() {
   const [showMinuteOptions, setShowMinuteOptions] = useState(false);
   const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
   const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
     const user = localStorage.getItem("logInUser")
     if (!user) {
       window.location.href = "/"
+    } else {
+      setIsLoggedIn(true);
     }
     const saveUser = localStorage.getItem("logInUser") 
     if (saveUser) {
@@ -661,6 +664,7 @@ export default function Dashboard() {
                   onTabChange={setActiveRightTab}
                   favoriteStocks={favoriteStocks}
                   setFavoriteStocks={setFavoriteStocks}
+                  isLoggedIn={isLoggedIn}
                 />
               )}
             </div>
