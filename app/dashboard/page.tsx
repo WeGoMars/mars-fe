@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button";
-import MyPage from "@/components/common/profileModal"
+import ProfileModal from "@/components/common/profileModal"
 import { Heart } from 'lucide-react';
 
 export default function Dashboard() {
@@ -139,6 +139,7 @@ export default function Dashboard() {
           <span className="text-lg font-medium">mars</span>
         </div>
 
+        {/* 헤더에 있는 "내계좌" 텍스트 클릭 시 "내계좌" 페이지로 이동 코드 */}
         <div className="hidden md:flex items-center gap-4">
           <Link
             href="dashboard/mypage"
@@ -677,7 +678,7 @@ export default function Dashboard() {
           )}
         </div>
       </div>
-      <MyPage />
+      <ProfileModal />
       <BuyConfirmModal 
         open={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}

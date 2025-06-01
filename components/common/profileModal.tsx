@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { X, User, ArrowRight, Camera } from "lucide-react"
 
-export default function MyPage() {
+export default function ProfileModal() {
   const router = useRouter()
   const searchParams = useSearchParams()
 

@@ -10,7 +10,7 @@ import { useEffect, useState } from "react"
 import ProfileModal from "@/components/common/profileModal"
 
 
-
+// 내계좌 페이지
 export default function MyPage() {
   const portfolioData = {
     totalAssets: 2850.75,
