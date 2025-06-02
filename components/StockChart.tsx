@@ -215,6 +215,7 @@ export default function StockChart({ symbol, period }: StockChartProps) {
       >
         차트
       </span>
+      {/* 중앙 차트 거래량 안보일 때 차트 높이 조절 코드 */}
       <div
         ref={mainChartRef}
         style={{
