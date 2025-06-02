@@ -25,13 +25,19 @@ export default function FinanceDashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<string>("");
   const [selectedStock, setSelectedStock] = useState<string>("AAPL");
+  const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
+  const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "분">("일");
+  const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
+  const [activeRightTab, setActiveRightTab] = useState<"종목정보 상세" | "내 계좌" | "AI 추천">("종목정보 상세");
 
   const { data: stockChartData, error } = useSWR(
-    selectedStock ? ['stockChart', selectedStock] : null,
+    selectedStock ? ['stockChart', selectedStock, activePeriod, selectedMinute] : null,
     () => getStockData({
       symbol: selectedStock,
-      interval: '1day',
-      limit: 30
+      interval: activePeriod === "분" ? (selectedMinute === "15분" ? "1h" : "1h") : 
+               activePeriod === "일" ? "1day" :
+               activePeriod === "주" ? "1week" : "1month",
+      limit: activePeriod === "분" ? 100 : 30
     })
   );
 
@@ -90,14 +96,6 @@ export default function FinanceDashboard() {
   setRegisterOpen(false)
   }
 
-  const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
-  const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "분">(
-    "일"
-  );
-  const [activeRightTab, setActiveRightTab] = useState<
-    "종목정보 상세" | "내 계좌" | "AI 추천"
-  >("종목정보 상세");
-  const [searchQuery, setSearchQuery] = useState<string>("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
@@ -110,7 +108,6 @@ export default function FinanceDashboard() {
   const [favoriteStocks, setFavoriteStocks] = useState<Stock[]>([]);
 
   const [showMinuteOptions, setShowMinuteOptions] = useState(false);
-  const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
 
   const [stockData, setStockData] = useState<Stock[]>([
     {
@@ -505,8 +502,15 @@ export default function FinanceDashboard() {
               id="chart-container"
               className="w-full h-full flex flex-col items-center justify-center"
             >
-              {!isEmpty(stockChartData?.data) ? <StockChart data={stockChartData?.data} symbol={selectedStock} period={activePeriod} /> : <div className="text-gray-400">차트 데이터를 불러오는 중입니다...</div>}
-              
+              {stockChartData && !isEmpty(stockChartData.data) ? (
+                <StockChart 
+                  data={stockChartData.data} 
+                  symbol={selectedStock} 
+                  period={activePeriod} 
+                />
+              ) : (
+                <div className="text-gray-400">차트 데이터를 불러오는 중입니다...</div>
+              )}
             </div>
           </div>
           </div>
