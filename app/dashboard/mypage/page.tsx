@@ -7,7 +7,7 @@ import { TrendingUp, TrendingDown, ChevronRight, Menu } from "lucide-react"
 import Image from "next/image";
 import { useRouter } from "next/navigation" 
 import { useEffect, useState } from "react"
-import ProfileModal from "@/components/common/profileModal"
+import ProfileModal from "@/components/common/ProfileModal"
 import mockPortfolio from "@/lib/mock/mockportfolio";
 
 // 내계좌 페이지

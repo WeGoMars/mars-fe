@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, X, Menu, ChevronLeft, Minus, Plus } from "lucide-react";
+import { X, Menu, ChevronLeft, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import StockChart from "@/components/StockChart";
 import SearchBar from "@/components/SearchBar";
@@ -9,13 +9,12 @@ import StockDetails from "@/components/StockDetails";
 import StockList from "@/components/StockList";
 import BuyConfirmModal from "@/components/BuyConfirmModal";
 import SellConfirmModal from "@/components/SellConfirmModal";
-import { getStockList } from "@/lib/api";
 import type { Stock } from "@/lib/types";
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button";
-import ProfileModal from "@/components/common/profileModal"
+import ProfileModal from "@/components/common/ProfileModal"
 import { Heart } from 'lucide-react';
 
 export default function Dashboard() {
