@@ -82,7 +82,7 @@ export default function Dashboard() {
   const [showMinuteOptions, setShowMinuteOptions] = useState(false);
   const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
   const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
 
 
 
@@ -99,18 +99,20 @@ export default function Dashboard() {
    const fetchUser = async () => {
     try {
       const res = await fetch("http://localhost:4000/users/whoami", {
-        credentials: "include", // 꼭 포함!
+        credentials: "include",
       })
 
       if (res.ok) {
         const data = await res.json()
         setNickname(data.nick)
+        setIsLoggedIn(true)
       } else {
-        // 로그인 안 되어 있으면 메인 페이지로 이동
+        setIsLoggedIn(false)
         window.location.href = "/"
       }
     } catch (err) { 
       console.error("유저 정보 불러오기 실패:", err)
+      setIsLoggedIn(false)
       window.location.href = "/"
     }
   }
@@ -155,6 +157,7 @@ export default function Dashboard() {
           <Link
             href="dashboard/mypage"
             className="flex items-center gap-2 text-sm text-gray-600 hover:opacity-80 transition-opacity"
+            onClick={() => setActiveRightTab('내 계좌')}
           >
             내계좌
           </Link>

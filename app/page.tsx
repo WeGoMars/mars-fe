@@ -20,6 +20,7 @@ export default function FinanceDashboard() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState<string>("");
 
   useEffect(() => {
     const checkLoginStatus = () => {
@@ -43,6 +44,18 @@ export default function FinanceDashboard() {
     return () => {
       window.removeEventListener('storage', checkLoginStatus);
     };
+  }, []);
+
+  useEffect(() => {
+    // 컴포넌트가 마운트된 후에만 시간을 업데이트
+    setCurrentTime(new Date().toLocaleString());
+    
+    // 1초마다 시간 업데이트
+    const timer = setInterval(() => {
+      setCurrentTime(new Date().toLocaleString());
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
@@ -90,6 +103,39 @@ export default function FinanceDashboard() {
 
   const [showMinuteOptions, setShowMinuteOptions] = useState(false);
   const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
+
+  const [stockData, setStockData] = useState<Stock[]>([
+    {
+      symbol: "MSFT",
+      name: "Microsoft Corp.",
+      price: "213.10",
+      change: "+2.5%",
+      changePercent: "2.5%",
+      volume: "25.3M",
+      marketCap: "2.5T",
+      description: "Microsoft Corporation is an American multinational technology corporation."
+    },
+    {
+      symbol: "GOOGL",
+      name: "Alphabet Inc.",
+      price: "142.65",
+      change: "+1.1%",
+      changePercent: "1.1%",
+      volume: "18.7M",
+      marketCap: "1.8T",
+      description: "Alphabet Inc. is an American multinational technology conglomerate holding company."
+    },
+    {
+      symbol: "SPOT",
+      name: "Spotify Technology S.A.",
+      price: "156.78",
+      change: "+2.5%",
+      changePercent: "2.5%",
+      volume: "3.2M",
+      marketCap: "30.5B",
+      description: "Spotify is a Swedish audio streaming and media services provider."
+    }
+  ]);
 
   console.log('searchQuery:', searchQuery)
 
@@ -203,81 +249,16 @@ export default function FinanceDashboard() {
           </div>
 
           <div className="space-y-6">
-            {[
-              {
-                symbol: "MSFT",
-                name: "Microsoft Corp.",
-                price: "$213.10",
-                change: "+2.5%",
-              },
-              {
-                symbol: "GOOGL",
-                name: "Alphabet Inc.",
-                price: "$213.10",
-                change: "+1.1%",
-              },
-              {
-                symbol: "SPOT",
-                name: "Microsoft Corp.",
-                price: "$213.10",
-                change: "+2.5%",
-              },
-              {
-                symbol: "MSFT",
-                name: "Microsoft Corp.",
-                price: "$213.10",
-                change: "+2.5%",
-              },
-              {
-                symbol: "GOOGL",
-                name: "Alphabet Inc.",
-                price: "$213.10",
-                change: "+1.1%",
-              },
-              {
-                symbol: "SPOT",
-                name: "Microsoft Corp.",
-                price: "$213.10",
-                change: "+2.5%",
-              },
-              {
-                symbol: "MSFT",
-                name: "Microsoft Corp.",
-                price: "$213.10",
-                change: "+2.5%",
-              },
-              {
-                symbol: "GOOGL",
-                name: "Alphabet Inc.",
-                price: "$213.10",
-                change: "+1.1%",
-              },
-              {
-                symbol: "SPOT",
-                name: "Microsoft Corp.",
-                price: "$213.10",
-                change: "+2.5%",
-              },
-              {
-                symbol: "MSFT",
-                name: "Microsoft Corp.",
-                price: "$213.10",
-                change: "+2.5%",
-              },
-              {
-                symbol: "GOOGL",
-                name: "Alphabet Inc.",
-                price: "$213.10",
-                change: "+1.1%",
-              },
-              {
-                symbol: "SPOT",
-                name: "Microsoft Corp.",
-                price: "$213.10",
-                change: "+2.5%",
-              },
-            ].map((stock, index) => (
-              <div key={index} className="flex items-center justify-between">
+            {stockData.map((stock, index) => (
+              <div 
+                key={index} 
+                className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                onClick={() => {
+                  setSelectedStock(stock.symbol);
+                  // API 연동 시 여기에 API 호출 로직 추가
+                  console.log(`Selected stock: ${stock.symbol}`);
+                }}
+              >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8">
                     {stock.symbol === "MSFT" && (
@@ -311,8 +292,10 @@ export default function FinanceDashboard() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-bold text-base">{stock.price}</div>
-                  <div className="text-xs text-[#41c3a9]">{stock.change}</div>
+                  <div className="font-bold text-base">${stock.price}</div>
+                  <div className={`text-xs ${stock.change.startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}>
+                    {stock.change}
+                  </div>
                 </div>
               </div>
             ))}
@@ -332,81 +315,16 @@ export default function FinanceDashboard() {
           {/* 핫 종목 리스트 목 데이터 */}
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
-              {[
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                },
-                {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                },
-                {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                },
-                {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                },
-                {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-              ].map((stock, index) => (
-                <div key={index} className="flex items-center justify-between">
+              {stockData.map((stock, index) => (
+                <div 
+                  key={index} 
+                  className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                  onClick={() => {
+                    setSelectedStock(stock.symbol);
+                    // API 연동 시 여기에 API 호출 로직 추가
+                    console.log(`Selected stock: ${stock.symbol}`);
+                  }}
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8">
                       {stock.symbol === "MSFT" && (
@@ -440,8 +358,10 @@ export default function FinanceDashboard() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-base">{stock.price}</div>
-                    <div className="text-xs text-[#41c3a9]">{stock.change}</div>
+                    <div className="font-bold text-base">${stock.price}</div>
+                    <div className={`text-xs ${stock.change.startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}>
+                      {stock.change}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -463,10 +383,9 @@ export default function FinanceDashboard() {
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-3">
               <div className="flex items-center gap-2">
                 <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs">
-                  <span className="text-[10px]">S&P</span>
-                  <span className="text-[10px]">500</span>
+                  <span className="text-[10px]">{selectedStock}</span>
                 </div>
-                <h2 className="text-xl font-bold">S&P 500</h2>
+                <h2 className="text-xl font-bold">{selectedStock}</h2>
               </div>
 
               {/* Buy/Sell and Time Period Tabs */}
@@ -562,15 +481,17 @@ export default function FinanceDashboard() {
             {/* s&p500 아이콘, 주가, 변동률 표시 영역 */}
             <div className="mb-1">
               <div className="flex items-center gap-2">
-                <span className="text-2xl md:text-3xl font-bold">4,566.48</span>
-                <span className="text-[#41c3a9] bg-[#e6f7f4] px-2 py-0.5 rounded-md text-sm">
-                  +1.66%
+                <span className="text-2xl md:text-3xl font-bold">
+                  ${stockData.find(stock => stock.symbol === selectedStock)?.price || "0.00"}
+                </span>
+                <span className={`${stockData.find(stock => stock.symbol === selectedStock)?.change.startsWith('+') ? 'text-[#41c3a9] bg-[#e6f7f4]' : 'text-red-500 bg-red-50'} px-2 py-0.5 rounded-md text-sm`}>
+                  {stockData.find(stock => stock.symbol === selectedStock)?.change || "0.00%"}
                 </span>
               </div>
             </div>
 
             <div className="text-xs text-gray-500 mb-6">
-              Oct 25, 5:26:38PM UTC-4 · INDEXSP · Disclaimer
+              {currentTime} · {selectedStock} · Disclaimer
             </div>
              {/* Empty Chart Area (for user to add their own chart) */}
           <div className="h-[740px] flex flex-col items-center justify-center">
@@ -578,7 +499,7 @@ export default function FinanceDashboard() {
               id="chart-container"
               className="w-full h-full flex flex-col items-center justify-center"
             >
-              <StockChart symbol="SPY" period={activePeriod} />
+              <StockChart symbol={selectedStock} period={activePeriod} />
             </div>
           </div>
           </div>
