@@ -4,7 +4,6 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { X, User, ArrowRight, Camera } from "lucide-react"
 
 export default function ProfileModal() {
