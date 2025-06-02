@@ -15,7 +15,9 @@ import type { Stock } from "@/lib/types";
 import { getStockData } from "@/lib/api";
 import useSWR from 'swr';
 
+
 import { useSearchParams, useRouter } from "next/navigation";
+import isEmpty from 'lodash/isEmpty';
 
 export default function FinanceDashboard() {
   const searchParams = useSearchParams()
@@ -503,8 +505,8 @@ export default function FinanceDashboard() {
               id="chart-container"
               className="w-full h-full flex flex-col items-center justify-center"
             >
-              {stockChartData?.data  && <StockChart data={stockChartData.data} symbol={selectedStock} period={activePeriod} />}
-              {!stockChartData?.data && <div className="text-gray-400">차트 데이터를 불러오는 중입니다...</div>}
+              {!isEmpty(stockChartData?.data) ? <StockChart data={stockChartData?.data} symbol={selectedStock} period={activePeriod} /> : <div className="text-gray-400">차트 데이터를 불러오는 중입니다...</div>}
+              
             </div>
           </div>
           </div>

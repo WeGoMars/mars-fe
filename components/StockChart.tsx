@@ -12,11 +12,12 @@ import {
 interface StockChartProps {
   symbol: string; // 종목 심볼
   period: "일" | "주" | "월" | "분"; // 차트 기간
-  data: StockChartData[];
+  data?: StockChartData[];
 }
 
 // 상태 관리
 export default function StockChart({ data, symbol, period }: StockChartProps) {
+  
 
 
   const mainChartRef = useRef<HTMLDivElement>(null);
@@ -57,6 +58,7 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
       wickDownColor: "#4dabf7",
       borderVisible: false,
     });
+    if (!data) return;
     candlestickSeries.setData(
       data.map(item => ({
         time: item.timestamp,
@@ -96,7 +98,7 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
       priceFormat: { type: "volume" },
       color: "#888",
     });
-    const volumeData = data.map((item) => ({
+    const volumeData = data?.map((item) => ({
       time: item.timestamp,
       value: item.volume,
       color: item.close >= item.open ? "#ff6b6b" : "#4dabf7",
@@ -141,6 +143,7 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
     };
   }, [data]);
 
+  if (!data) return <div>차트 데이터가 없습니다.</div>;
 
   return (
     <div className="flex flex-col w-full h-full">
