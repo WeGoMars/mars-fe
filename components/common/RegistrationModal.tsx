@@ -84,7 +84,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
       return
 
     try {
-      const res = await fetch("http://localhost:4000/users/",{
+      const res = await fetch("http://13.220.145.152:4000/users/",{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
