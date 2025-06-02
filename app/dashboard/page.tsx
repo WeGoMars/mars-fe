@@ -84,8 +84,6 @@ export default function Dashboard() {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
 
-
-
   const selectStock = (symbol: string) => {
     setSelectedStock(symbol);
   };
@@ -122,6 +120,12 @@ export default function Dashboard() {
   const portfolioData = mockPortfolio;
 
   const cashAsset = portfolioData.seedMoney - portfolioData.investmentAmount;
+
+  // 관심 종목 상태가 변경될 때마다 하트 상태 업데이트
+  useEffect(() => {
+    const isFavorite = favoriteStocks.some(stock => stock.symbol === selectedStock);
+    setIsHeartFilled(isFavorite);
+  }, [selectedStock, favoriteStocks]);
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -413,27 +417,20 @@ export default function Dashboard() {
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-3">
               <div className="flex items-center gap-2">
                 <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs">
-                  <span className="text-[10px]">S&P</span>
-                  <span className="text-[10px]">500</span>
+                  <span className="text-[10px]">{selectedStock}</span>
                 </div>
-                <h2 className="text-xl font-bold">S&P 500</h2>
+                <h2 className="text-xl font-bold">{selectedStock}</h2>
                 <button
                   onClick={() => {
                     const newIsHeartFilled = !isHeartFilled;
                     setIsHeartFilled(newIsHeartFilled);
                     
                     if (newIsHeartFilled) {
-                      // 현재 선택된 주식 정보를 가져옵니다
                       const currentStock = stocks.find(stock => stock.symbol === selectedStock);
-                      console.log('Current stock:', currentStock); // 디버깅용
-                      console.log('Selected stock:', selectedStock); // 디버깅용
-                      
                       if (currentStock && !favoriteStocks.some(stock => stock.symbol === currentStock.symbol)) {
-                        console.log('Adding to favorites:', currentStock); // 디버깅용
                         setFavoriteStocks(prev => [...prev, currentStock]);
                       }
                     } else {
-                      console.log('Removing from favorites:', selectedStock); // 디버깅용
                       setFavoriteStocks(prev => prev.filter(stock => stock.symbol !== selectedStock));
                     }
                   }}
@@ -540,15 +537,21 @@ export default function Dashboard() {
             {/* Price Display */}
             <div className="mb-1">
               <div className="flex items-center gap-2">
-                <span className="text-2xl md:text-3xl font-bold">4,566.48</span>
-                <span className="text-[#41c3a9] bg-[#e6f7f4] px-2 py-0.5 rounded-md text-sm">
-                  +1.66%
+                <span className="text-2xl md:text-3xl font-bold">
+                  ${stocks.find(stock => stock.symbol === selectedStock)?.price.replace('$', '') || "0.00"}
+                </span>
+                <span className={`${
+                  stocks.find(stock => stock.symbol === selectedStock)?.change.startsWith('+') 
+                    ? 'text-[#41c3a9] bg-[#e6f7f4]' 
+                    : 'text-red-500 bg-red-50'
+                } px-2 py-0.5 rounded-md text-sm`}>
+                  {stocks.find(stock => stock.symbol === selectedStock)?.change || "0.00%"}
                 </span>
               </div>
             </div>
 
             <div className="text-xs text-gray-500 mb-6">
-              Oct 25, 5:26:38PM UTC-4 · INDEXSP · Disclaimer
+              {new Date().toLocaleString()} · {selectedStock} · Disclaimer
             </div>
 
             {/* Chart Area */}
