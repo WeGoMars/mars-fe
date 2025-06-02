@@ -1,3 +1,5 @@
+// 로딩 스피너 화면
+
 export default function Loading() {
   return (
     <div className="flex justify-center items-center h-screen">
