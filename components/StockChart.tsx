@@ -23,7 +23,16 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
 
   useEffect(() => {
     if (!mainChartRef.current || !volumeChartRef.current || !data || data.length === 0) return;
-
+    if (!data || data.length === 0 || data.some(item =>
+      !item.timestamp ||
+      item.open == null ||
+      item.close == null ||
+      item.high == null ||
+      item.low == null ||
+      item.volume == null
+    )) {
+     console.log("data", data);
+    }
     // 메인 차트(캔들)
     const mainChart = createChart(mainChartRef.current, {
       width: mainChartRef.current.clientWidth,
@@ -159,7 +168,7 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
       mainChart.remove();
       volumeChart.remove();
     };
-  }, [data]);
+  }, []);
 
   if (!data || data.length === 0) {
     return (
