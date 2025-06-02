@@ -29,7 +29,7 @@ export default function ProfileModal() {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch("api/users", {
+      const response = await fetch("http://localhost:4000/users", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
