@@ -8,25 +8,17 @@ import Image from "next/image";
 import { useRouter } from "next/navigation" 
 import { useEffect, useState } from "react"
 import ProfileModal from "@/components/common/profileModal"
-
+import mockPortfolio from "@/lib/mock/mockportfolio";
 
 // 내계좌 페이지
 export default function MyPage() {
-  const portfolioData = {
-    totalAssets: 2850.75,
-    investmentAmount: 1500.5,
-    profitLoss: 350.6,
-    returnRate: 5.5,
-  }
-
-  
-  
+ 
 
   const holdings = [{ name: "테슬라", purchasePrice: 300, currentPrice: 344, Quantity: 2 , gain: 44, returnRate: 14.67 }]
 
   const router = useRouter()
   const [nickname, setNickname] = useState<string | null>(null)
-
+  const [portfolioData, setPortfolioData] = useState(mockPortfolio);
   const handleAvatarClick = () => {
   const url = new URL(window.location.href)
   url.searchParams.set("modal", "edit")
@@ -98,7 +90,7 @@ export default function MyPage() {
       
       <div className="flex flex-col lg:flex-row p-4 gap-4">
         {/* Left Column - Hidden on mobile, visible on lg screens */}
-        <div className="hidden lg:flex lg:w-64 flex-col">
+        <div className="lg:flex lg:w-64 flex-col">
           {/* Interest Stocks Section */}
           <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center">
             <span className="text-sm">관심 종목</span>
@@ -348,9 +340,22 @@ export default function MyPage() {
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-sm font-medium text-[#8f9098]">수익률</div>
                 </div>
-                <div className="text-2xl font-bold text-[#63c89b] group-hover:text-[#4caf50] transition-colors flex items-center gap-1">
-                  <TrendingUp className="h-5 w-5" />+{portfolioData.returnRate}%
+                <div
+                  className={`text-2xl font-bold transition-colors flex items-center gap-1 
+                    ${portfolioData.returnRate >= 0 
+                      ? "text-[#63c89b] group-hover:text-[#4caf50]" 
+                      : "text-[#bb4430] group-hover:text-[#a73d2a]"}
+                  `}
+                  >
+                    {portfolioData.returnRate >= 0 ? (
+                    <TrendingUp className="h-5 w-5" />
+                  ) : (
+                    <TrendingDown className="h-5 w-5" />
+                  )}
+                  {portfolioData.returnRate >= 0 ? "+" : "-"}
+                  {Math.abs(portfolioData.returnRate).toFixed(2)}%
                 </div>
+
                 <div className="text-xs text-[#8f9098] mt-1">Return Rate</div>
               </div>
             
@@ -362,7 +367,11 @@ export default function MyPage() {
                   <div className="text-sm font-medium text-[#8f9098]">제공시드머니</div>
                 </div>
                 <div className="text-2xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
-                  $ 4,000
+                  ${" "}
+                  {portfolioData.seedMoney.toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </div>
                 <div className="text-xs text-[#8f9098] mt-1">Provided Seed Money</div>
               </div>
@@ -491,3 +500,4 @@ export default function MyPage() {
 </div>
 )
 }
+
