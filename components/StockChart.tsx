@@ -29,45 +29,53 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
       width: mainChartRef.current.clientWidth,
       height: mainChartRef.current.clientHeight,
       layout: {
-        background: { color: "transparent" },
-        textColor: "#333",
+        background: { color: 'white' },
+        textColor: '#333',
       },
       grid: {
-        vertLines: { color: "#f0f0f0" },
-        horzLines: { color: "#f0f0f0" },
+        vertLines: { color: '#f0f0f0' },
+        horzLines: { color: '#f0f0f0' },
       },
       rightPriceScale: {
         scaleMargins: {
           top: 0.1,
           bottom: 0.1,
         },
+        borderColor: '#eee',
       },
       leftPriceScale: {
         visible: false,
       },
       timeScale: {
-        borderColor: "#eee",
+        borderColor: '#eee',
         timeVisible: true,
         secondsVisible: false,
       },
     });
 
     const candlestickSeries = mainChart.addSeries(CandlestickSeries, {
-      upColor: "#ff6b6b",
-      downColor: "#4dabf7",
-      wickUpColor: "#ff6b6b",
-      wickDownColor: "#4dabf7",
+      upColor: '#26a69a',
+      downColor: '#ef5350',
+      wickUpColor: '#26a69a',
+      wickDownColor: '#ef5350',
       borderVisible: false,
     });
 
     // 데이터 변환 및 설정
-    const chartData = data.map(item => ({
-      time: new Date(item.timestamp).getTime() / 1000 as Time,
-      open: Number(item.open),
-      high: Number(item.high),
-      low: Number(item.low),
-      close: Number(item.close),
-    }));
+    const chartData = data.map(item => {
+      const date = new Date(item.timestamp);
+      return {
+        time: {
+          year: date.getFullYear(),
+          month: date.getMonth() + 1,
+          day: date.getDate(),
+        },
+        open: Number(item.open),
+        high: Number(item.high),
+        low: Number(item.low),
+        close: Number(item.close),
+      };
+    });
 
     candlestickSeries.setData(chartData);
 
@@ -76,24 +84,25 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
       width: volumeChartRef.current.clientWidth,
       height: 120,
       layout: {
-        background: { color: "transparent" },
-        textColor: "#333",
+        background: { color: 'white' },
+        textColor: '#333',
       },
       grid: {
-        vertLines: { color: "#f0f0f0" },
-        horzLines: { color: "#f0f0f0" },
+        vertLines: { color: '#f0f0f0' },
+        horzLines: { color: '#f0f0f0' },
       },
       rightPriceScale: {
         scaleMargins: {
           top: 0.2,
           bottom: 0.1,
         },
+        borderColor: '#eee',
       },
       leftPriceScale: {
         visible: false,
       },
       timeScale: {
-        borderColor: "#eee",
+        borderColor: '#eee',
         timeVisible: true,
         secondsVisible: false,
       },
@@ -101,13 +110,13 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
 
     const volumeSeries = volumeChart.addSeries(HistogramSeries, {
       priceFormat: { type: "volume" },
-      color: "#888",
+      color: '#888',
     });
 
     const volumeData = data.map((item) => ({
-      time: new Date(item.timestamp).getTime() / 1000 as Time,
+      time: item.timestamp,
       value: Number(item.volume),
-      color: Number(item.close) >= Number(item.open) ? "#ff6b6b" : "#4dabf7",
+      color: Number(item.close) >= Number(item.open) ? '#26a69a' : '#ef5350',
     }));
 
     volumeSeries.setData(volumeData);
