@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, X, Menu, ChevronLeft, Minus, Plus } from "lucide-react";
+import { X, Menu, ChevronLeft, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import StockChart from "@/components/StockChart";
 import SearchBar from "@/components/SearchBar";
@@ -9,16 +9,39 @@ import StockDetails from "@/components/StockDetails";
 import StockList from "@/components/StockList";
 import BuyConfirmModal from "@/components/BuyConfirmModal";
 import SellConfirmModal from "@/components/SellConfirmModal";
-import { getStockList } from "@/lib/api";
 import type { Stock } from "@/lib/types";
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button";
-import MyPage from "@/components/common/profile"
+import ProfileModal from "@/components/common/ProfileModal"
+import { Heart } from 'lucide-react';
+import mockPortfolio from "@/lib/mock/mockportfolio";
 
 export default function Dashboard() {
-  const [stocks, setStocks] = useState<Stock[]>([]);
+  const [stocks, setStocks] = useState<Stock[]>([
+    {
+      symbol: "SPY",
+      name: "S&P 500 ETF",
+      price: "$456.48",
+      change: "+1.66%",
+      changePercent: "+1.66%"
+    },
+    {
+      symbol: "AAPL",
+      name: "Apple Inc.",
+      price: "$175.04",
+      change: "+0.86%",
+      changePercent: "+0.86%"
+    },
+    {
+      symbol: "TSLA",
+      name: "Tesla Inc.",
+      price: "$238.45",
+      change: "-2.32%",
+      changePercent: "-2.32%"
+    }
+  ]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStock, setSelectedStock] = useState<string>("SPY");
@@ -32,42 +55,34 @@ export default function Dashboard() {
   const [showPanel, setShowPanel] = useState<false | 'buy' | 'sell'>(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSellConfirmModal, setShowSellConfirmModal] = useState(false);
+  const [isHeartFilled, setIsHeartFilled] = useState(false);
+  const [favoriteStocks, setFavoriteStocks] = useState<Stock[]>([
+    {
+      symbol: "MSFT",
+      name: "Microsoft Corp.",
+      price: "$213.10",
+      change: "+2.5%",
+      changePercent: "+2.5%"
+    },
+    {
+      symbol: "GOOGL",
+      name: "Alphabet Inc.",
+      price: "$213.10",
+      change: "+1.1%",
+      changePercent: "+1.1%"
+    },
+    {
+      symbol: "SPOT",
+      name: "Spotify Corp.",
+      price: "$213.10",
+      change: "+2.5%",
+      changePercent: "+2.5%"
+    }
+  ]);
+  const [showMinuteOptions, setShowMinuteOptions] = useState(false);
+  const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
   const router = useRouter();
-
-  useEffect(() => {
-    const user = localStorage.getItem("logInUser")
-    if (!user) {
-      window.location.href = "/"
-    }
-    const saveUser = localStorage.getItem("logInUser") 
-    if (saveUser) {
-      try {
-        const user = JSON.parse(saveUser)
-        setNickname(user.nickname)
-      } catch (err) {
-        console.error("failed to parse user:", err)
-      }
-    }
-
-    const fetchStocks = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const data = await getStockList();
-        setStocks(data);
-        if (data.length > 0 && !selectedStock) {
-          setSelectedStock(data[0].symbol);
-        }
-      } catch (err) {
-        setError("종목 목록을 불러오는 중 오류가 발생했습니다.");
-        console.error("Failed to fetch stocks:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchStocks();
-  }, []);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
 
   const selectStock = (symbol: string) => {
     setSelectedStock(symbol);
@@ -78,6 +93,39 @@ export default function Dashboard() {
     url.searchParams.set("modal", "edit")
     router.push(url.toString())
   }
+  useEffect(() => {
+   const fetchUser = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/users/whoami", {
+        credentials: "include",
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        setNickname(data.nick)
+        setIsLoggedIn(true)
+      } else {
+        setIsLoggedIn(false)
+        window.location.href = "/"
+      }
+    } catch (err) { 
+      console.error("유저 정보 불러오기 실패:", err)
+      setIsLoggedIn(false)
+      window.location.href = "/"
+    }
+  }
+
+  fetchUser()
+}, [])
+  const portfolioData = mockPortfolio;
+
+  const cashAsset = portfolioData.seedMoney - portfolioData.investmentAmount;
+
+  // 관심 종목 상태가 변경될 때마다 하트 상태 업데이트
+  useEffect(() => {
+    const isFavorite = favoriteStocks.some(stock => stock.symbol === selectedStock);
+    setIsHeartFilled(isFavorite);
+  }, [selectedStock, favoriteStocks]);
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -100,6 +148,7 @@ export default function Dashboard() {
           <span className="text-lg font-medium">mars</span>
         </div>
 
+        {/* 헤더에 있는 "내계좌" 텍스트 클릭 시 "내계좌" 페이지로 이동 코드 */}
         <div className="hidden md:flex items-center gap-4">
           <Link
             href="dashboard/mypage"
@@ -115,6 +164,7 @@ export default function Dashboard() {
           <Link
             href="dashboard/mypage"
             className="flex items-center gap-2 text-sm text-gray-600 hover:opacity-80 transition-opacity"
+            onClick={() => setActiveRightTab('내 계좌')}
           >
             내계좌
           </Link>
@@ -195,45 +245,16 @@ export default function Dashboard() {
 
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
-              {[
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                },
-                {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                },
-                {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-              ].map((stock, index) => (
-                <div key={index} className="flex items-center justify-between">
+              {favoriteStocks.map((stock, index) => (
+                <div 
+                  key={index} 
+                  className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                  onClick={() => {
+                    setSelectedStock(stock.symbol);
+                    // API 연동 시 여기에 API 호출 로직 추가
+                    console.log(`Selected favorite stock: ${stock.symbol}`);
+                  }}
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8">
                       {stock.symbol === "MSFT" && (
@@ -268,7 +289,9 @@ export default function Dashboard() {
                   </div>
                   <div className="text-right">
                     <div className="font-bold text-base">{stock.price}</div>
-                    <div className="text-xs text-[#41c3a9]">{stock.change}</div>
+                    <div className={`text-xs ${stock.change.startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}>
+                      {stock.change}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -288,39 +311,53 @@ export default function Dashboard() {
                   name: "Microsoft Corp.",
                   price: "$213.10",
                   change: "+2.5%",
+                  changePercent: "+2.5%"
                 },
                 {
                   symbol: "GOOGL",
                   name: "Alphabet Inc.",
                   price: "$213.10",
                   change: "+1.1%",
+                  changePercent: "+1.1%"
                 },
                 {
                   symbol: "SPOT",
                   name: "Microsoft Corp.",
                   price: "$213.10",
                   change: "+2.5%",
+                  changePercent: "+2.5%"
                 },
                 {
                   symbol: "MSFT",
                   name: "Microsoft Corp.",
                   price: "$213.10",
                   change: "+2.5%",
+                  changePercent: "+2.5%"
                 },
                 {
                   symbol: "GOOGL",
                   name: "Alphabet Inc.",
                   price: "$213.10",
                   change: "+1.1%",
+                  changePercent: "+1.1%"
                 },
                 {
                   symbol: "SPOT",
                   name: "Microsoft Corp.",
                   price: "$213.10",
                   change: "+2.5%",
+                  changePercent: "+2.5%"
                 },
               ].map((stock, index) => (
-                <div key={index} className="flex items-center justify-between">
+                <div 
+                  key={index} 
+                  className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                  onClick={() => {
+                    setSelectedStock(stock.symbol);
+                    // API 연동 시 여기에 API 호출 로직 추가
+                    console.log(`Selected purchased stock: ${stock.symbol}`);
+                  }}
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8">
                       {stock.symbol === "MSFT" && (
@@ -355,7 +392,9 @@ export default function Dashboard() {
                   </div>
                   <div className="text-right">
                     <div className="font-bold text-base">{stock.price}</div>
-                    <div className="text-xs text-[#41c3a9]">{stock.change}</div>
+                    <div className={`text-xs ${stock.change.startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}>
+                      {stock.change}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -378,10 +417,31 @@ export default function Dashboard() {
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-3">
               <div className="flex items-center gap-2">
                 <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs">
-                  <span className="text-[10px]">S&P</span>
-                  <span className="text-[10px]">500</span>
+                  <span className="text-[10px]">{selectedStock}</span>
                 </div>
-                <h2 className="text-xl font-bold">S&P 500</h2>
+                <h2 className="text-xl font-bold">{selectedStock}</h2>
+                <button
+                  onClick={() => {
+                    const newIsHeartFilled = !isHeartFilled;
+                    setIsHeartFilled(newIsHeartFilled);
+                    
+                    if (newIsHeartFilled) {
+                      const currentStock = stocks.find(stock => stock.symbol === selectedStock);
+                      if (currentStock && !favoriteStocks.some(stock => stock.symbol === currentStock.symbol)) {
+                        setFavoriteStocks(prev => [...prev, currentStock]);
+                      }
+                    } else {
+                      setFavoriteStocks(prev => prev.filter(stock => stock.symbol !== selectedStock));
+                    }
+                  }}
+                  className="flex items-center justify-center"
+                >
+                  <Heart 
+                    className={`w-4 h-4 cursor-pointer transition-colors ${
+                      isHeartFilled ? 'text-red-500 fill-red-500' : 'text-[#1f2024]'
+                    }`} 
+                  />
+                </button>
               </div>
 
               {/* Buy/Sell and Time Period Tabs */}
@@ -405,20 +465,71 @@ export default function Dashboard() {
                 </button>
 
                 {/* Time Period Tabs */}
-                <div className="flex ml-0 md:ml-2 bg-[#f5f7f9] rounded-full">
-                  {(["월", "주", "일", "분"] as const).map((period) => (
-                    <button
-                      key={period}
-                      onClick={() => setActivePeriod(period)}
-                      className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                        activePeriod === period
-                          ? "bg-white shadow-sm"
-                          : "hover:bg-gray-100"
-                      }`}
-                    >
-                      {period}
-                    </button>
-                  ))}
+                <div className="flex ml-0 md:ml-2 bg-[#f5f7f9] rounded-full relative">
+                  {(["월", "주", "일", "분"] as const).map((period) => {
+                    if (period === "분") {
+                      return (
+                        <div key={period} className="relative">
+                          <button
+                            onClick={() => {
+                              if (activePeriod === "분") {
+                                setShowMinuteOptions((prev) => !prev);
+                              } else {
+                                setActivePeriod("분");
+                                setShowMinuteOptions(true);
+                              }
+                            }}
+                            className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
+                              activePeriod === period
+                                ? "bg-white shadow-sm"
+                                : "hover:bg-gray-100"
+                            }`}
+                          >
+                            {activePeriod === "분" ? selectedMinute : period}
+                          </button>
+                          {activePeriod === "분" && showMinuteOptions && (
+                            <div className="absolute left-1/2 -translate-x-1/2 mt-2 bg-white border rounded-xl shadow-lg z-10 w-24 flex flex-col">
+                              <button
+                                className={`py-2 px-4 text-sm hover:bg-gray-100 rounded-t-xl ${selectedMinute === "15분" ? "font-bold text-blue-600" : ""}`}
+                                onClick={() => {
+                                  setSelectedMinute("15분");
+                                  setShowMinuteOptions(false);
+                                }}
+                              >
+                                15분
+                              </button>
+                              <button
+                                className={`py-2 px-4 text-sm hover:bg-gray-100 rounded-b-xl ${selectedMinute === "1시간" ? "font-bold text-blue-600" : ""}`}
+                                onClick={() => {
+                                  setSelectedMinute("1시간");
+                                  setShowMinuteOptions(false);
+                                }}
+                              >
+                                1시간
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <button
+                          key={period}
+                          onClick={() => {
+                            setActivePeriod(period);
+                            setShowMinuteOptions(false);
+                          }}
+                          className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
+                            activePeriod === period
+                              ? "bg-white shadow-sm"
+                              : "hover:bg-gray-100"
+                          }`}
+                        >
+                          {period}
+                        </button>
+                      );
+                    }
+                  })}
                 </div>
               </div>
             </div>
@@ -426,15 +537,21 @@ export default function Dashboard() {
             {/* Price Display */}
             <div className="mb-1">
               <div className="flex items-center gap-2">
-                <span className="text-2xl md:text-3xl font-bold">4,566.48</span>
-                <span className="text-[#41c3a9] bg-[#e6f7f4] px-2 py-0.5 rounded-md text-sm">
-                  +1.66%
+                <span className="text-2xl md:text-3xl font-bold">
+                  ${stocks.find(stock => stock.symbol === selectedStock)?.price.replace('$', '') || "0.00"}
+                </span>
+                <span className={`${
+                  stocks.find(stock => stock.symbol === selectedStock)?.change.startsWith('+') 
+                    ? 'text-[#41c3a9] bg-[#e6f7f4]' 
+                    : 'text-red-500 bg-red-50'
+                } px-2 py-0.5 rounded-md text-sm`}>
+                  {stocks.find(stock => stock.symbol === selectedStock)?.change || "0.00%"}
                 </span>
               </div>
             </div>
 
             <div className="text-xs text-gray-500 mb-6">
-              Oct 25, 5:26:38PM UTC-4 · INDEXSP · Disclaimer
+              {new Date().toLocaleString()} · {selectedStock} · Disclaimer
             </div>
 
             {/* Chart Area */}
@@ -443,7 +560,7 @@ export default function Dashboard() {
                 id="chart-container"
                 className="w-full h-full flex flex-col items-center justify-center"
               >
-                <StockChart symbol="SPY" period={activePeriod} />
+                <StockChart symbol={selectedStock} period={activePeriod} />
               </div>
             </div>
           </div>
@@ -479,7 +596,7 @@ export default function Dashboard() {
                     </div>
                     <h2 className="text-xl font-extrabold">S&P 500</h2>
                   </div>
-                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 채투자하는 ETF</p>
+                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 재투자하는 ETF</p>
                   <div className="flex items-center justify-between mt-6">
                     <div className="font-bold text-base">수량</div>
                     <div className="flex items-center gap-4">
@@ -512,7 +629,7 @@ export default function Dashboard() {
                     </div>
                     <h2 className="text-xl font-extrabold">S&P 500</h2>
                   </div>
-                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 채투자하는 ETF</p>
+                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 재투자하는 ETF</p>
                   <div className="flex items-center justify-between mt-6">
                     <div className="font-bold text-base">수량</div>
                     <div className="flex items-center gap-4">
@@ -544,36 +661,48 @@ export default function Dashboard() {
                     <div className="font-bold text-base">총자산</div>
                     <div>
                       <span className="text-[#006ffd] text-xs mr-1">$</span>
-                      <span className="text-[#006ffd] text-xl font-bold">2850.75</span>
+                      <span className="text-[#006ffd] text-xl font-bold">{portfolioData.totalAssets.toFixed(2)}</span>
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="font-bold text-base">현금자산</div>
                     <div>
-                      <span className="text-[#006ffd] text-xs mr-1">$</span>
-                      <span className="text-[#006ffd] text-xl font-bold">999.75</span>
+                      <span className="text-xs mr-1">$</span>
+                      <span className="text-xl font-bold">{cashAsset.toFixed(2)}</span>
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="font-bold text-base">시드머니</div>
                     <div>
                       <span className="text-[#006ffd] text-xs mr-1">$</span>
-                      <span className="text-[#006ffd] text-xl font-bold">2850.75</span>
+                      <span className="text-[#006ffd] text-xl font-bold">{portfolioData.seedMoney.toFixed(2)}</span>
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="font-bold text-base">투자금액</div>
                     <div>
                       <span className="text-[#439a86] text-xs mr-1">$</span>
-                      <span className="text-[#439a86] text-xl font-bold">1500.50</span>
+                      <span className="text-[#439a86] text-xl font-bold">{portfolioData.investmentAmount.toFixed(2)}</span>
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="font-bold text-base">평가손익</div>
                     <div className="flex items-center">
-                      <span className="text-[#bb4430] text-xs mr-1">$</span>
-                      <span className="text-[#bb4430] text-3sl font-bold">350.60</span>
-                      <span className="text-[#bb4430] ml-2">+5.5%</span>
+                      <span
+                        className={`text-xs mr-1 ${
+                          portfolioData.profitLoss >= 0 ? "text-[#e74c3c]" : "text-[#3498db]"
+                        }`}
+                      >
+                        $
+                      </span>
+                      <span
+                        className={`text-xl font-bold ${
+                          portfolioData.profitLoss >= 0 ? "text-[#e74c3c]" : "text-[#3498db]"
+                        }`}
+                      >
+                        {portfolioData.profitLoss >= 0 ? "+" : "-"}
+                        {Math.abs(portfolioData.profitLoss).toFixed(2)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -586,17 +715,17 @@ export default function Dashboard() {
                 <StockDetails
                   symbol={selectedStock}
                   activeTab={activeRightTab}
-                  onTabChange={(tab) => {
-                    console.log('Tab change requested:', tab);
-                    setActiveRightTab(tab);
-                  }}
+                  onTabChange={setActiveRightTab}
+                  favoriteStocks={favoriteStocks}
+                  setFavoriteStocks={setFavoriteStocks}
+                  isLoggedIn={isLoggedIn}
                 />
               )}
             </div>
           )}
         </div>
       </div>
-      <MyPage />
+      <ProfileModal />
       <BuyConfirmModal 
         open={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}

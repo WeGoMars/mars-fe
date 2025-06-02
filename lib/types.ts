@@ -5,6 +5,9 @@ export interface Stock {
   change: string
   changePercent: string
   logoUrl?: string
+  volume?: string
+  marketCap?: string
+  description?: string
 }
 
 export interface StockDetails {

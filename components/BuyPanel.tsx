@@ -1,8 +1,8 @@
 import { X, Minus, Plus } from "lucide-react";
 
 interface BuyPanelProps {
-  open: boolean;
-  onClose: () => void;
+  open: boolean; // 패널 표시 여부
+  onClose: () => void; // 패널 닫기 함수
 }
 
 export default function BuyPanel({ open, onClose }: BuyPanelProps) {
@@ -33,7 +33,7 @@ export default function BuyPanel({ open, onClose }: BuyPanelProps) {
           <h2 className="text-2xl font-bold">S&P 500</h2>
         </div>
         {/* Description */}
-        <p className="text-gray-500 text-center">S&P 500에 투자하여 배당금을 채투자하는 ETF</p>
+        <p className="text-gray-500 text-center">S&P 500에 투자하여 배당금을 재투자하는 ETF</p>
         {/* Quantity Selector */}
         <div className="flex justify-between items-center mt-8">
           <div className="font-medium">수량</div>
@@ -46,7 +46,7 @@ export default function BuyPanel({ open, onClose }: BuyPanelProps) {
               <Plus className="w-4 h-4" />
             </button>
           </div>
-          <div className="text-xl font-semibold">€ 12.00</div>
+          <div className="text-xl font-semibold">$ 12.00</div>
         </div>
         {/* Purchase Button */}
         <button className="w-full py-4 bg-[#f9e0de] rounded-xl text-center font-medium mt-6">구매</button>
