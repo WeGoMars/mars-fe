@@ -7,6 +7,8 @@ import type { StockDetails as StockDetailsType, NewsItem, Stock } from '@/lib/ty
 import { Check, ChevronDown, ChevronLeft, Heart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import mockPortfolio from "@/lib/mock/mockportfolio";
+import { TrendingUp, TrendingDown } from "lucide-react"
 
 // 주식 상세 정보를 보여주는 컴포넌트
 
@@ -30,6 +32,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   const [showReasonDetail, setShowReasonDetail] = useState(false);
   const [aiSubmitted, setAiSubmitted] = useState(false);
   const [isHeartFilled, setIsHeartFilled] = useState(false);
+  const [portfolioData, setPortfolioData] = useState(mockPortfolio);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -226,32 +229,79 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               {/* Total Assets */}
               <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">총자산</span>
-                <div>
+                <div className="text-xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
                   <span className="text-[#197bbd] text-xs mr-1">$</span>
-                  <span className="text-[#197bbd] text-sm font-medium">2850.75</span>
+                  {portfolioData.totalAssets.toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </div>
+              </div>
+              {/* 시드머니 */}
+              <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
+                <span className="text-sm text-gray-500">시드머니</span>
+                <div className="text-xl font-bold group-hover:text-[#1565a0] transition-colors">
+                  <span className="text-xs mr-1">$</span>
+                  {portfolioData.seedMoney.toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </div>
               </div>
               {/* Investment Amount */}
               <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">투자금액</span>
-                <div>
-                  <span className="text-[#439a86] text-xs mr-1">$</span>
-                  <span className="text-[#439a86] text-sm font-medium">1500.50</span>
-                </div>
+                
+               <div>
+                <span className="text-[#439a86] text-xs mr-1">$</span>
+                <span className="text-xl font-bold text-[#439a86] ">
+                  {portfolioData.investmentAmount.toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
+              </div>
               </div>
               {/* Unrealized P&L */}
               <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">평가손익</span>
-                <div className="flex items-center">
-                  <span className="text-[#bb4430] text-xs mr-1">$</span>
-                  <span className="text-[#bb4430] text-sm font-medium">350.60</span>
-                  <span className="text-[#bb4430] ml-2 text-xs">+5.5%</span>
-                </div>
+                  <div
+                    className={`flex items-center text-xl font-bold transition-colors 
+                      ${portfolioData.profitLoss >= 0 
+                        ? "text-[#e74c3c] group-hover:text-[#c0392b]" 
+                        : "text-[#3498db] group-hover:text-[#2c80b4]"}
+                    `}
+                  >
+              <span className="text-xs mr-1">$</span>
+              <span>
+                {portfolioData.profitLoss >= 0 ? "+" : "-"}
+                {Math.abs(portfolioData.profitLoss).toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </span>
+            </div>
               </div>
               {/* Return Rate */}
               <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">수익률</span>
-                <span className="text-sm font-medium">+5.5%</span>
+                <span className="text-sm font-medium">
+                  <div
+                  className={`text-xl font-bold transition-colors flex items-center gap-1 
+                    ${portfolioData.returnRate >= 0 
+                      ? "text-[#e74c3c] group-hover:text-[#4caf50]" 
+                      : "text-[#3498db] group-hover:text-[#a73d2a]"}
+                  `}
+                  >
+                    {portfolioData.returnRate >= 0 ? (
+                    <TrendingUp className="h-5 w-5" />
+                  ) : (
+                    <TrendingDown className="h-5 w-5" />
+                  )}
+                  {portfolioData.returnRate >= 0 ? "+" : "-"}
+                  {Math.abs(portfolioData.returnRate).toFixed(2)}%
+                </div>
+                </span>
               </div>
             </div>
           </div>

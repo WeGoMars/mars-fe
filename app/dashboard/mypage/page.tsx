@@ -10,12 +10,11 @@ import { useEffect, useState } from "react"
 import ProfileModal from "@/components/common/profileModal"
 import mockPortfolio from "@/lib/mock/mockportfolio";
 
-// 내계좌 페이지
+
 export default function MyPage() {
  
 
   const holdings = [{ name: "테슬라", purchasePrice: 300, currentPrice: 344, Quantity: 2 , gain: 44, returnRate: 14.67 }]
-
   const router = useRouter()
   const [nickname, setNickname] = useState<string | null>(null)
   const [portfolioData, setPortfolioData] = useState(mockPortfolio);
@@ -306,7 +305,7 @@ export default function MyPage() {
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-sm font-medium text-[#8f9098]">투자금액</div>
                 </div>
-                <div className="text-2xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
+                <div className="text-2xl font-bold  group-hover:text-[#1565a0] transition-colors">
                   ${" "}
                   {portfolioData.investmentAmount.toLocaleString("en-US", {
                     minimumFractionDigits: 2,
@@ -321,11 +320,17 @@ export default function MyPage() {
             
               <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#bb4430] hover:shadow-md transition-all duration-200 cursor-pointer">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="text-sm font-medium text-[#8f9 করলো98]">평가손익</div>
+                  <div className="text-sm font-medium text-[#8f9098]">평가손익</div>
                 </div>
-                <div className="text-2xl font-bold text-[#bb4430] group-hover:text-[#a73d2a] transition-colors flex items-center gap-1">
-                  <TrendingUp className="h-5 w-5" />${" "}
-                  {portfolioData.profitLoss.toLocaleString("en-US", {
+                <div
+                  className={`text-2xl font-bold transition-colors 
+                    ${portfolioData.profitLoss >= 0 
+                      ? "text-[#e74c3c] group-hover:text-[#c0392b]" 
+                      : "text-[#3498db] group-hover:text-[#2c80b4]"}
+                  `}
+                >
+                  {portfolioData.profitLoss >= 0 ? "+" : "-"}
+                  {Math.abs(portfolioData.profitLoss).toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -343,8 +348,8 @@ export default function MyPage() {
                 <div
                   className={`text-2xl font-bold transition-colors flex items-center gap-1 
                     ${portfolioData.returnRate >= 0 
-                      ? "text-[#63c89b] group-hover:text-[#4caf50]" 
-                      : "text-[#bb4430] group-hover:text-[#a73d2a]"}
+                      ? "text-[#e74c3c] group-hover:text-[#4caf50]" 
+                      : "text-[#3498db] group-hover:text-[#a73d2a]"}
                   `}
                   >
                     {portfolioData.returnRate >= 0 ? (
@@ -411,6 +416,16 @@ export default function MyPage() {
                     })}
                   </div>
                 </div>
+                  <div className="text-center">
+                    <div className="text-xs text-[#8f9098] mb-1">현금 자산</div>
+                    <div className="text-lg font-semibold">
+                      ${" "}
+                      {(portfolioData.seedMoney - portfolioData.investmentAmount).toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </div>
+                  </div>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-[#63c89b] rounded-full"></div>
@@ -448,7 +463,7 @@ export default function MyPage() {
                         className="flex items-center gap-3 hover:text-[#197bbd] transition-colors"
                       >
                         <div className="w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold">
-                          테
+                          
                         </div>
                         <span className="font-medium text-[#1c2730]">{holding.name}</span>
                       </Link>
