@@ -65,19 +65,6 @@ export default function FinanceDashboard() {
     };
   }, []);
 
-  // 1초마다 바뀌는 차트
-  // useEffect(() => {
-  //   // 컴포넌트가 마운트된 후에만 시간을 업데이트
-  //   setCurrentTime(new Date().toLocaleString());
-    
-  //   // 1초마다 시간 업데이트
-  //   const timer = setInterval(() => {
-  //     setCurrentTime(new Date().toLocaleString());
-  //   }, 1000);
-
-  //   return () => clearInterval(timer);
-  // }, []);
-
   useEffect(() => {
     const modal = searchParams.get("modal")
 
@@ -516,7 +503,8 @@ export default function FinanceDashboard() {
               id="chart-container"
               className="w-full h-full flex flex-col items-center justify-center"
             >
-              <StockChart symbol={selectedStock} period={activePeriod} />
+              {stockChartData?.data  && <StockChart data={stockChartData.data} symbol={selectedStock} period={activePeriod} />}
+              {!stockChartData?.data && <div className="text-gray-400">차트 데이터를 불러오는 중입니다...</div>}
             </div>
           </div>
           </div>

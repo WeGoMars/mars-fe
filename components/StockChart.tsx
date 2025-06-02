@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { getStockChartData } from "@/lib/api";
-import type { ChartDataResponse } from "@/lib/types";
+import { useEffect, useRef } from "react";
+import type { StockChartData } from "@/lib/types";
 import {
   createChart,
   CandlestickSeries,
@@ -13,68 +12,15 @@ import {
 interface StockChartProps {
   symbol: string; // 종목 심볼
   period: "일" | "주" | "월" | "분"; // 차트 기간
+  data: StockChartData[];
 }
 
 // 상태 관리
-export default function StockChart({ symbol, period }: StockChartProps) {
-  const [chartData, setChartData] = useState<ChartDataResponse | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+export default function StockChart({ data, symbol, period }: StockChartProps) {
+
 
   const mainChartRef = useRef<HTMLDivElement>(null);
   const volumeChartRef = useRef<HTMLDivElement>(null);
-
-  // 캔들차트용 목 데이터(API 나오면 대체)
-  const mockData = Array.from({ length: 200 }, (_, i) => {
-    const date = new Date(2024, 0, 1); // 2024-01-01
-    date.setDate(date.getDate() + i);
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
-    return {
-      time: `2024-${month}-${day}`,
-      open: 210 + i * 2,
-      high: 215 + i * 2,
-      low: 208 + i * 2,
-      close: 212 + i * 2 + Math.floor(Math.random() * 6) - 3,
-      volume: 10 + Math.floor(Math.random() * 40),
-    };
-  });
-
-  // 차트 데이터 가져오기
-  useEffect(() => {
-    const fetchChartData = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        // 백엔드에 맞게 period 값 변환
-        let periodParam = "daily";
-        switch (period) {
-          case "월":
-            periodParam = "monthly";
-            break;
-          case "주":
-            periodParam = "weekly";
-            break;
-          case "일":
-            periodParam = "daily";
-            break;
-          case "분":
-            periodParam = "minutes";
-            break;
-        }
-
-        const data = await getStockChartData(symbol, periodParam);
-        setChartData(data);
-      } catch (err) {
-        setError("차트 데이터를 불러오는 중 오류가 발생했습니다.");
-        console.error("Failed to fetch chart data:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchChartData();
-  }, [symbol, period]);
 
   useEffect(() => {
     if (!mainChartRef.current || !volumeChartRef.current) return;
@@ -111,7 +57,15 @@ export default function StockChart({ symbol, period }: StockChartProps) {
       wickDownColor: "#4dabf7",
       borderVisible: false,
     });
-    candlestickSeries.setData(mockData);
+    candlestickSeries.setData(
+      data.map(item => ({
+        time: item.timestamp,
+        open: item.open,
+        high: item.high,
+        low: item.low,
+        close: item.close,
+      }))
+    );
 
     // 거래량 차트
     const volumeChart = createChart(volumeChartRef.current, {
@@ -142,8 +96,8 @@ export default function StockChart({ symbol, period }: StockChartProps) {
       priceFormat: { type: "volume" },
       color: "#888",
     });
-    const volumeData = mockData.map((item) => ({
-      time: item.time,
+    const volumeData = data.map((item) => ({
+      time: item.timestamp,
       value: item.volume,
       color: item.close >= item.open ? "#ff6b6b" : "#4dabf7",
     }));
@@ -185,23 +139,8 @@ export default function StockChart({ symbol, period }: StockChartProps) {
       mainChart.remove();
       volumeChart.remove();
     };
-  }, [mockData]);
+  }, [data]);
 
-  if (isLoading) {
-    return (
-      <div className="h-80 flex items-center justify-center">
-        <div className="text-gray-400">차트 데이터 로딩 중...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="h-80 flex items-center justify-center">
-        <div className="text-red-500">{error}</div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col w-full h-full">
