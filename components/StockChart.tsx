@@ -62,20 +62,13 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
     });
 
     // 데이터 변환 및 설정
-    const chartData = data.map(item => {
-      const date = new Date(item.timestamp);
-      return {
-        time: {
-          year: date.getFullYear(),
-          month: date.getMonth() + 1,
-          day: date.getDate(),
-        },
-        open: Number(item.open),
-        high: Number(item.high),
-        low: Number(item.low),
-        close: Number(item.close),
-      };
-    });
+    const chartData = data.map(item => ({
+      time: item.timestamp,
+      open: Number(item.open),
+      high: Number(item.high),
+      low: Number(item.low),
+      close: Number(item.close),
+    }));
 
     candlestickSeries.setData(chartData);
 
@@ -110,7 +103,7 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
 
     const volumeSeries = volumeChart.addSeries(HistogramSeries, {
       priceFormat: { type: "volume" },
-      color: '#888',
+      color: '#26a69a',
     });
 
     const volumeData = data.map((item) => ({
