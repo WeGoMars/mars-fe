@@ -16,6 +16,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button";
 import ProfileModal from "@/components/common/ProfileModal"
 import { Heart } from 'lucide-react';
+import mockPortfolio from "@/lib/mock/mockportfolio";
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -118,6 +119,9 @@ export default function Dashboard() {
 
   fetchUser()
 }, [])
+  const portfolioData = mockPortfolio;
+
+  const cashAsset = portfolioData.seedMoney - portfolioData.investmentAmount;
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -654,36 +658,48 @@ export default function Dashboard() {
                     <div className="font-bold text-base">총자산</div>
                     <div>
                       <span className="text-[#006ffd] text-xs mr-1">$</span>
-                      <span className="text-[#006ffd] text-xl font-bold">2850.75</span>
+                      <span className="text-[#006ffd] text-xl font-bold">{portfolioData.totalAssets.toFixed(2)}</span>
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="font-bold text-base">현금자산</div>
                     <div>
-                      <span className="text-[#006ffd] text-xs mr-1">$</span>
-                      <span className="text-[#006ffd] text-xl font-bold">999.75</span>
+                      <span className="text-xs mr-1">$</span>
+                      <span className="text-xl font-bold">{cashAsset.toFixed(2)}</span>
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="font-bold text-base">시드머니</div>
                     <div>
                       <span className="text-[#006ffd] text-xs mr-1">$</span>
-                      <span className="text-[#006ffd] text-xl font-bold">2850.75</span>
+                      <span className="text-[#006ffd] text-xl font-bold">{portfolioData.seedMoney.toFixed(2)}</span>
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="font-bold text-base">투자금액</div>
                     <div>
                       <span className="text-[#439a86] text-xs mr-1">$</span>
-                      <span className="text-[#439a86] text-xl font-bold">1500.50</span>
+                      <span className="text-[#439a86] text-xl font-bold">{portfolioData.investmentAmount.toFixed(2)}</span>
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="font-bold text-base">평가손익</div>
                     <div className="flex items-center">
-                      <span className="text-[#bb4430] text-xs mr-1">$</span>
-                      <span className="text-[#bb4430] text-3sl font-bold">350.60</span>
-                      <span className="text-[#bb4430] ml-2">+5.5%</span>
+                      <span
+                        className={`text-xs mr-1 ${
+                          portfolioData.profitLoss >= 0 ? "text-[#e74c3c]" : "text-[#3498db]"
+                        }`}
+                      >
+                        $
+                      </span>
+                      <span
+                        className={`text-xl font-bold ${
+                          portfolioData.profitLoss >= 0 ? "text-[#e74c3c]" : "text-[#3498db]"
+                        }`}
+                      >
+                        {portfolioData.profitLoss >= 0 ? "+" : "-"}
+                        {Math.abs(portfolioData.profitLoss).toFixed(2)}
+                      </span>
                     </div>
                   </div>
                 </div>

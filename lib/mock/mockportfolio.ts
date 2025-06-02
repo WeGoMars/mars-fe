@@ -1,17 +1,3 @@
-// const investmentAmount = 1500.5;
-// const profitLoss = 350.6;
-// const seedMoney = 2000; 
-
-// const mockPortfolio = {
-//   totalAssets: investmentAmount+profitLoss,   //총자산
-//   investmentAmount: 1500.5,   //투자금액
-//   profitLoss: 350.6,     //평가손익
-//   returnRate: parseFloat(((profitLoss / investmentAmount) * 100).toFixed(2)), //수익률
-//   seedMoney,    //시드머니
-// };
-
-// export default mockPortfolio;
-// lib/mock/mockportfolio.ts
 
 export type PortfolioData = {
   totalAssets: number;
@@ -40,6 +26,6 @@ export function createMockPortfolio(
 }
 
 // 기본 mock 데이터
-const mockPortfolio = createMockPortfolio(1000,-120.5, 2000);
+const mockPortfolio = createMockPortfolio(1000,120.5, 1550);
 
 export default mockPortfolio;
