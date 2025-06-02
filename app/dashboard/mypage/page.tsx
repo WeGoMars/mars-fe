@@ -12,7 +12,7 @@ import mockPortfolio from "@/lib/mock/mockportfolio";
 
 
 export default function MyPage() {
- 
+
 
   const holdings = [{ name: "테슬라", purchasePrice: 300, currentPrice: 344, Quantity: 2 , gain: 44, returnRate: 14.67 }]
   const router = useRouter()
@@ -26,7 +26,7 @@ export default function MyPage() {
 
 
   useEffect(() => {
-   const fetchUser = async () => {
+    const fetchUser = async () => {
     try {
       const res = await fetch("http://localhost:4000/users/whoami", {
         credentials: "include", // 꼭 포함!
@@ -75,7 +75,7 @@ export default function MyPage() {
             <AvatarFallback>M</AvatarFallback>
             </Avatar>
             <Button variant="default" size="sm" className="bg-[#5f80f8] hover:bg-[#4c6ef5] text-white"
-             onClick={() => {
+            onClick={() => {
                 localStorage.removeItem("logInUser")
                 alert("로그아웃 되었습니다.")
                 router.push("/")
