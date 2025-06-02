@@ -1,4 +1,4 @@
-import type { Stock, StockDetails, ChartDataResponse, NewsItem } from "./types"
+import type { Stock, StockDetails, ChartDataResponse, NewsItem, StockChartResponse } from "./types"
 
 // 종목 목록 가져오기
 export async function getStockList(): Promise<Stock[]> {
@@ -86,4 +86,28 @@ export async function getStockNews(symbol?: string): Promise<NewsItem[]> {
       imageUrl: "/placeholder.svg?height=56&width=56&query=financial news",
     },
   ]
+}
+
+// 주식 차트 데이터 가져오기 (RTK)
+export async function getStockData(params: {
+  symbol: string
+  interval: '1h' | '1day' | '1week' | '1month'
+  limit: number
+}): Promise<StockChartResponse> {
+  const { symbol, interval, limit } = params
+  const response = await fetch(
+    `api/stocks/chart?symbol=${symbol}&interval=${interval}&limit=${limit}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch stock data')
+  }
+
+  return response.json()
 }
