@@ -19,7 +19,7 @@ interface LoginModalProps {
 export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  
+
   const router = useRouter()
 
   // const handleSubmit = (e: React.FormEvent) => {
@@ -49,7 +49,7 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://13.220.145.152:4000/users/login", {
+      const response = await fetch("api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -62,7 +62,7 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
       }
 
       const data = await response.json();
- 
+
       setEmail("");
       setPassword("");
       onOpenChange(false);
@@ -78,13 +78,13 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
       router.back()
     }, 100)
   }
-  
+
   if (!open) return null
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[#eff5ff] via-[#e9f0ff] to-[#dfe8ff] backdrop-blur-sm p-4"
-      
+
     >
       {/* 마크 로고 */}
       <Link
@@ -144,7 +144,7 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
                 비밀번호 찾기
               </span>
 
-      
+
             </div>
             <Input
               id="password"
