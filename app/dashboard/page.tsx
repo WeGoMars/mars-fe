@@ -238,7 +238,15 @@ export default function Dashboard() {
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
               {favoriteStocks.map((stock, index) => (
-                <div key={index} className="flex items-center justify-between">
+                <div 
+                  key={index} 
+                  className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                  onClick={() => {
+                    setSelectedStock(stock.symbol);
+                    // API 연동 시 여기에 API 호출 로직 추가
+                    console.log(`Selected favorite stock: ${stock.symbol}`);
+                  }}
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8">
                       {stock.symbol === "MSFT" && (
@@ -273,7 +281,9 @@ export default function Dashboard() {
                   </div>
                   <div className="text-right">
                     <div className="font-bold text-base">{stock.price}</div>
-                    <div className="text-xs text-[#41c3a9]">{stock.change}</div>
+                    <div className={`text-xs ${stock.change.startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}>
+                      {stock.change}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -293,39 +303,53 @@ export default function Dashboard() {
                   name: "Microsoft Corp.",
                   price: "$213.10",
                   change: "+2.5%",
+                  changePercent: "+2.5%"
                 },
                 {
                   symbol: "GOOGL",
                   name: "Alphabet Inc.",
                   price: "$213.10",
                   change: "+1.1%",
+                  changePercent: "+1.1%"
                 },
                 {
                   symbol: "SPOT",
                   name: "Microsoft Corp.",
                   price: "$213.10",
                   change: "+2.5%",
+                  changePercent: "+2.5%"
                 },
                 {
                   symbol: "MSFT",
                   name: "Microsoft Corp.",
                   price: "$213.10",
                   change: "+2.5%",
+                  changePercent: "+2.5%"
                 },
                 {
                   symbol: "GOOGL",
                   name: "Alphabet Inc.",
                   price: "$213.10",
                   change: "+1.1%",
+                  changePercent: "+1.1%"
                 },
                 {
                   symbol: "SPOT",
                   name: "Microsoft Corp.",
                   price: "$213.10",
                   change: "+2.5%",
+                  changePercent: "+2.5%"
                 },
               ].map((stock, index) => (
-                <div key={index} className="flex items-center justify-between">
+                <div 
+                  key={index} 
+                  className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                  onClick={() => {
+                    setSelectedStock(stock.symbol);
+                    // API 연동 시 여기에 API 호출 로직 추가
+                    console.log(`Selected purchased stock: ${stock.symbol}`);
+                  }}
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8">
                       {stock.symbol === "MSFT" && (
@@ -360,7 +384,9 @@ export default function Dashboard() {
                   </div>
                   <div className="text-right">
                     <div className="font-bold text-base">{stock.price}</div>
-                    <div className="text-xs text-[#41c3a9]">{stock.change}</div>
+                    <div className={`text-xs ${stock.change.startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}>
+                      {stock.change}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -527,7 +553,7 @@ export default function Dashboard() {
                 id="chart-container"
                 className="w-full h-full flex flex-col items-center justify-center"
               >
-                <StockChart symbol="SPY" period={activePeriod} />
+                <StockChart symbol={selectedStock} period={activePeriod} />
               </div>
             </div>
           </div>
