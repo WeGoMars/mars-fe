@@ -70,8 +70,11 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
       borderVisible: false,
     });
 
+    // 데이터 오름차순 정렬
+    const sortedData = [...data].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+
     // 데이터 변환 및 설정
-    const chartData = data.map(item => ({
+    const chartData = sortedData.map(item => ({
       time: item.timestamp,
       open: Number(item.open),
       high: Number(item.high),
@@ -115,7 +118,7 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
       color: '#26a69a',
     });
 
-    const volumeData = data.map((item) => ({
+    const volumeData = sortedData.map((item) => ({
       time: item.timestamp,
       value: Number(item.volume),
       color: Number(item.close) >= Number(item.open) ? '#26a69a' : '#ef5350',
@@ -168,7 +171,7 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
       mainChart.remove();
       volumeChart.remove();
     };
-  }, []);
+  }, [data]);
 
   if (!data || data.length === 0) {
     return (
