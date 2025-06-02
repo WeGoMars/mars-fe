@@ -502,7 +502,7 @@ export default function FinanceDashboard() {
               id="chart-container"
               className="w-full h-full flex flex-col items-center justify-center"
             >
-              {stockChartData && !isEmpty(stockChartData.data) ? (
+              {stockChartData && stockChartData.data && stockChartData.data.length > 0 ? (
                 <StockChart 
                   data={stockChartData.data} 
                   symbol={selectedStock} 

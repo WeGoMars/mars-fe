@@ -6,6 +6,7 @@ import {
   createChart,
   CandlestickSeries,
   HistogramSeries,
+  Time,
 } from "lightweight-charts";
 
 // 주식 차트를 표시하는 컴포넌트
@@ -17,14 +18,11 @@ interface StockChartProps {
 
 // 상태 관리
 export default function StockChart({ data, symbol, period }: StockChartProps) {
-  
-
-
   const mainChartRef = useRef<HTMLDivElement>(null);
   const volumeChartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!mainChartRef.current || !volumeChartRef.current) return;
+    if (!mainChartRef.current || !volumeChartRef.current || !data || data.length === 0) return;
 
     // 메인 차트(캔들)
     const mainChart = createChart(mainChartRef.current, {
@@ -49,8 +47,11 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
       },
       timeScale: {
         borderColor: "#eee",
+        timeVisible: true,
+        secondsVisible: false,
       },
     });
+
     const candlestickSeries = mainChart.addSeries(CandlestickSeries, {
       upColor: "#ff6b6b",
       downColor: "#4dabf7",
@@ -58,16 +59,17 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
       wickDownColor: "#4dabf7",
       borderVisible: false,
     });
-    if (!data) return;
-    candlestickSeries.setData(
-      data.map(item => ({
-        time: item.timestamp,
-        open: item.open,
-        high: item.high,
-        low: item.low,
-        close: item.close,
-      }))
-    );
+
+    // 데이터 변환 및 설정
+    const chartData = data.map(item => ({
+      time: new Date(item.timestamp).getTime() / 1000 as Time,
+      open: Number(item.open),
+      high: Number(item.high),
+      low: Number(item.low),
+      close: Number(item.close),
+    }));
+
+    candlestickSeries.setData(chartData);
 
     // 거래량 차트
     const volumeChart = createChart(volumeChartRef.current, {
@@ -92,29 +94,40 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
       },
       timeScale: {
         borderColor: "#eee",
+        timeVisible: true,
+        secondsVisible: false,
       },
     });
+
     const volumeSeries = volumeChart.addSeries(HistogramSeries, {
       priceFormat: { type: "volume" },
       color: "#888",
     });
-    const volumeData = data?.map((item) => ({
-      time: item.timestamp,
-      value: item.volume,
-      color: item.close >= item.open ? "#ff6b6b" : "#4dabf7",
+
+    const volumeData = data.map((item) => ({
+      time: new Date(item.timestamp).getTime() / 1000 as Time,
+      value: Number(item.volume),
+      color: Number(item.close) >= Number(item.open) ? "#ff6b6b" : "#4dabf7",
     }));
+
     volumeSeries.setData(volumeData);
+
+    // 차트 내용 맞추기
+    mainChart.timeScale().fitContent();
+    volumeChart.timeScale().fitContent();
 
     // === x축(시간축) 동기화 ===
     const mainTimeScale = mainChart.timeScale();
     const volumeTimeScale = volumeChart.timeScale();
     let isSyncing = false;
+
     mainTimeScale.subscribeVisibleLogicalRangeChange((range) => {
       if (isSyncing || !range) return;
       isSyncing = true;
       volumeTimeScale.setVisibleLogicalRange(range);
       isSyncing = false;
     });
+
     volumeTimeScale.subscribeVisibleLogicalRangeChange((range) => {
       if (isSyncing || !range) return;
       isSyncing = true;
@@ -124,15 +137,18 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
 
     // 리사이즈 이벤트
     const handleResize = () => {
+      if (!mainChartRef.current || !volumeChartRef.current) return;
+      
       mainChart.applyOptions({
-        width: mainChartRef.current?.clientWidth || 0,
+        width: mainChartRef.current.clientWidth,
         height: 400,
       });
       volumeChart.applyOptions({
-        width: volumeChartRef.current?.clientWidth || 0,
+        width: volumeChartRef.current.clientWidth,
         height: 120,
       });
     };
+
     window.addEventListener("resize", handleResize);
 
     // cleanup
@@ -143,51 +159,29 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
     };
   }, [data]);
 
-  if (!data) return <div>차트 데이터가 없습니다.</div>;
+  if (!data || data.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-gray-400">차트 데이터를 불러오는 중입니다...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col w-full h-full">
-      <span
-        style={{
-          marginLeft: 8,
-          marginBottom: 2,
-          fontWeight: 600,
-          color: "#333",
-        }}
-      >
-        차트
+      <span className="ml-2 mb-2 font-semibold text-gray-700">
+        {symbol} 차트
       </span>
-      {/* 중앙 차트 거래량 안보일 때 차트 높이 조절 코드 */}
       <div
         ref={mainChartRef}
-        style={{
-          width: "100%",
-          height: "100%",
-          position: "relative",
-          zIndex: 1,
-          margin: 0,
-          marginTop: 0,
-          marginBottom: 0,
-          padding: 0,
-        }}
+        className="w-full h-[400px] relative z-1 m-0 p-0"
       />
-      <span
-        style={{ marginLeft: 8, marginTop: 2, fontWeight: 600, color: "#333" }}
-      >
+      <span className="ml-2 mt-2 font-semibold text-gray-700">
         거래량
       </span>
       <div
         ref={volumeChartRef}
-        style={{
-          width: "100%",
-          height: "120px",
-          position: "relative",
-          zIndex: 1,
-          margin: 0,
-          marginTop: 0,
-          marginBottom: 0,
-          padding: 0,
-        }}
+        className="w-full h-[120px] relative z-1 m-0 p-0"
       />
     </div>
   );
