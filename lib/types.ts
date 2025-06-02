@@ -41,3 +41,27 @@ export interface NewsItem {
   time: string
   imageUrl: string
 }
+
+export interface StockChartData {
+  // 시간스탬프
+  timestamp: string
+  // 시가
+  open: number
+  // 고가
+  high: number 
+  // 저가
+  low: number
+  // 종가
+  close: number
+  // 거래량
+  volume: number
+}
+
+export interface StockChartResponse {
+  // 성공 여부
+  success: boolean
+  // 메시지
+  message: string
+  // 데이터
+  data: StockChartData[]
+}

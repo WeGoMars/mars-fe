@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, X, Menu, ChevronLeft, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import StockChart from "@/components/StockChart";
@@ -12,15 +12,34 @@ import SellConfirmModal from "@/components/SellConfirmModal";
 import SearchBar from "@/components/SearchBar";
 import StockDetails from "@/components/StockDetails";
 import type { Stock } from "@/lib/types";
+import { getStockData } from "@/lib/api";
+import useSWR from 'swr';
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function FinanceDashboard() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<string>("");
+  const [selectedStock, setSelectedStock] = useState<string>("AAPL");
+
+  const { data: stockChartData, error } = useSWR(
+    selectedStock ? ['stockChart', selectedStock] : null,
+    () => getStockData({
+      symbol: selectedStock,
+      interval: '1day',
+      limit: 30
+    })
+  );
+
+  if (stockChartData) {
+    console.log('Stock Chart Data:', stockChartData);
+  }
+
+  if (error) {
+    console.error('Failed to fetch stock data:', error);
+  }
 
   useEffect(() => {
     const checkLoginStatus = () => {
@@ -46,17 +65,18 @@ export default function FinanceDashboard() {
     };
   }, []);
 
-  useEffect(() => {
-    // 컴포넌트가 마운트된 후에만 시간을 업데이트
-    setCurrentTime(new Date().toLocaleString());
+  // 1초마다 바뀌는 차트
+  // useEffect(() => {
+  //   // 컴포넌트가 마운트된 후에만 시간을 업데이트
+  //   setCurrentTime(new Date().toLocaleString());
     
-    // 1초마다 시간 업데이트
-    const timer = setInterval(() => {
-      setCurrentTime(new Date().toLocaleString());
-    }, 1000);
+  //   // 1초마다 시간 업데이트
+  //   const timer = setInterval(() => {
+  //     setCurrentTime(new Date().toLocaleString());
+  //   }, 1000);
 
-    return () => clearInterval(timer);
-  }, []);
+  //   return () => clearInterval(timer);
+  // }, []);
 
   useEffect(() => {
     const modal = searchParams.get("modal")
@@ -81,7 +101,6 @@ export default function FinanceDashboard() {
   setRegisterOpen(false)
   }
 
-  const [selectedStock, setSelectedStock] = useState<string>("SPY");
   const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
   const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "분">(
     "일"
@@ -136,8 +155,6 @@ export default function FinanceDashboard() {
       description: "Spotify is a Swedish audio streaming and media services provider."
     }
   ]);
-
-  console.log('searchQuery:', searchQuery)
 
   const handleStockSelect = (symbol: string) => {
     setSelectedStock(symbol);
