@@ -592,7 +592,7 @@ export default function FinanceDashboard() {
                         <Plus className="w-4 h-4" />
                       </button>
                     </div>
-                    <div className="text-lg font-extrabold">€ 12.00</div>
+                    <div className="text-lg font-extrabold">$ 12.00</div>
                   </div>
                   <button 
                     className="w-full py-4 bg-[#b3c6e6] rounded-2xl text-center font-bold text-base text-black mt-6"
