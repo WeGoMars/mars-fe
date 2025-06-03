@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image";
 
-interface RegistrationModalProps {
+interface SignupModalProps {
   isOpen: boolean
   onClose: () => void
 }
@@ -20,7 +20,7 @@ type FormErrors = {
   
 }
 
-export default function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
+export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
   const router = useRouter()
   const [formData, setFormData] = useState({
     email: "",

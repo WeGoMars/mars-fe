@@ -22,28 +22,7 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
   
   const router = useRouter()
 
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault()
-  //   console.log("Login attempt with:", email, password)
-
-  //   const users = JSON.parse(localStorage.getItem("users") || "[]")
-
-  //   const matchUser = users.find(
-  //     (user: any) => user.email === email && user.password === password
-  //   )
-
-  //   if (matchUser) {
-  //     alert(`환영합니다, ${matchUser.nickname}님!`)
-  //     localStorage.setItem("logInUser", JSON.stringify(matchUser))
-  //     setEmail("")
-  //     setPassword("")
-  //     onOpenChange(false)
-  //     router.push("/dashboard")
-  //   } else {
-  //     alert("이메일 또는 비밀번호가 올바르지 않습니다.")
-  //   }
-  // }
-
+  
   // 백엔드 로그인 테스트 !!
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,7 +89,7 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
         <X size={20} />
       </button>
 
-      {/* 실제 로그인 모달 */}
+      {/*  로그인 모달 */}
       <div
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-md rounded-lg bg-white dark:bg-gray-800 p-8 shadow-lg"

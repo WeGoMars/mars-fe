@@ -5,7 +5,7 @@ import { Search, X, Menu, ChevronLeft, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import StockChart from "@/components/StockChart";
 import LoginModal from "@/components/common/LoginModal";
-import RegistrationModal from "@/components/common/RegistrationModal"
+import RegistrationModal from "@/components/common/SignupModal"
 import Link from "next/link";
 import BuyConfirmModal from "@/components/BuyConfirmModal";
 import SellConfirmModal from "@/components/SellConfirmModal";
