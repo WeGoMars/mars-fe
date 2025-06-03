@@ -31,11 +31,11 @@ export default function HeaderSection({ nickname, onAvatarClick }: HeaderSection
 
         <div className="flex items-center gap-4">
           <span className="text-sm text-[#747480]">
-            {nickname ? `${nickname}님 환영합니다` : "mars 모투에 오신걸 환영합니다"}
+            {nickname}님 환영합니다
           </span>
           <Avatar className="w-8 h-8 cursor-pointer hover:opacity-80" onClick={onAvatarClick}>
             <AvatarImage src="/placeholder.svg?height=32&width=32&query=user+avatar" />
-            <AvatarFallback>M</AvatarFallback>
+               
           </Avatar>
           <Button
             variant="default"

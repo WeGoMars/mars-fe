@@ -20,7 +20,7 @@ export default function MyPage() {
   //   { name: "테슬라", purchasePrice: 300, currentPrice: 344, Quantity: 2, gain: 44, returnRate: 14.67 },
   // ]
 
-  const handleAvatarClick = () => {
+  const AvatarClick = () => {
     const url = new URL(window.location.href)
     url.searchParams.set("modal", "edit")
     router.push(url.toString())
@@ -49,7 +49,7 @@ export default function MyPage() {
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
-      <Header nickname={nickname} onAvatarClick={handleAvatarClick} />
+      <Header nickname={nickname} onAvatarClick={AvatarClick} />
       <div className="flex flex-col lg:flex-row p-4 gap-4">
         <div className="lg:flex lg:w-64 flex-col">
           <InterestStock />

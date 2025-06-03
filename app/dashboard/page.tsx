@@ -83,7 +83,7 @@ export default function Dashboard() {
     setSelectedStock(symbol);
   };
 
-  const handleAvatarClick = () => {
+  const AvatarClick = () => {
     const url = new URL(window.location.href);
     url.searchParams.set("modal", "edit");
     router.push(url.toString());
@@ -119,7 +119,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-[#f5f7f9]">
       <Header
         nickname={nickname}
-        onAvatarClick={handleAvatarClick}
+        onAvatarClick={AvatarClick}
         onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
       />
 
