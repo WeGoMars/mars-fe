@@ -2,7 +2,7 @@ name: Deploy Frontend on Main Push
 
 on:
   push:
-    branches: [main]
+    branches: [develop]
 
 jobs:
   build-and-deploy:
@@ -56,4 +56,6 @@ jobs:
           script: |
             cd ~/infra
             docker compose down
+            docker builder prune -af
+            docker image prune -af
             docker compose up -d --build

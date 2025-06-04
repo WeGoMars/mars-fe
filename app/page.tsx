@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, X, Menu, ChevronLeft, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import StockChart from "@/components/StockChart";
@@ -12,15 +12,42 @@ import SellConfirmModal from "@/components/SellConfirmModal";
 import SearchBar from "@/components/SearchBar";
 import StockDetails from "@/components/StockDetails";
 import type { Stock } from "@/lib/types";
+import { getStockData } from "@/lib/api";
+import useSWR from 'swr';
+
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import isEmpty from 'lodash/isEmpty';
 
 export default function FinanceDashboard() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<string>("");
+  const [selectedStock, setSelectedStock] = useState<string>("AAPL");
+  const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
+  const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "분">("일");
+  const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
+  const [activeRightTab, setActiveRightTab] = useState<"종목정보 상세" | "내 계좌" | "AI 추천">("종목정보 상세");
+
+  const { data: stockChartData, error } = useSWR(
+    selectedStock ? ['stockChart', selectedStock, activePeriod, selectedMinute] : null,
+    () => getStockData({
+      symbol: selectedStock,
+      interval: activePeriod === "분" ? (selectedMinute === "15분" ? "1h" : "1h") : 
+               activePeriod === "일" ? "1day" :
+               activePeriod === "주" ? "1week" : "1month",
+      limit: activePeriod === "분" ? 100 : 30
+    })
+  );
+
+  if (stockChartData) {
+    console.log('Stock Chart Data:', stockChartData);
+  }
+
+  if (error) {
+    console.error('Failed to fetch stock data:', error);
+  }
 
   useEffect(() => {
     const checkLoginStatus = () => {
@@ -47,18 +74,6 @@ export default function FinanceDashboard() {
   }, []);
 
   useEffect(() => {
-    // 컴포넌트가 마운트된 후에만 시간을 업데이트
-    setCurrentTime(new Date().toLocaleString());
-    
-    // 1초마다 시간 업데이트
-    const timer = setInterval(() => {
-      setCurrentTime(new Date().toLocaleString());
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
     const modal = searchParams.get("modal")
 
     if (modal === "register") {
@@ -81,15 +96,6 @@ export default function FinanceDashboard() {
   setRegisterOpen(false)
   }
 
-  const [selectedStock, setSelectedStock] = useState<string>("SPY");
-  const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
-  const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "분">(
-    "일"
-  );
-  const [activeRightTab, setActiveRightTab] = useState<
-    "종목정보 상세" | "내 계좌" | "AI 추천"
-  >("종목정보 상세");
-  const [searchQuery, setSearchQuery] = useState<string>("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
@@ -102,7 +108,6 @@ export default function FinanceDashboard() {
   const [favoriteStocks, setFavoriteStocks] = useState<Stock[]>([]);
 
   const [showMinuteOptions, setShowMinuteOptions] = useState(false);
-  const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
 
   const [stockData, setStockData] = useState<Stock[]>([
     {
@@ -136,8 +141,6 @@ export default function FinanceDashboard() {
       description: "Spotify is a Swedish audio streaming and media services provider."
     }
   ]);
-
-  console.log('searchQuery:', searchQuery)
 
   const handleStockSelect = (symbol: string) => {
     setSelectedStock(symbol);
@@ -499,7 +502,15 @@ export default function FinanceDashboard() {
               id="chart-container"
               className="w-full h-full flex flex-col items-center justify-center"
             >
-              <StockChart symbol={selectedStock} period={activePeriod} />
+              {stockChartData && stockChartData.data && stockChartData.data.length > 0 ? (
+                <StockChart 
+                  data={stockChartData.data} 
+                  symbol={selectedStock} 
+                  period={activePeriod} 
+                />
+              ) : (
+                <div className="text-gray-400">차트 데이터를 불러오는 중입니다...</div>
+              )}
             </div>
           </div>
           </div>
