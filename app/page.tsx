@@ -278,7 +278,7 @@ export default function FinanceDashboard() {
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 flex items-center justify-center bg-[#00000091] rounded-[5px] p-[2px]">
+                  <div className="w-8 h-8">
                     <Image
                       src={`/logos/${stock.symbol}.png`}
                       alt={stock.symbol}
@@ -326,7 +326,7 @@ export default function FinanceDashboard() {
                   }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 flex items-center justify-center bg-[#00000091] rounded-[5px] p-[2px]">
+                    <div className="w-8 h-8">
                       <Image
                         src={`/logos/${stock.symbol}.png`}
                         alt={stock.symbol}
