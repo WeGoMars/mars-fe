@@ -111,3 +111,5 @@ export async function getStockData(params: {
 
   return response.json()
 }
+export const BASE_URL = "/api/";
+

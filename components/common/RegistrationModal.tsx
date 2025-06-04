@@ -7,6 +7,7 @@ import { X } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image";
+import {  BASE_URL } from "@/lib/api"; 
 
 interface RegistrationModalProps {
   isOpen: boolean
@@ -84,7 +85,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
       return
 
     try {
-      const res = await fetch("http://localhost:4000/users/",{
+      const res = await fetch(`${BASE_URL}/users`,{
         method: "POST",
         headers: {
           "Content-Type": "application/json",

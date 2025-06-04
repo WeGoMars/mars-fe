@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import ProfileModal from "@/components/common/ProfileModal"
 import mockPortfolio from "@/lib/mock/mockportfolio";
+import { BASE_URL} from "@/lib/api";
 
 
 export default function MyPage() {
@@ -28,7 +29,7 @@ export default function MyPage() {
   useEffect(() => {
     const fetchUser = async () => {
     try {
-      const res = await fetch("http://13.220.145.152:4000/users/whoami", {
+      const res = await fetch(`${BASE_URL}/users/whoami`, {
         credentials: "include", // 꼭 포함!
       })
 

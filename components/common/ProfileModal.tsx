@@ -5,6 +5,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { X, User, ArrowRight, Camera } from "lucide-react"
+import { BASE_URL} from "@/lib/api";
 
 export default function ProfileModal() {
   const router = useRouter()
@@ -29,7 +30,7 @@ export default function ProfileModal() {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch("http://localhost:4000/users", {
+      const response = await fetch(`${BASE_URL}/users`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

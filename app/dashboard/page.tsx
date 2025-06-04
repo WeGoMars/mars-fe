@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import ProfileModal from "@/components/common/ProfileModal"
 import { Heart } from 'lucide-react';
 import mockPortfolio from "@/lib/mock/mockportfolio";
+import { BASE_URL} from "@/lib/api";
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -96,7 +97,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localh:4000/users/whoami", {
+        const res = await fetch(`${BASE_URL}/users/whoami`, {
           credentials: "include",
         })
 

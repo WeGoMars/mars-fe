@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { X } from "lucide-react"
+import { BASE_URL} from "@/lib/api";
 
 interface LoginModalProps {
   open: boolean
@@ -22,34 +23,12 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
 
   const router = useRouter()
 
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault()
-  //   console.log("Login attempt with:", email, password)
-
-  //   const users = JSON.parse(localStorage.getItem("users") || "[]")
-
-  //   const matchUser = users.find(
-  //     (user: any) => user.email === email && user.password === password
-  //   )
-
-  //   if (matchUser) {
-  //     alert(`환영합니다, ${matchUser.nickname}님!`)
-  //     localStorage.setItem("logInUser", JSON.stringify(matchUser))
-  //     setEmail("")
-  //     setPassword("")
-  //     onOpenChange(false)
-  //     router.push("/dashboard")
-  //   } else {
-  //     alert("이메일 또는 비밀번호가 올바르지 않습니다.")
-  //   }
-  // }
-
   // 백엔드 로그인 테스트 !!
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:4000/users/login", {
+      const response = await fetch(`${BASE_URL}/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

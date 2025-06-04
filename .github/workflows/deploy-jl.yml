@@ -1,0 +1,59 @@
+name: Deploy Frontend on Main Push
+
+on:
+  push:
+    branches: [JL]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9.1.2
+
+      - name: Install dependencies and build
+        run: |
+          pnpm install
+          pnpm build
+
+      - name: Prepare build directory
+        run: |
+          mkdir build
+          cp -r .next build/
+          cp -r public build/
+          cp package.json pnpm-lock.yaml build/
+
+      - name: Clean server build directory
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ${{ secrets.AWS_USER }}
+          key: ${{ secrets.AWS_CI_KEY }}
+          script: |
+            rm -rf ~/infra/frontend/build/*
+
+      - name: Copy build artifacts to server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ${{ secrets.AWS_USER }}
+          key: ${{ secrets.AWS_CI_KEY }}
+          source: "build/*"
+          target: "~/infra/frontend"
+
+      - name: Restart Docker Compose
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ${{ secrets.AWS_USER }}
+          key: ${{ secrets.AWS_CI_KEY }}
+          script: |
+            cd ~/infra
+            docker compose down
+            docker compose up -d --build
