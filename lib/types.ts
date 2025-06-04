@@ -78,7 +78,7 @@ export interface GetStockListRequest{
   // 검색어
   query: string
   // 검색 결과 개수
-  limit: number
+  limit: string
 }
 
 export interface GetStockListResponse{

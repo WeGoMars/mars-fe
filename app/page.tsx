@@ -44,7 +44,7 @@ export default function FinanceDashboard() {
     ['stockList'],
     () => getStockList({
       query: 'AA',
-      limit: 10
+      limit: "10"
     })
   );
 
