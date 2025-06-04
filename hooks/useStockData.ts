@@ -1,3 +1,4 @@
+// 주식 데이터를 관리하는 로직을 캡슐화한 파일(주식 목록 관리)
 "use client"
 
 import { useState, useEffect } from "react"

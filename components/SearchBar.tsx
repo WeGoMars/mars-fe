@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { Search, X } from "lucide-react"
 import type { Stock } from "@/lib/types"
 
+// 주식 종목 검색바 컴포넌트
 interface SearchBarProps {
   onSelectStock: (symbol: string) => void // 종목 선택 시 호출되는 콜백
 }

@@ -1,5 +1,6 @@
 import { X, Minus, Plus } from "lucide-react";
 
+// 매수, 매도 슬라이드 컴포넌트
 interface BuyPanelProps {
   open: boolean; // 패널 표시 여부
   onClose: () => void; // 패널 닫기 함수

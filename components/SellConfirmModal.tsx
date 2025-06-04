@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 
+// 매수/매도 상세 모달 컴포넌트
 interface SellConfirmModalProps {
   open: boolean; // 모달 표시 여부
   onClose: () => void; // 모달 닫기 함수
