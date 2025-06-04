@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import type { Stock } from "@/lib/types";
 
+// 주식 클릭 시 목록 보여주는 컴포넌트
 interface StockListProps {
   stocks: Stock[];
   onSelectStock: (symbol: string) => void;

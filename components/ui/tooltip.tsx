@@ -5,6 +5,7 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip"
 
 import { cn } from "@/lib/utils"
 
+// radix-ui 라이브러리에서 제공하는 툴팁 컴포넌트(줌 인/아웃)
 const TooltipProvider = TooltipPrimitive.Provider
 
 const Tooltip = TooltipPrimitive.Root

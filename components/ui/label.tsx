@@ -1,3 +1,4 @@
+// LoginModal.tsx에 사용되는 Label 컴포넌트
 "use client"
 
 import * as React from "react"
