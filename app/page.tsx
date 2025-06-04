@@ -279,16 +279,8 @@ export default function FinanceDashboard() {
               >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8">
-                    {stock.symbol === "MSFT" && (
-                      <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
-                        <div className="bg-[#f25022]"></div>
-                        <div className="bg-[#7fba00]"></div>
-                        <div className="bg-[#00a4ef]"></div>
-                        <div className="bg-[#ffb900]"></div>
-                      </div>
-                    )}
                     <Image
-                      src={`/logos/${stock.symbol.toUpperCase()}.png`}
+                      src={`/logos/${stock.symbol}.png`}
                       alt={stock.symbol}
                       width={32}
                       height={32}
@@ -335,30 +327,12 @@ export default function FinanceDashboard() {
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8">
-                      {stock.symbol === "MSFT" && (
-                        <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
-                          <div className="bg-[#f25022]"></div>
-                          <div className="bg-[#7fba00]"></div>
-                          <div className="bg-[#00a4ef]"></div>
-                          <div className="bg-[#ffb900]"></div>
-                        </div>
-                      )}
-                      {stock.symbol === "GOOGL" && (
-                        <Image
-                          src="/google-logo.png"
-                          alt="Google"
-                          width={32}
-                          height={32}
-                        />
-                      )}
-                      {stock.symbol === "SPOT" && (
-                        <Image
-                          src="/spotify-logo.png"
-                          alt="Spotify"
-                          width={32}
-                          height={32}
-                        />
-                      )}
+                      <Image
+                        src={`/logos/${stock.symbol}.png`}
+                        alt={stock.symbol}
+                        width={32}
+                        height={32}
+                      />
                     </div>
                     <div>
                       <div className="font-bold text-base">{stock.symbol}</div>
