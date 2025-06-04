@@ -44,7 +44,7 @@ export default function FinanceDashboard() {
     ['stockList'],
     () => getStockList({
       query: 'AA',
-      limit: "10"
+      limit: 10
     })
   );
 
@@ -333,7 +333,7 @@ export default function FinanceDashboard() {
           {/* 핫 종목 리스트 목 데이터 */}
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
-              {stockData.map((stock, index) => (
+              {stockListData?.data.map((stock, index) => (
                 <div 
                   key={index} 
                   className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
@@ -376,9 +376,9 @@ export default function FinanceDashboard() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-base">${stock.price}</div>
-                    <div className={`text-xs ${stock.change.startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}>
-                      {stock.change}
+                    <div className="font-bold text-base">${stock.currentPrice}</div>
+                    <div className={`text-xs ${stock.priceDelta.toString().startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}>
+                      {Number(stock.priceDelta) > 0 ? '+' : ''}{Number(stock.priceDelta).toFixed(1)}%
                     </div>
                   </div>
                 </div>

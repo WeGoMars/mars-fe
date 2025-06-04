@@ -7,7 +7,6 @@ export interface ApiResponse<T> {
   data: T[]
 }
 
-
 export interface Stock {
   symbol: string
   name: string
@@ -78,7 +77,7 @@ export interface GetStockListRequest{
   // 검색어
   query: string
   // 검색 결과 개수
-  limit: string
+  limit: number
 }
 
 export interface GetStockListResponse{
