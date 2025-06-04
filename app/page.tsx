@@ -12,12 +12,11 @@ import SellConfirmModal from "@/components/SellConfirmModal";
 import SearchBar from "@/components/SearchBar";
 import StockDetails from "@/components/StockDetails";
 import type { Stock } from "@/lib/types";
-import { getStockData } from "@/lib/api";
+import { getStockChartData, getStockList } from "@/lib/api";
 import useSWR from 'swr';
 
 
 import { useSearchParams, useRouter } from "next/navigation";
-import isEmpty from 'lodash/isEmpty';
 
 export default function FinanceDashboard() {
   const searchParams = useSearchParams()
@@ -32,7 +31,7 @@ export default function FinanceDashboard() {
 
   const { data: stockChartData, error } = useSWR(
     selectedStock ? ['stockChart', selectedStock, activePeriod, selectedMinute] : null,
-    () => getStockData({
+    () => getStockChartData({
       symbol: selectedStock,
       interval: activePeriod === "분" ? (selectedMinute === "15분" ? "1h" : "1h") : 
                activePeriod === "일" ? "1day" :
@@ -41,8 +40,24 @@ export default function FinanceDashboard() {
     })
   );
 
+  const { data: stockListData, error: stockListError } = useSWR(
+    ['stockList'],
+    () => getStockList({
+      query: '',
+      limit: 10
+    })
+  );
+
   if (stockChartData) {
     console.log('Stock Chart Data:', stockChartData);
+  }
+
+  if (stockListData) {
+    console.log('Stock List Data:', stockListData);
+  }
+
+  if (stockListError) {
+    console.error('Failed to fetch stock list:', stockListError);
   }
 
   if (error) {

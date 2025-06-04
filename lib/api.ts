@@ -1,17 +1,4 @@
-import type { Stock, StockDetails, ChartDataResponse, NewsItem, StockChartResponse } from "./types"
-
-// 종목 목록 가져오기
-export async function getStockList(): Promise<Stock[]> {
-  // 실제 API 호출 대신 더미 데이터 반환
-  return [
-    { symbol: "MSFT", name: "Microsoft Corp.", price: "$213.10", change: "+2.5%", changePercent: "2.5%" },
-    { symbol: "GOOGL", name: "Alphabet Inc.", price: "$213.10", change: "+1.1%", changePercent: "1.1%" },
-    { symbol: "SPOT", name: "Spotify Technology", price: "$213.10", change: "+2.5%", changePercent: "2.5%" },
-    { symbol: "AAPL", name: "Apple Inc.", price: "$213.10", change: "+2.5%", changePercent: "2.5%" },
-    { symbol: "AMZN", name: "Amazon.com Inc.", price: "$213.10", change: "+1.1%", changePercent: "1.1%" },
-    { symbol: "NFLX", name: "Netflix Inc.", price: "$213.10", change: "+2.5%", changePercent: "2.5%" },
-  ]
-}
+import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest } from "./types"
 
 // 종목 상세 정보 가져오기
 export async function getStockDetails(symbol: string): Promise<StockDetails> {
@@ -29,35 +16,6 @@ export async function getStockDetails(symbol: string): Promise<StockDetails> {
     shares: "230,800,000주",
     description: "S&P 500에 투자하여 배당금을 제공하는 ETF",
   }
-}
-
-// 종목 차트 데이터 가져오기
-export async function getStockChartData(symbol: string, period: string): Promise<ChartDataResponse> {
-  // 실제 API 호출 대신 더미 데이터 반환
-  const prices = Array.from({ length: 30 }, (_, i) => ({
-    date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
-    value: 100 + Math.random() * 50,
-  }))
-
-  const volumes = Array.from({ length: 30 }, (_, i) => ({
-    date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
-    value: 1000000 + Math.random() * 5000000,
-  }))
-
-  return { prices, volumes }
-}
-
-// 종목 검색하기
-export async function searchStocks(query: string): Promise<Stock[]> {
-  // 실제 API 호출 대신 더미 데이터 반환
-  if (!query) return []
-
-  const allStocks = await getStockList()
-  return allStocks.filter(
-    (stock) =>
-      stock.symbol.toLowerCase().includes(query.toLowerCase()) ||
-      stock.name.toLowerCase().includes(query.toLowerCase()),
-  )
 }
 
 // 뉴스 가져오기
@@ -88,12 +46,8 @@ export async function getStockNews(symbol?: string): Promise<NewsItem[]> {
   ]
 }
 
-// 주식 차트 데이터 가져오기 (RTK)
-export async function getStockData(params: {
-  symbol: string
-  interval: '1h' | '1day' | '1week' | '1month'
-  limit: number
-}): Promise<StockChartResponse> {
+// 차트 데이터 조회
+export async function getStockChartData(params: GetStockChartDataRequest): Promise<ApiResponse<GetStockChartDataResponse>> {
   const { symbol, interval, limit } = params
   const response = await fetch(
     `api/stocks/chart?symbol=${symbol}&interval=${interval}&limit=${limit}`,
@@ -107,6 +61,26 @@ export async function getStockData(params: {
 
   if (!response.ok) {
     throw new Error('Failed to fetch stock data')
+  }
+
+  return response.json()
+}
+
+// 주식 종목 검색
+export async function getStockList(params: GetStockListRequest): Promise<ApiResponse<GetStockListResponse>>{
+  const { query, limit } = params
+  const response = await fetch(
+    `api/stocks/search?query=${query}&limit=${limit}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch stock list')
   }
 
   return response.json()
