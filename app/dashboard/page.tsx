@@ -449,8 +449,8 @@ export default function Dashboard() {
                 <button
                   onClick={() => setShowPanel('buy')}
                   className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activeTab === "매수"
-                      ? "bg-[#fce7e7]"
-                      : "bg-white hover:bg-gray-50"
+                    ? "bg-[#fce7e7]"
+                    : "bg-white hover:bg-gray-50"
                     }`}
                 >
                   매수
@@ -478,8 +478,8 @@ export default function Dashboard() {
                               }
                             }}
                             className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activePeriod === period
-                                ? "bg-white shadow-sm"
-                                : "hover:bg-gray-100"
+                              ? "bg-white shadow-sm"
+                              : "hover:bg-gray-100"
                               }`}
                           >
                             {activePeriod === "분" ? selectedMinute : period}
@@ -517,8 +517,8 @@ export default function Dashboard() {
                             setShowMinuteOptions(false);
                           }}
                           className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activePeriod === period
-                              ? "bg-white shadow-sm"
-                              : "hover:bg-gray-100"
+                            ? "bg-white shadow-sm"
+                            : "hover:bg-gray-100"
                             }`}
                         >
                           {period}
@@ -537,8 +537,8 @@ export default function Dashboard() {
                   ${stocks.find(stock => stock.symbol === selectedStock)?.price.replace('$', '') || "0.00"}
                 </span>
                 <span className={`${stocks.find(stock => stock.symbol === selectedStock)?.change.startsWith('+')
-                    ? 'text-[#41c3a9] bg-[#e6f7f4]'
-                    : 'text-red-500 bg-red-50'
+                  ? 'text-[#41c3a9] bg-[#e6f7f4]'
+                  : 'text-red-500 bg-red-50'
                   } px-2 py-0.5 rounded-md text-sm`}>
                   {stocks.find(stock => stock.symbol === selectedStock)?.change || "0.00%"}
                 </span>

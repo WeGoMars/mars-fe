@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Search, X, Menu, ChevronLeft, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import StockChart from "@/components/StockChart";
@@ -12,42 +12,15 @@ import SellConfirmModal from "@/components/SellConfirmModal";
 import SearchBar from "@/components/SearchBar";
 import StockDetails from "@/components/StockDetails";
 import type { Stock } from "@/lib/types";
-import { getStockData } from "@/lib/api";
-import useSWR from 'swr';
-
 
 import { useSearchParams, useRouter } from "next/navigation";
-import isEmpty from 'lodash/isEmpty';
+import { useEffect } from "react";
 
 export default function FinanceDashboard() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<string>("");
-  const [selectedStock, setSelectedStock] = useState<string>("AAPL");
-  const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
-  const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "분">("일");
-  const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
-  const [activeRightTab, setActiveRightTab] = useState<"종목정보 상세" | "내 계좌" | "AI 추천">("종목정보 상세");
-
-  const { data: stockChartData, error } = useSWR(
-    selectedStock ? ['stockChart', selectedStock, activePeriod, selectedMinute] : null,
-    () => getStockData({
-      symbol: selectedStock,
-      interval: activePeriod === "분" ? (selectedMinute === "15분" ? "1h" : "1h") : 
-               activePeriod === "일" ? "1day" :
-               activePeriod === "주" ? "1week" : "1month",
-      limit: activePeriod === "분" ? 100 : 30
-    })
-  );
-
-  if (stockChartData) {
-    console.log('Stock Chart Data:', stockChartData);
-  }
-
-  if (error) {
-    console.error('Failed to fetch stock data:', error);
-  }
 
   useEffect(() => {
     const checkLoginStatus = () => {
@@ -74,12 +47,24 @@ export default function FinanceDashboard() {
   }, []);
 
   useEffect(() => {
+    // 컴포넌트가 마운트된 후에만 시간을 업데이트
+    setCurrentTime(new Date().toLocaleString());
+
+    // 1초마다 시간 업데이트
+    const timer = setInterval(() => {
+      setCurrentTime(new Date().toLocaleString());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
     const modal = searchParams.get("modal")
 
     if (modal === "register") {
       setLoginOpen(false)
       setRegisterOpen(true)
-    } else if (modal ==="login") {
+    } else if (modal === "login") {
       setRegisterOpen(false)
       setLoginOpen(true)
     } else {
@@ -88,14 +73,23 @@ export default function FinanceDashboard() {
     }
   }, [searchParams])
   const clearModalQuery = () => {
-  const url = new URL(window.location.href)
-  url.searchParams.delete("modal")
-  router.replace(url.pathname + url.search, { scroll: false })
+    const url = new URL(window.location.href)
+    url.searchParams.delete("modal")
+    router.replace(url.pathname + url.search, { scroll: false })
 
-  setLoginOpen(false)
-  setRegisterOpen(false)
+    setLoginOpen(false)
+    setRegisterOpen(false)
   }
 
+  const [selectedStock, setSelectedStock] = useState<string>("SPY");
+  const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
+  const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "분">(
+    "일"
+  );
+  const [activeRightTab, setActiveRightTab] = useState<
+    "종목정보 상세" | "내 계좌" | "AI 추천"
+  >("종목정보 상세");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
@@ -108,6 +102,7 @@ export default function FinanceDashboard() {
   const [favoriteStocks, setFavoriteStocks] = useState<Stock[]>([]);
 
   const [showMinuteOptions, setShowMinuteOptions] = useState(false);
+  const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
 
   const [stockData, setStockData] = useState<Stock[]>([
     {
@@ -142,6 +137,8 @@ export default function FinanceDashboard() {
     }
   ]);
 
+  console.log('searchQuery:', searchQuery)
+
   const handleStockSelect = (symbol: string) => {
     setSelectedStock(symbol);
   };
@@ -158,13 +155,13 @@ export default function FinanceDashboard() {
             <Menu className="w-6 h-6 text-gray-700" />
           </button>
           <Link href="/">
-          <Image
-            src="/marslogo.png"
-            alt="Mars 로고"
-            width={30}
-            height={30}
-            className="rounded-full cursor-pointer"
-          />
+            <Image
+              src="/marslogo.png"
+              alt="Mars 로고"
+              width={30}
+              height={30}
+              className="rounded-full cursor-pointer"
+            />
           </Link>
           <span className="text-lg font-medium">Mars</span>
         </div>
@@ -178,7 +175,7 @@ export default function FinanceDashboard() {
               url.searchParams.set("modal", "register")
               router.push(url.toString())
             }}
-          className="border border-[#006ffd] text-[#006ffd] px-4 py-2 rounded-md hover:bg-[#f0f7ff] transition-colors">
+            className="border border-[#006ffd] text-[#006ffd] px-4 py-2 rounded-md hover:bg-[#f0f7ff] transition-colors">
             회원가입
           </button>
           <button
@@ -188,7 +185,7 @@ export default function FinanceDashboard() {
               router.push(url.toString())
             }}
             className="bg-[#006ffd] text-white px-4 py-2 rounded-md hover:bg-[#0057cc] transition-colors"
-            >
+          >
             로그인
           </button>
           <LoginModal
@@ -253,8 +250,8 @@ export default function FinanceDashboard() {
 
           <div className="space-y-6">
             {stockData.map((stock, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                 onClick={() => {
                   setSelectedStock(stock.symbol);
@@ -319,8 +316,8 @@ export default function FinanceDashboard() {
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
               {stockData.map((stock, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                   onClick={() => {
                     setSelectedStock(stock.symbol);
@@ -396,11 +393,10 @@ export default function FinanceDashboard() {
                 {/* Buy/Sell Tabs */}
                 <button
                   onClick={() => setShowPanel('buy')}
-                  className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                    activeTab === "매수"
+                  className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activeTab === "매수"
                       ? "bg-[#fce7e7]"
                       : "bg-white hover:bg-gray-50"
-                  }`}
+                    }`}
                 >
                   매수
                 </button>
@@ -426,11 +422,10 @@ export default function FinanceDashboard() {
                                 setShowMinuteOptions(true);
                               }
                             }}
-                            className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                              activePeriod === period
+                            className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activePeriod === period
                                 ? "bg-white shadow-sm"
                                 : "hover:bg-gray-100"
-                            }`}
+                              }`}
                           >
                             {activePeriod === "분" ? selectedMinute : period}
                           </button>
@@ -466,11 +461,10 @@ export default function FinanceDashboard() {
                             setActivePeriod(period);
                             setShowMinuteOptions(false);
                           }}
-                          className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                            activePeriod === period
+                          className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activePeriod === period
                               ? "bg-white shadow-sm"
                               : "hover:bg-gray-100"
-                          }`}
+                            }`}
                         >
                           {period}
                         </button>
@@ -496,23 +490,15 @@ export default function FinanceDashboard() {
             <div className="text-xs text-gray-500 mb-6">
               {currentTime} · {selectedStock} · Disclaimer
             </div>
-             {/* Empty Chart Area (for user to add their own chart) */}
-          <div className="h-[740px] flex flex-col items-center justify-center">
-            <div
-              id="chart-container"
-              className="w-full h-full flex flex-col items-center justify-center"
-            >
-              {stockChartData && stockChartData.data && stockChartData.data.length > 0 ? (
-                <StockChart 
-                  data={stockChartData.data} 
-                  symbol={selectedStock} 
-                  period={activePeriod} 
-                />
-              ) : (
-                <div className="text-gray-400">차트 데이터를 불러오는 중입니다...</div>
-              )}
+            {/* Empty Chart Area (for user to add their own chart) */}
+            <div className="h-[740px] flex flex-col items-center justify-center">
+              <div
+                id="chart-container"
+                className="w-full h-full flex flex-col items-center justify-center"
+              >
+                <StockChart symbol={selectedStock} period={activePeriod} />
+              </div>
             </div>
-          </div>
           </div>
         </div>
 
@@ -561,7 +547,7 @@ export default function FinanceDashboard() {
                     </div>
                     <div className="text-lg font-extrabold">€ 12.00</div>
                   </div>
-                  <button 
+                  <button
                     className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
                     onClick={() => setShowConfirmModal(true)}
                   >
@@ -594,7 +580,7 @@ export default function FinanceDashboard() {
                     </div>
                     <div className="text-lg font-extrabold">€ 12.00</div>
                   </div>
-                  <button 
+                  <button
                     className="w-full py-4 bg-[#b3c6e6] rounded-2xl text-center font-bold text-base text-black mt-6"
                     onClick={() => setShowSellConfirmModal(true)}
                   >
@@ -669,7 +655,7 @@ export default function FinanceDashboard() {
       </div>
 
       {/* BuyConfirmModal과 SellConfirmModal 추가 */}
-      <BuyConfirmModal 
+      <BuyConfirmModal
         open={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
         onConfirm={() => {
@@ -678,7 +664,7 @@ export default function FinanceDashboard() {
           setShowPanel(false);
         }}
       />
-      <SellConfirmModal 
+      <SellConfirmModal
         open={showSellConfirmModal}
         onClose={() => setShowSellConfirmModal(false)}
         onConfirm={() => {
