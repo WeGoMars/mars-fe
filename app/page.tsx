@@ -287,22 +287,12 @@ export default function FinanceDashboard() {
                         <div className="bg-[#ffb900]"></div>
                       </div>
                     )}
-                    {stock.symbol === "GOOGL" && (
-                      <Image
-                        src="/google-logo.png"
-                        alt="Google"
-                        width={32}
-                        height={32}
-                      />
-                    )}
-                    {stock.symbol === "SPOT" && (
-                      <Image
-                        src="/spotify-logo.png"
-                        alt="Spotify"
-                        width={32}
-                        height={32}
-                      />
-                    )}
+                    <Image
+                      src={`/logos/${stock.symbol.toUpperCase()}.png`}
+                      alt={stock.symbol}
+                      width={32}
+                      height={32}
+                    />
                   </div>
                   <div>
                     <div className="font-bold text-base">{stock.symbol}</div>
