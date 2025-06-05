@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import ProfileModal from "@/components/common/ProfileModal"
 import mockPortfolio from "@/lib/mock/mockportfolio";
-import { BASE_URL} from "@/lib/api";
+import { useGetProfileQuery} from "@/lib/api";
 
 
 export default function MyPage() {
@@ -25,30 +25,18 @@ export default function MyPage() {
   router.push(url.toString())
   }
 
-
-  useEffect(() => {
-    const fetchUser = async () => {
-    try {
-      const res = await fetch(`${BASE_URL}/users/whoami`, {
-        credentials: "include", // 꼭 포함!
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        setNickname(data.nick)
-      } else {
-        // 로그인 안 되어 있으면 메인 페이지로 이동
-        window.location.href = "/"
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
+    const { data, isError } = useGetProfileQuery();
+    
+    useEffect(() => {
+      if (data) {
+        setNickname(data.nickname);
+        setIsLoggedIn(true);
+      } else if (isError) {
+        setIsLoggedIn(false);
+        window.location.href = "/";
       }
-    } catch (err) { 
-      console.error("유저 정보 불러오기 실패:", err)
-      window.location.href = "/"
-    }
-  }
-
-  fetchUser()
-}, [])
-  
+  }, [data, isError]);
   
   return (
     <div className="min-h-screen bg-[#f5f7f9]">

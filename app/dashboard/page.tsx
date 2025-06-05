@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import ProfileModal from "@/components/common/ProfileModal"
 import { Heart } from 'lucide-react';
 import mockPortfolio from "@/lib/mock/mockportfolio";
-import { BASE_URL} from "@/lib/api";
+import { useGetProfileQuery} from "@/lib/api";
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -94,30 +94,17 @@ export default function Dashboard() {
     url.searchParams.set("modal", "edit")
     router.push(url.toString())
   }
+  const { data, isError } = useGetProfileQuery();
+  
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch(`${BASE_URL}/users/whoami`, {
-          credentials: "include",
-        })
-
-        if (res.ok) {
-          const data = await res.json()
-          setNickname(data.nick)
-          setIsLoggedIn(true)
-        } else {
-          setIsLoggedIn(false)
-          window.location.href = "/"
-        }
-      } catch (err) {
-        console.error("유저 정보 불러오기 실패:", err)
-        setIsLoggedIn(false)
-        window.location.href = "/"
-      }
+    if (data) {
+      setNickname(data.nickname);
+      setIsLoggedIn(true);
+    } else if (isError) {
+      setIsLoggedIn(false);
+      window.location.href = "/";
     }
-
-    fetchUser()
-  }, [])
+}, [data, isError]);
   const portfolioData = mockPortfolio;
 
   const cashAsset = portfolioData.seedMoney - portfolioData.investmentAmount;

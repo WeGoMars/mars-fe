@@ -7,7 +7,7 @@ import { X } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image";
-import {  BASE_URL } from "@/lib/api"; 
+import { useSignUpMutation } from "@/lib/api";
 
 interface RegistrationModalProps {
   isOpen: boolean
@@ -75,7 +75,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
-
+  const [signUpMutation] = useSignUpMutation(); // ✅ 훅으로부터 mutation 함수 가져오기
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -85,37 +85,16 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
       return
 
     try {
-      const res = await fetch(`${BASE_URL}/users`,{
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          nick : formData.nickname,
-        
-        }),
-        credentials: "include",
-      }
-
-      )
-      const data = await res.json()
-      console.log("서버 응답:", data)
-
-      if (res.ok) {
-        alert("회원가입 완료.")
-        setFormData({email: "" , password: "", nickname: ""})
-        onClose()
-        window.location.href = "/"
-      }else{
-        alert(`회원가입 실패: ${data.message}`)
-      }
-    } catch (error){
-      console.error("회원가입 중 에러:", error)
-      alert("서버에 연결할 수 없습니다.")
-    }
+    const response = await signUpMutation(formData).unwrap(); // ✅ 이렇게 호출해야 됨
+    console.log("회원가입 성공:", response);
+    // ✅ 예: router.push("/login") 등 추가 가능
+    onClose();
+  } catch (err) {
+    console.error("회원가입 실패:", err);
   }
+};
+   
+  
 
   // Prevent clicks inside the modal from closing it
   const handleModalClick = (e: React.MouseEvent) => {
