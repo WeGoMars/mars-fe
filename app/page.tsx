@@ -12,12 +12,11 @@ import SellConfirmModal from "@/components/SellConfirmModal";
 import SearchBar from "@/components/SearchBar";
 import StockDetails from "@/components/StockDetails";
 import type { Stock } from "@/lib/types";
-import { getStockData } from "@/lib/api";
+import { getStockChartData, getStockList } from "@/lib/api";
 import useSWR from 'swr';
 
 
 import { useSearchParams, useRouter } from "next/navigation";
-import isEmpty from 'lodash/isEmpty';
 
 export default function FinanceDashboard() {
   const searchParams = useSearchParams()
@@ -32,17 +31,37 @@ export default function FinanceDashboard() {
 
   const { data: stockChartData, error } = useSWR(
     selectedStock ? ['stockChart', selectedStock, activePeriod, selectedMinute] : null,
-    () => getStockData({
+    () => getStockChartData({
       symbol: selectedStock,
-      interval: activePeriod === "분" ? (selectedMinute === "15분" ? "1h" : "1h") : 
-               activePeriod === "일" ? "1day" :
-               activePeriod === "주" ? "1week" : "1month",
+      interval: activePeriod === "분" 
+        ? (selectedMinute === "15분" ? "1h" : "1h") 
+        : activePeriod === "일" 
+          ? "1day" 
+          : activePeriod === "주" 
+            ? "1week" 
+            : "1month",
       limit: activePeriod === "분" ? 100 : 30
+    })
+  );
+
+  const { data: stockListData, error: stockListError } = useSWR(
+    ['stockList'],
+    () => getStockList({
+      query: 'A',
+      limit: 10
     })
   );
 
   if (stockChartData) {
     console.log('Stock Chart Data:', stockChartData);
+  }
+
+  if (stockListData) {
+    console.log('Stock List Data:', stockListData);
+  }
+
+  if (stockListError) {
+    console.error('Failed to fetch stock list:', stockListError);
   }
 
   if (error) {
@@ -264,30 +283,12 @@ export default function FinanceDashboard() {
               >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8">
-                    {stock.symbol === "MSFT" && (
-                      <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
-                        <div className="bg-[#f25022]"></div>
-                        <div className="bg-[#7fba00]"></div>
-                        <div className="bg-[#00a4ef]"></div>
-                        <div className="bg-[#ffb900]"></div>
-                      </div>
-                    )}
-                    {stock.symbol === "GOOGL" && (
-                      <Image
-                        src="/google-logo.png"
-                        alt="Google"
-                        width={32}
-                        height={32}
-                      />
-                    )}
-                    {stock.symbol === "SPOT" && (
-                      <Image
-                        src="/spotify-logo.png"
-                        alt="Spotify"
-                        width={32}
-                        height={32}
-                      />
-                    )}
+                    <Image
+                      src={`/logos/${stock.symbol}.png`}
+                      alt={stock.symbol}
+                      width={32}
+                      height={32}
+                    />
                   </div>
                   <div>
                     <div className="font-bold text-base">{stock.symbol}</div>
@@ -318,7 +319,7 @@ export default function FinanceDashboard() {
           {/* 핫 종목 리스트 목 데이터 */}
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
-              {stockData.map((stock, index) => (
+              {stockListData?.data.map((stock, index) => (
                 <div 
                   key={index} 
                   className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
@@ -330,30 +331,12 @@ export default function FinanceDashboard() {
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8">
-                      {stock.symbol === "MSFT" && (
-                        <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
-                          <div className="bg-[#f25022]"></div>
-                          <div className="bg-[#7fba00]"></div>
-                          <div className="bg-[#00a4ef]"></div>
-                          <div className="bg-[#ffb900]"></div>
-                        </div>
-                      )}
-                      {stock.symbol === "GOOGL" && (
-                        <Image
-                          src="/google-logo.png"
-                          alt="Google"
-                          width={32}
-                          height={32}
-                        />
-                      )}
-                      {stock.symbol === "SPOT" && (
-                        <Image
-                          src="/spotify-logo.png"
-                          alt="Spotify"
-                          width={32}
-                          height={32}
-                        />
-                      )}
+                      <Image
+                        src={`/logos/${stock.symbol}.png`}
+                        alt={stock.symbol}
+                        width={32}
+                        height={32}
+                      />
                     </div>
                     <div>
                       <div className="font-bold text-base">{stock.symbol}</div>
@@ -361,9 +344,9 @@ export default function FinanceDashboard() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-base">${stock.price}</div>
-                    <div className={`text-xs ${stock.change.startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}>
-                      {stock.change}
+                    <div className="font-bold text-base">${stock.currentPrice}</div>
+                    <div className={`text-xs ${stock.priceDelta.toString().startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}>
+                      {Number(stock.priceDelta) > 0 ? '+' : ''}{Number(stock.priceDelta).toFixed(1)}%
                     </div>
                   </div>
                 </div>
