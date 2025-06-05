@@ -102,7 +102,7 @@ export interface SignUpRequest
 }
 
 export interface SignUpResponse{
-  success: string;
+  success: boolean;
   message: string;
   data: {
     id: number;
@@ -117,7 +117,7 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-   success: string;
+   success: boolean;
    message: string;
 }
 export interface UserProfile {
