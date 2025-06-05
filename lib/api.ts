@@ -88,8 +88,8 @@ export async function getStockList(params: GetStockListRequest): Promise<ApiResp
   return response.json()
 }
 
-export const signUp = createApi({
-  reducerPath: "signUp",
+export const userApi = createApi({
+  reducerPath: "userApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/api", credentials: "include" }),
   endpoints: (builder) => ({
     signUp: builder.mutation<SignUpResponse, SignUpRequest>({
@@ -99,15 +99,6 @@ export const signUp = createApi({
         body: params,
       }),
     }),
-  }),
-});
-
-export const { useSignUpMutation } = signUp;
-
-export const logIn = createApi({
-  reducerPath: "logIn",
-  baseQuery: fetchBaseQuery({ baseUrl: "/api", credentials: "include" }),
-  endpoints: (builder) => ({
     logIn: builder.mutation<LoginResponse, LoginRequest>({
       query: (params) => ({
         url: "/users/login",
@@ -115,31 +106,13 @@ export const logIn = createApi({
         body: params,
       }),
     }),
-  }),
-})
-
-export const { useLogInMutation } = logIn;
-
-export const porfileEdit = createApi({
-  reducerPath: "profileEdit",
-  baseQuery: fetchBaseQuery({ baseUrl: "/api", credentials: "include" }),
-  endpoints: (builder) => ({
-    editProfile: builder.mutation<void, { nickname: string, profileImageUrl?: string }>({
+    editProfile: builder.mutation<void, { nickname: string; profileImageUrl?: string }>({
       query: (params) => ({
         url: "/users",
         method: "PATCH",
         body: params,
       }),
     }),
-  }),
-})
-
-export const { useEditProfileMutation } = porfileEdit;
-
-export const userApi = createApi({
-  reducerPath: "userApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "/api", credentials: "include" }),
-  endpoints: (builder) => ({
     getProfile: builder.query<LoginResponse, void>({
       query: () => ({
         url: "/users/whoami",
@@ -148,4 +121,9 @@ export const userApi = createApi({
     }),
   }),
 });
-export const { useGetProfileQuery } = userApi;
+export const {
+  useSignUpMutation,
+  useLogInMutation,
+  useEditProfileMutation,
+  useGetProfileQuery,
+} = userApi;
