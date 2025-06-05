@@ -114,10 +114,13 @@ export const userApi = createApi({
       }),
     }),
     editProfile: builder.mutation<void, { nickname: string; profileImageUrl?: string }>({
-      query: (params) => ({
+      query: ({nickname, profileImageUrl}) => ({
         url: "/users",
         method: "PATCH",
-        body: params,
+        body: { 
+          nick: nickname,
+          ...(profileImageUrl && { profileImageUrl }),
+        },
       }),
     }),
     getProfile: builder.query<UserProfile, void>({
