@@ -9,8 +9,8 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import ProfileModal from "@/components/common/ProfileModal"
 import mockPortfolio from "@/lib/mock/mockportfolio";
-import { useGetProfileQuery} from "@/lib/api";
 
+import ProfileHandler from "@/components/common/ProfileHandler";
 
 export default function MyPage() {
 
@@ -26,19 +26,11 @@ export default function MyPage() {
   }
 
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
-    const { data, isError } = useGetProfileQuery();
     
-    useEffect(() => {
-      if (data) {
-        setNickname(data.nickname);
-        setIsLoggedIn(true);
-      } else if (isError) {
-        setIsLoggedIn(false);
-        window.location.href = "/";
-      }
-  }, [data, isError]);
+   
   
   return (
+    
     <div className="min-h-screen bg-[#f5f7f9]">
       <header className="bg-white border-b">
         <div className="flex items-center justify-between p-4">
@@ -59,10 +51,10 @@ export default function MyPage() {
             <span className="text-sm text-[#747480]">
               {nickname ? `${nickname}님 환영합니다` : "mars 모투에 오신걸 환영합니다"}
             </span>
-            <Avatar className="w-8 h-8 cursor-pointer hover:opacity-80" onClick={handleAvatarClick}>
-            <AvatarImage src="/placeholder.svg?height=32&width=32&query=user+avatar" />
-            <AvatarFallback>M</AvatarFallback>
-            </Avatar>
+            <ProfileHandler
+                onNicknameUpdate={setNickname}
+                onLoginStatusUpdate={setIsLoggedIn}
+              />
             <Button variant="default" size="sm" className="bg-[#5f80f8] hover:bg-[#4c6ef5] text-white"
             onClick={() => {
                 localStorage.removeItem("logInUser")

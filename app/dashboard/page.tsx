@@ -12,12 +12,13 @@ import SellConfirmModal from "@/components/SellConfirmModal";
 import type { Stock } from "@/lib/types";
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+
 import { Button } from "@/components/ui/button";
 import ProfileModal from "@/components/common/ProfileModal"
 import { Heart } from 'lucide-react';
 import mockPortfolio from "@/lib/mock/mockportfolio";
-import { useGetProfileQuery} from "@/lib/api";
+
+import ProfileHandler from "@/components/common/ProfileHandler"
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -89,25 +90,11 @@ export default function Dashboard() {
     setSelectedStock(symbol);
   };
 
-  const handleAvatarClick = () => {
-    const url = new URL(window.location.href)
-    url.searchParams.set("modal", "edit")
-    router.push(url.toString())
-  }
-  const { data, isError } = useGetProfileQuery();
-  
-  useEffect(() => {
-    if (data) {
-      setNickname(data.nickname);
-      setIsLoggedIn(true);
-    } else if (isError) {
-      setIsLoggedIn(false);
-      window.location.href = "/";
-    }
-}, [data, isError]);
+ 
   const portfolioData = mockPortfolio;
 
   const cashAsset = portfolioData.seedMoney - portfolioData.investmentAmount;
+ 
 
   // 관심 종목 상태가 변경될 때마다 하트 상태 업데이트
   useEffect(() => {
@@ -144,11 +131,10 @@ export default function Dashboard() {
             <span>{nickname ? `${nickname}님 환영합니다` : "mars 모투에 오신걸 환영합니다"}</span>
           </Link>
 
-          <Avatar className="w-8 h-8 cursor-pointer hover:opacity-80" onClick={handleAvatarClick}>
-            <AvatarImage src="/placeholder.svg?height=32&width=32&query=user+avatar" />
-            <AvatarFallback>M</AvatarFallback>
-          </Avatar>
-
+          <ProfileHandler
+            onNicknameUpdate={setNickname}
+            onLoginStatusUpdate={setIsLoggedIn}
+          />
           <Link
             href="dashboard/mypage"
             className="flex items-center gap-2 text-sm text-gray-600 hover:opacity-80 transition-opacity"
