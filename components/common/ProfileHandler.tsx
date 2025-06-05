@@ -14,7 +14,9 @@ export default function ProfileHandler({
   onLoginStatusUpdate,
 }: ProfileHandlerProps) {
   const router = useRouter();
-  const { data, isError } = useGetProfileQuery();
+  const { data, isError } = useGetProfileQuery(undefined, {
+  skip: typeof window === "undefined", // 서버사이드일 때는 호출하지 않음
+});
 
   useEffect(() => {
     if (data) {
