@@ -47,7 +47,7 @@ export default function FinanceDashboard() {
   const { data: stockListData, error: stockListError } = useSWR(
     ['stockList'],
     () => getStockList({
-      query: 'AA',
+      query: 'A',
       limit: 10
     })
   );
