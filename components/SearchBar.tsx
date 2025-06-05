@@ -107,7 +107,7 @@ export default function SearchBar({ onSelectStock }: SearchBarProps) {
             </div>
 
             {/* Search Items List */}
-            <div className="p-4 space-y-4">
+            <div className="p-4 space-y-4 max-h-[300px] overflow-y-auto">
               {isLoading ? (
                 <div className="text-center text-gray-400 text-sm py-8">검색 중...</div>
               ) : (searchQuery ? searchResults : recentSearches).length === 0 ? (
