@@ -33,9 +33,13 @@ export default function FinanceDashboard() {
     selectedStock ? ['stockChart', selectedStock, activePeriod, selectedMinute] : null,
     () => getStockChartData({
       symbol: selectedStock,
-      interval: activePeriod === "분" ? (selectedMinute === "15분" ? "1h" : "1h") : 
-               activePeriod === "일" ? "1day" :
-               activePeriod === "주" ? "1week" : "1month",
+      interval: activePeriod === "분" 
+        ? (selectedMinute === "15분" ? "1h" : "1h") 
+        : activePeriod === "일" 
+          ? "1day" 
+          : activePeriod === "주" 
+            ? "1week" 
+            : "1month",
       limit: activePeriod === "분" ? 100 : 30
     })
   );
