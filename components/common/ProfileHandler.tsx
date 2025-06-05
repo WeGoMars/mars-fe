@@ -28,11 +28,11 @@ export default function ProfileHandler({
     }
   }, [data, isError]);
 
-  const handleAvatarClick = () => {
-    const url = new URL(window.location.href);
-    url.searchParams.set("modal", "edit");
-    router.push(url.toString());
-  };
+const handleAvatarClick = () => {
+  const url = new URL(window.location.href);
+  url.searchParams.set("modal", "edit");
+  router.push(url.toString());
+};
   return(
     <Avatar className="w-8 h-8 cursor-pointer hover:opacity-80" onClick={handleAvatarClick}>
             <AvatarImage src="/placeholder.svg?height=32&width=32&query=user+avatar" />

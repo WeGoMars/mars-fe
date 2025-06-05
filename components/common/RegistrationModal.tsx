@@ -18,16 +18,17 @@ type FormErrors = {
   email?: string
   password?: string
   nickname?: string
-  
+
 }
 
 export default function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
   const router = useRouter()
+  const [signUpMutation] = useSignUpMutation(); // ✅ 훅으로부터 mutation 함수 가져오기
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     nickname: "",
-    
+
   })
   const [errors, setErrors] = useState<FormErrors>({})
 
@@ -71,30 +72,30 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
       newErrors.nickname = "Nickname must be at least 2 characters"
     }
 
-    
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
-  const [signUpMutation] = useSignUpMutation(); // ✅ 훅으로부터 mutation 함수 가져오기
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     console.log("회원가입 버튼 클릭")
 
-    if (!validateForm()) 
+    if (!validateForm())
       return
 
     try {
-    const response = await signUpMutation(formData).unwrap(); // ✅ 이렇게 호출해야 됨
-    console.log("회원가입 성공:", response);
-    // ✅ 예: router.push("/login") 등 추가 가능
-    onClose();
-  } catch (err) {
-    console.error("회원가입 실패:", err);
-  }
-};
-   
-  
+      const response = await signUpMutation(formData).unwrap(); // ✅ 이렇게 호출해야 됨
+      console.log("회원가입 성공:", response);
+      // ✅ 예: router.push("/login") 등 추가 가능
+      onClose();
+    } catch (err) {
+      console.error("회원가입 실패:", err);
+    }
+  };
+
+
 
   // Prevent clicks inside the modal from closing it
   const handleModalClick = (e: React.MouseEvent) => {
@@ -104,24 +105,24 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[#eff5ff] via-[#e9f0ff] to-[#dfe8ff] backdrop-blur-sm p-4"
-      
+
     >
-       {/* ✅ 마크 링크: 가장 먼저, 가장 위에! */}
-    <Link
-      href="/"
-      className="fixed left-4 top-4 z-[9999]"
-      title="홈으로 이동"
-    >
-      <Image
-        src="/marslogo.png"
-        alt="Mars 로고"
-        width={60}
-        height={60}
-        className="rounded-full cursor-pointer"
-      />
-    </Link>
-    <span className="fixed left-7 top-4 text-lg font-medium">Mars</span>
-    {/* <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}> */}
+      {/* ✅ 마크 링크: 가장 먼저, 가장 위에! */}
+      <Link
+        href="/"
+        className="fixed left-4 top-4 z-[9999]"
+        title="홈으로 이동"
+      >
+        <Image
+          src="/marslogo.png"
+          alt="Mars 로고"
+          width={60}
+          height={60}
+          className="rounded-full cursor-pointer"
+        />
+      </Link>
+      <span className="fixed left-7 top-4 text-lg font-medium">Mars</span>
+      {/* <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}> */}
       {/* Close button positioned in the top-right corner of the modal window frame */}
       <button
         onClick={onClose}
@@ -130,7 +131,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
       >
         <X size={20} />
       </button>
-      
+
       <div
         className="relative max-h-[90vh] w-full max-w-md overflow -auto rounded-lg bg-white shadow-lg"
         onClick={handleModalClick}
@@ -190,7 +191,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
               {errors.nickname && <p className="mt-1 text-xs text-red-500">{errors.nickname}</p>}
             </div>
 
-            
+
             <button
               type="submit"
               className="mt-6 w-full rounded-full bg-[#5f80f8] py-3 text-white hover:bg-[#5f80f8]/90"
@@ -199,7 +200,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
             </button>
           </form>
 
-         
+
           <div className="text-center text-sm">
             <span className="text-[#747480] dark:text-gray-400">이미 계정이 있으신가요?</span>{" "}
             <button
@@ -213,7 +214,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
             >
               Login
             </button>
-</div>
+          </div>
         </div>
       </div>
     </div>

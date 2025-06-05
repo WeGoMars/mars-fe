@@ -25,7 +25,7 @@ export default function MyPage() {
   router.push(url.toString())
   }
 
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
     
    
   
