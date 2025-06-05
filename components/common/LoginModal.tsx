@@ -24,18 +24,20 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
 
   const router = useRouter()
   const [logIn, { isLoading }] = useLogInMutation();
+  
   // 백엔드 로그인 테스트 !!
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
      try {
     const data = await logIn({ email, password }).unwrap();
+    
 
     setEmail("");
     setPassword("");
     onOpenChange(false);
     router.push("/dashboard");
-    window.location.reload()
+    // window.location.reload()
   } catch (err) {
     console.error("로그인 실패:", err);
     alert("로그인 실패: 이메일 또는 비밀번호를 확인해주세요.");
