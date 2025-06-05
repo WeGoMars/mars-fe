@@ -1,3 +1,4 @@
+// 체크박스 컴포넌트(아직 안쓰임)
 "use client"
 
 import * as React from "react"

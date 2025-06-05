@@ -9,7 +9,7 @@ import {
   Time,
 } from "lightweight-charts";
 
-// 주식 차트를 표시하는 컴포넌트
+// 주식 차트를 표시하는 컴포넌트(lightweight-chars 라이브러리 사용)
 interface StockChartProps {
   symbol: string; // 종목 심볼
   period: "일" | "주" | "월" | "분"; // 차트 기간

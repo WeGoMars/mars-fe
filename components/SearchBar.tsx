@@ -5,6 +5,7 @@ import { Search, X } from "lucide-react"
 import { getStockList } from "@/lib/api"
 import type { GetStockListResponse } from "@/lib/types"
 
+// 주식 종목 검색바 컴포넌트
 interface SearchBarProps {
   onSelectStock: (symbol: string) => void
 }
