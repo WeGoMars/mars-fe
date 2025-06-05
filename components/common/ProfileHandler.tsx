@@ -18,7 +18,7 @@ export default function ProfileHandler({
 
   useEffect(() => {
     if (data) {
-      onNicknameUpdate(data.nickname);
+      onNicknameUpdate(data.nick);
       onLoginStatusUpdate(true);
     } else if (isError) {
       onLoginStatusUpdate(false);

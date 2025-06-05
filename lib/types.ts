@@ -101,16 +101,15 @@ export interface SignUpRequest
   nickname: string
 }
 
-export interface SignUpResponse
-{
-  // 사용자 ID
-  id: number
-  // 이메일
-  email: string
-  // 닉네임
-  nickname: string
+export interface SignUpResponse{
+  success: string;
+  message: string;
+  data: {
+    id: number;
+    email: string;
+    nick: string;
+  };
 }
-
 //로그인
 export interface LoginRequest {
   email: string;
@@ -118,8 +117,11 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
+   success: string;
+   message: string;
+}
+export interface UserProfile {
   id: number;
   email: string;
-  nickname: string;
+  nick: string;
 }
-

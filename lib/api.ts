@@ -1,7 +1,7 @@
 import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest } from "./types"
 import type { SignUpRequest, SignUpResponse } from "./types"
 import { fetchBaseQuery, createApi } from '@reduxjs/toolkit/query/react';
-import type { LoginRequest, LoginResponse } from "./types"
+import type { LoginRequest, LoginResponse, UserProfile } from "./types"
 // 종목 상세 정보 가져오기
 export async function getStockDetails(symbol: string): Promise<StockDetails> {
   // 실제 API 호출 대신 더미 데이터 반환
@@ -93,17 +93,24 @@ export const userApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "/api", credentials: "include" }),
   endpoints: (builder) => ({
     signUp: builder.mutation<SignUpResponse, SignUpRequest>({
-      query: (params) => ({
-        url: "/users",
+      query: ({email, password, nickname}) => ({
+        url: "/users/signup",
         method: "POST",
-        body: params,
+        body: {
+          email,
+          password,
+          nick: nickname,
+        },
       }),
     }),
     logIn: builder.mutation<LoginResponse, LoginRequest>({
-      query: (params) => ({
+      query: ({email, password}) => ({
         url: "/users/login",
         method: "POST",
-        body: params,
+        body: {
+          email,
+          password,
+        },
       }),
     }),
     editProfile: builder.mutation<void, { nickname: string; profileImageUrl?: string }>({
@@ -113,10 +120,11 @@ export const userApi = createApi({
         body: params,
       }),
     }),
-    getProfile: builder.query<LoginResponse, void>({
+    getProfile: builder.query<UserProfile, void>({
       query: () => ({
         url: "/users/whoami",
         method: "GET",
+        credentials: "include",
       }),
     }),
   }),
