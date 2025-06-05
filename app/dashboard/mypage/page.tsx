@@ -387,16 +387,7 @@ export default function MyPage() {
                     {((portfolioData.investmentAmount / 4000) * 100).toFixed(1)}%
                   </div>
                 </div>
-                <div className="text-center">
-                  <div className="text-xs text-[#8f9098] mb-1">가용 자금</div>
-                  <div className="text-lg font-semibold text-[#197bbd]">
-                    ${" "}
-                    {(4000 - portfolioData.investmentAmount).toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </div>
-                </div>
+               
                   <div className="text-center">
                     <div className="text-xs text-[#8f9098] mb-1">현금 자산</div>
                     <div className="text-lg font-semibold">
@@ -408,10 +399,7 @@ export default function MyPage() {
                     </div>
                   </div>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-[#63c89b] rounded-full"></div>
-                <span className="text-sm text-[#8f9098]">수익 상태</span>
-              </div>
+              
             </div>
           </div>
         </CardContent>
