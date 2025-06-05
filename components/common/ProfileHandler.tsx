@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useGetProfileQuery } from "@/lib/api";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { Input } from "@/components/ui/input";
 interface ProfileHandlerProps {
   onNicknameUpdate: (nickname: string | null) => void;
   onLoginStatusUpdate: (isLoggedIn: boolean) => void;
@@ -17,9 +18,11 @@ export default function ProfileHandler({
   const { data, isError } = useGetProfileQuery(undefined, {
   skip: typeof window === "undefined", // 서버사이드일 때는 호출하지 않음
 });
+  const [nickname, setNickname] = useState("");
 
   useEffect(() => {
     if (data) {
+      setNickname(data.nick);
       onNicknameUpdate(data.nick);
       onLoginStatusUpdate(true);
     } else if (isError) {

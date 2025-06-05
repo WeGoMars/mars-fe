@@ -125,3 +125,8 @@ export interface UserProfile {
   email: string;
   nick: string;
 }
+export interface EditProfileRequest {
+  nickname: string;
+  profileImageUrl?: string;
+}
+
