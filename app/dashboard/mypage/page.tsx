@@ -27,8 +27,11 @@ export default function MyPage() {
   }
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
-  const { data: walletData, isLoading, isError } = useGetWalletQuery();
-
+  const { data: walletData, isLoading, isError, error } = useGetWalletQuery();
+  useEffect(() => {
+  console.log("📦 walletData:", walletData);
+  console.log("📛 error:", error);
+}, [walletData, error]);
    
   
   return (
