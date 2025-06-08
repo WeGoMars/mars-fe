@@ -389,25 +389,25 @@ export default function Dashboard() {
                   <span className="text-[10px]">{selectedStock}</span>
                 </div>
                 <h2 className="text-xl font-bold">{selectedStock}</h2>
-                <button
-                  onClick={() => {
-                    const newIsHeartFilled = !isHeartFilled;
-                    setIsHeartFilled(newIsHeartFilled);
-                    if (newIsHeartFilled) {
-                      const currentStock = stocks.find(stock => stock.symbol === selectedStock);
-                      if (currentStock && !favoriteStocks.some(stock => stock.symbol === currentStock.symbol)) {
-                        setFavoriteStocks(prev => [...prev, currentStock]);
+                {isLoggedIn && (
+                  <button
+                    onClick={() => {
+                      const isFavorite = favoriteStocks.some(stock => stock.symbol === selectedStock);
+                      if (isFavorite) {
+                        setFavoriteStocks(prev => prev.filter(stock => stock.symbol !== selectedStock));
+                      } else {
+                        const stock = stocks.find(s => s.symbol === selectedStock);
+                        if (stock) setFavoriteStocks(prev => [...prev, stock]);
                       }
-                    } else {
-                      setFavoriteStocks(prev => prev.filter(stock => stock.symbol !== selectedStock));
-                    }
-                  }}
-                  className="flex items-center justify-center"
-                >
-                  <Heart
-                    className={`w-4 h-4 cursor-pointer transition-colors ${isHeartFilled ? 'text-red-500 fill-red-500' : 'text-[#1f2024]'}`}
-                  />
-                </button>
+                      setIsHeartFilled(!isFavorite);
+                    }}
+                    className="flex items-center justify-center"
+                  >
+                    <Heart
+                      className={`w-4 h-4 cursor-pointer transition-colors ${isHeartFilled ? 'text-red-500 fill-red-500' : 'text-[#1f2024]'}`}
+                    />
+                  </button>
+                )}
               </div>
               {/* Buy/Sell and Time Period Tabs */}
               <div className="flex flex-wrap gap-2">
