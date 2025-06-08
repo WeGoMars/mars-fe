@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import ProfileModal from "@/components/common/ProfileModal"
 import mockPortfolio from "@/lib/mock/mockportfolio";
+import { useGetWalletQuery } from "@/lib/api"
 
 import ProfileHandler from "@/components/common/ProfileHandler";
 
@@ -26,7 +27,8 @@ export default function MyPage() {
   }
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
-    
+  const { data: walletData, isLoading, isError } = useGetWalletQuery();
+
    
   
   return (
@@ -348,20 +350,23 @@ export default function MyPage() {
 
             {/* 제공시드머니 */}
             
-              <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#197bbd] hover:shadow-md transition-all duration-200 cursor-pointer">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="text-sm font-medium text-[#8f9098]">제공시드머니</div>
-                </div>
-                <div className="text-2xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
-                  ${" "}
-                  {portfolioData.seedMoney.toLocaleString("en-US", {
+             <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#197bbd] hover:shadow-md transition-all duration-200 cursor-pointer">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-sm font-medium text-[#8f9098]">제공시드머니</div>
+              </div>
+              <div className="text-2xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
+                {isLoading ? "Loading..." : isError || !walletData?.data ? (
+                  "$0.00"
+                ) : (
+                  `$ ${walletData.data.cyberDollar.toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
-                  })}
-                </div>
-                <div className="text-xs text-[#8f9098] mt-1">Provided Seed Money</div>
+                  })}`
+                )}
               </div>
-            
+              <div className="text-xs text-[#8f9098] mt-1">Provided Seed Money</div>
+            </div>
+                        
 
             {/* 시드머니 문의 */}
             
@@ -384,7 +389,7 @@ export default function MyPage() {
                 <div className="text-center">
                   <div className="text-xs text-[#8f9098] mb-1">총 투자 비율</div>
                   <div className="text-lg font-semibold text-[#1c2730]">
-                    {((portfolioData.investmentAmount / 4000) * 100).toFixed(1)}%
+                    {/* {((portfolioData.investmentAmount / 4000) * 100).toFixed(1)}% */}
                   </div>
                 </div>
                
@@ -392,10 +397,10 @@ export default function MyPage() {
                     <div className="text-xs text-[#8f9098] mb-1">현금 자산</div>
                     <div className="text-lg font-semibold">
                       ${" "}
-                      {(portfolioData.seedMoney - portfolioData.investmentAmount).toLocaleString("en-US", {
+                      {/* {(portfolioData.seedMoney - portfolioData.investmentAmount).toLocaleString("en-US", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
-                      })}
+                      })} */}
                     </div>
                   </div>
               </div>

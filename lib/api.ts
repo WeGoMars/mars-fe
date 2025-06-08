@@ -1,7 +1,9 @@
-import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest } from "./types"
+import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest, WalletResponse } from "./types"
 import type { SignUpRequest, SignUpResponse } from "./types"
 import { fetchBaseQuery, createApi } from '@reduxjs/toolkit/query/react';
 import type { LoginRequest, LoginResponse, UserProfile } from "./types"
+
+
 // 종목 상세 정보 가져오기
 export async function getStockDetails(symbol: string): Promise<StockDetails> {
   // 실제 API 호출 대신 더미 데이터 반환
@@ -138,3 +140,41 @@ export const {
   useEditProfileMutation,
   useGetProfileQuery,
 } = userApi;
+
+export const walletApi = createApi({
+  reducerPath: "walletApi",
+  baseQuery: fetchBaseQuery({ baseUrl: "/api", credentials: "include" }),
+  endpoints: (builder) => ({
+    // 지갑 생성
+    createWallet: builder.mutation<WalletResponse, { amount: number }>({
+      query: ({ amount }) => ({
+        url: "/wallets",
+        method: "POST",
+        body: { amount },
+      }),
+    }),
+
+    // 지갑 잔고 조회
+    getWallet: builder.query<WalletResponse, void>({
+      query: () => ({
+        url: "/wallets",
+        method: "GET",
+      }),
+    }),
+
+    // 지갑 잔고 수정
+    updateWallet: builder.mutation<WalletResponse, { amount: number }>({
+      query: ({ amount }) => ({
+        url: "/wallets",
+        method: "PUT",
+        body: { amount },
+      }),
+    }),
+  }),
+});
+
+export const {
+  useCreateWalletMutation,
+  useGetWalletQuery,
+  useUpdateWalletMutation,
+} = walletApi;

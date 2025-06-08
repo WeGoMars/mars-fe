@@ -130,3 +130,18 @@ export interface EditProfileRequest {
   profileImageUrl?: string;
 }
 
+export interface WalletResponse {
+  success: boolean;
+  message: string;
+  data: {
+    email?: string;
+    nick?: string;
+    cyberDollar: number;
+    updatedAt: string;
+  };
+}
+
+ export interface WalletErrorResponse {
+  success: false;
+  message: string;
+}
