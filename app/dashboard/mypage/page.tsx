@@ -10,6 +10,7 @@ import { useEffect, useState } from "react"
 import ProfileModal from "@/components/common/ProfileModal"
 import mockPortfolio from "@/lib/mock/mockportfolio";
 
+import ProfileHandler from "@/components/common/ProfileHandler";
 
 export default function MyPage() {
 
@@ -24,32 +25,12 @@ export default function MyPage() {
   router.push(url.toString())
   }
 
-
-  useEffect(() => {
-    const fetchUser = async () => {
-    try {
-      const res = await fetch("http://localhost:4000/users/whoami", {
-        credentials: "include", // 꼭 포함!
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        setNickname(data.nick)
-      } else {
-        // 로그인 안 되어 있으면 메인 페이지로 이동
-        window.location.href = "/"
-      }
-    } catch (err) { 
-      console.error("유저 정보 불러오기 실패:", err)
-      window.location.href = "/"
-    }
-  }
-
-  fetchUser()
-}, [])
-  
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
+    
+   
   
   return (
+    
     <div className="min-h-screen bg-[#f5f7f9]">
       <header className="bg-white border-b">
         <div className="flex items-center justify-between p-4">
@@ -70,10 +51,10 @@ export default function MyPage() {
             <span className="text-sm text-[#747480]">
               {nickname ? `${nickname}님 환영합니다` : "mars 모투에 오신걸 환영합니다"}
             </span>
-            <Avatar className="w-8 h-8 cursor-pointer hover:opacity-80" onClick={handleAvatarClick}>
-            <AvatarImage src="/placeholder.svg?height=32&width=32&query=user+avatar" />
-            <AvatarFallback>M</AvatarFallback>
-            </Avatar>
+            <ProfileHandler
+                onNicknameUpdate={setNickname}
+                onLoginStatusUpdate={setIsLoggedIn}
+              />
             <Button variant="default" size="sm" className="bg-[#5f80f8] hover:bg-[#4c6ef5] text-white"
             onClick={() => {
                 localStorage.removeItem("logInUser")
@@ -406,16 +387,7 @@ export default function MyPage() {
                     {((portfolioData.investmentAmount / 4000) * 100).toFixed(1)}%
                   </div>
                 </div>
-                <div className="text-center">
-                  <div className="text-xs text-[#8f9098] mb-1">가용 자금</div>
-                  <div className="text-lg font-semibold text-[#197bbd]">
-                    ${" "}
-                    {(4000 - portfolioData.investmentAmount).toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </div>
-                </div>
+               
                   <div className="text-center">
                     <div className="text-xs text-[#8f9098] mb-1">현금 자산</div>
                     <div className="text-lg font-semibold">
@@ -427,10 +399,7 @@ export default function MyPage() {
                     </div>
                   </div>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-[#63c89b] rounded-full"></div>
-                <span className="text-sm text-[#8f9098]">수익 상태</span>
-              </div>
+              
             </div>
           </div>
         </CardContent>

@@ -5,6 +5,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { X, User, ArrowRight, Camera } from "lucide-react"
+import { useEditProfileMutation } from "@/lib/api";
 
 export default function ProfileModal() {
   const router = useRouter()
@@ -14,7 +15,8 @@ export default function ProfileModal() {
   const [nickname, setNickname] = useState("")
   const [password, setPassword] = useState("")
   const [profileImage, setProfileImage] = useState("")
-
+  const [editProfile] = useEditProfileMutation();
+  
   const handleAvatarClick = () => {
     const url = new URL(window.location.href)
     url.searchParams.set("modal", "edit")
@@ -27,32 +29,23 @@ export default function ProfileModal() {
     router.push(url.pathname)
   }
 
-  const handleSubmit = async () => {
-    try {
-      const response = await fetch("http://localhost:4000/users", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ nick:nickname}),
-      });
-      
-      const data = await response.json();
+ const handleSubmit = async () => {
+  try {
+    const body = {
+      nickname: nickname,
+      profileImageUrl: profileImage, // 이건 setProfileImage로 저장한 이미지 URL 경로라고 가정
+    };
 
-      if (!response.ok || !data.success) {
-        alert("닉넴 수정 실패: " + (data.message || "오류발생"));
-        return
-      }
-      alert("닉네임이 성공적으로 변경되었습니다!");
-      handleCloseModal();
-      // window.location.reload();  
-    }catch (error) {
-      console.error("닉네임 수정 오류:", error);
-      alert("서버 오류 발생");
-    }
-  
-  };
+    await editProfile(body).unwrap();
+
+    alert("닉네임이 성공적으로 변경되었습니다!");
+    handleCloseModal();
+    // window.location.reload();
+  } catch (error) {
+    console.error("프로필 수정 오류:", error);
+    alert("서버 오류가 발생했습니다.");
+  }
+};
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]

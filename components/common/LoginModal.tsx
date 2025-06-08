@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { X } from "lucide-react"
+import { useLogInMutation } from "@/lib/api";
+
 
 interface LoginModalProps {
   open: boolean
@@ -19,72 +21,41 @@ interface LoginModalProps {
 export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  
+
   const router = useRouter()
-
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault()
-  //   console.log("Login attempt with:", email, password)
-
-  //   const users = JSON.parse(localStorage.getItem("users") || "[]")
-
-  //   const matchUser = users.find(
-  //     (user: any) => user.email === email && user.password === password
-  //   )
-
-  //   if (matchUser) {
-  //     alert(`환영합니다, ${matchUser.nickname}님!`)
-  //     localStorage.setItem("logInUser", JSON.stringify(matchUser))
-  //     setEmail("")
-  //     setPassword("")
-  //     onOpenChange(false)
-  //     router.push("/dashboard")
-  //   } else {
-  //     alert("이메일 또는 비밀번호가 올바르지 않습니다.")
-  //   }
-  // }
-
+  const [logIn, { isLoading }] = useLogInMutation();
+  
   // 백엔드 로그인 테스트 !!
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      const response = await fetch("http://localhost:4000/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
-      });
+     try {
+    const data = await logIn({ email, password }).unwrap();
+    
 
-      if (!response.ok) {
-        alert("로그인 실패: 이메일 또는 비밀번호를 확인해주세요.");
-        return;
-      }
-
-      const data = await response.json();
- 
-      setEmail("");
-      setPassword("");
-      onOpenChange(false);
-      router.push("/dashboard");
-    } catch (err) {
-      console.error("로그인 오류:", err);
-      alert("서버 오류가 발생했습니다.");
-    }
-  };
+    setEmail("");
+    setPassword("");
+    onOpenChange(false);
+    router.push("/dashboard");
+    // window.location.reload()
+  } catch (err) {
+    console.error("로그인 실패:", err);
+    alert("로그인 실패: 이메일 또는 비밀번호를 확인해주세요.");
+  }
+};
   const handleClose = () => {
     onOpenChange(false)
     setTimeout(() => {
       router.back()
     }, 100)
   }
-  
+
   if (!open) return null
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[#eff5ff] via-[#e9f0ff] to-[#dfe8ff] backdrop-blur-sm p-4"
-      
+
     >
       {/* 마크 로고 */}
       <Link
@@ -144,7 +115,7 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
                 비밀번호 찾기
               </span>
 
-      
+
             </div>
             <Input
               id="password"

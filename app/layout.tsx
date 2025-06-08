@@ -2,7 +2,9 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css";
-
+import { store } from "@/lib/store"; //
+import { Provider } from "react-redux";
+import ProviderWrapper from '@/components/common/ProviderWrapper';
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
@@ -21,7 +23,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+         <ProviderWrapper>
+        {children}
+        </ProviderWrapper>
+        </body>
     </html>
   )
 }
