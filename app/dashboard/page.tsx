@@ -61,7 +61,6 @@ export default function Dashboard() {
   const [showSellConfirmModal, setShowSellConfirmModal] = useState(false);
   const [isHeartFilled, setIsHeartFilled] = useState(false);
   const [favoriteStocks, setFavoriteStocks] = useState<Stock[]>([]);
-  const [showMinuteOptions, setShowMinuteOptions] = useState(false);
   const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
@@ -405,62 +404,17 @@ export default function Dashboard() {
                   매도
                 </button>
                 <div className="flex ml-0 md:ml-2 bg-[#f5f7f9] rounded-full relative">
-                  {(["월", "주", "일", "분"] as const).map((period) => {
-                    if (period === "분") {
-                      return (
-                        <div key={period} className="relative">
-                          <button
-                            onClick={() => {
-                              if (activePeriod === "분") {
-                                setShowMinuteOptions((prev) => !prev);
-                              } else {
-                                setActivePeriod("분");
-                                setShowMinuteOptions(true);
-                              }
-                            }}
-                            className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activePeriod === period ? "bg-white shadow-sm" : "hover:bg-gray-100"}`}
-                          >
-                            {activePeriod === "분" ? selectedMinute : period}
-                          </button>
-                          {activePeriod === "분" && showMinuteOptions && (
-                            <div className="absolute left-1/2 -translate-x-1/2 mt-2 bg-white border rounded-xl shadow-lg z-10 w-24 flex flex-col">
-                              <button
-                                className={`py-2 px-4 text-sm hover:bg-gray-100 rounded-t-xl ${selectedMinute === "15분" ? "font-bold text-blue-600" : ""}`}
-                                onClick={() => {
-                                  setSelectedMinute("15분");
-                                  setShowMinuteOptions(false);
-                                }}
-                              >
-                                15분
-                              </button>
-                              <button
-                                className={`py-2 px-4 text-sm hover:bg-gray-100 rounded-b-xl ${selectedMinute === "1시간" ? "font-bold text-blue-600" : ""}`}
-                                onClick={() => {
-                                  setSelectedMinute("1시간");
-                                  setShowMinuteOptions(false);
-                                }}
-                              >
-                                1시간
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    } else {
-                      return (
-                        <button
-                          key={period}
-                          onClick={() => {
-                            setActivePeriod(period);
-                            setShowMinuteOptions(false);
-                          }}
-                          className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activePeriod === period ? "bg-white shadow-sm" : "hover:bg-gray-100"}`}
-                        >
-                          {period}
-                        </button>
-                      );
-                    }
-                  })}
+                  {(["월", "주", "일", "분"] as const).map((period) => (
+                    <button
+                      key={period}
+                      onClick={() => setActivePeriod(period)}
+                      className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
+                        activePeriod === period ? "bg-white shadow-sm" : "hover:bg-gray-100"
+                      }`}
+                    >
+                      {period === "분" ? "1시간" : period}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
