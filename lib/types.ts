@@ -4,7 +4,7 @@ export interface ApiResponse<T> {
   // 메시지
   message: string
   // 데이터
-  data: T[]
+  data: T
 }
 
 export interface Stock {
@@ -128,5 +128,20 @@ export interface UserProfile {
 export interface EditProfileRequest {
   nickname: string;
   profileImageUrl?: string;
+}
+
+export interface GetStockSearchRequest {
+  query: string;
+  limit: number;
+}
+
+export interface GetStockSearchResponse {
+  symbol: string;
+  name: string;
+  sector: string;
+  industry: string;
+  currentPrice: number;
+  priceDelta: number;
+  hourlyVolume: number;
 }
 

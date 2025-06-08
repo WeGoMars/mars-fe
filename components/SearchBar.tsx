@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Search, X } from "lucide-react"
-import { getStockList } from "@/lib/api"
-import type { GetStockListResponse } from "@/lib/types"
+import { searchStockList } from "@/lib/api"
+import type { GetStockSearchResponse } from "@/lib/types"
 
 // 주식 종목 검색바 컴포넌트
 interface SearchBarProps {
@@ -12,10 +12,10 @@ interface SearchBarProps {
 
 export default function SearchBar({ onSelectStock }: SearchBarProps) {
   const [searchQuery, setSearchQuery] = useState("")
-  const [searchResults, setSearchResults] = useState<GetStockListResponse[]>([])
+  const [searchResults, setSearchResults] = useState<GetStockSearchResponse[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [showResults, setShowResults] = useState(false)
-  const [recentSearches, setRecentSearches] = useState<GetStockListResponse[]>([])
+  const [recentSearches, setRecentSearches] = useState<GetStockSearchResponse[]>([])
   const wrapperRef = useRef<HTMLDivElement>(null)
 
   // 바깥 클릭 시 모달 닫기
@@ -39,7 +39,7 @@ export default function SearchBar({ onSelectStock }: SearchBarProps) {
       if (searchQuery.length > 0) {
         setIsLoading(true)
         try {
-          const response = await getStockList({
+          const response = await searchStockList({
             query: searchQuery,
             limit: 20
           })

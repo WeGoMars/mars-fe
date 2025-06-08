@@ -12,7 +12,7 @@ import SellConfirmModal from "@/components/SellConfirmModal";
 import SearchBar from "@/components/SearchBar";
 import StockDetails from "@/components/StockDetails";
 import type { Stock } from "@/lib/types";
-import { getStockChartData, getStockList } from "@/lib/api";
+import { getStockChartData, getStockList, searchStockList } from "@/lib/api";
 import useSWR from 'swr';
 
 
@@ -161,15 +161,37 @@ export default function FinanceDashboard() {
     }
   ]);
 
-  const handleStockSelect = (symbol: string) => {
+  const [searchedStockInfo, setSearchedStockInfo] = useState<any | null>(null);
+
+  const handleStockSelect = async (symbol: string) => {
     setSelectedStock(symbol);
+    // 종목 검색 결과에서 선택된 경우, 해당 종목의 상세 정보 fetch
+    try {
+      const res = await searchStockList({ query: symbol, limit: 1 });
+      if (res.success && res.data.length > 0) {
+        setSearchedStockInfo(res.data[0]);
+      } else {
+        setSearchedStockInfo(null);
+      }
+    } catch {
+      setSearchedStockInfo(null);
+    }
   };
 
-  // 중앙에 표시할 종목 정보 우선순위: stockListData -> 목데이터
+  // 중앙에 표시할 종목 정보 우선순위: 검색된 종목 > stockListData > 목데이터
   const getSelectedStockInfo = () => {
-    // stockListData에서 찾기
-    if (stockListData?.data) {
-      const found = stockListData.data.find((s: any) => s.symbol === selectedStock);
+    if (searchedStockInfo && searchedStockInfo.symbol === selectedStock) {
+      return {
+        symbol: searchedStockInfo.symbol,
+        name: searchedStockInfo.name,
+        price: searchedStockInfo.currentPrice,
+        change: searchedStockInfo.priceDelta,
+      };
+    }
+    // stockListData에서 찾기 (data가 배열임을 명확히 단언)
+    const stockListArr = stockListData?.data as any[] | undefined;
+    if (stockListArr) {
+      const found = stockListArr.find((s: any) => s.symbol === selectedStock);
       if (found) return {
         symbol: found.symbol,
         name: found.name,
@@ -349,7 +371,7 @@ export default function FinanceDashboard() {
           {/* 핫 종목 리스트 목 데이터 */}
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
-              {stockListData?.data.map((stock, index) => (
+              {(stockListData?.data as any[] | undefined)?.map((stock, index) => (
                 <div 
                   key={index} 
                   className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
@@ -521,7 +543,7 @@ export default function FinanceDashboard() {
               id="chart-container"
               className="w-full h-full flex flex-col items-center justify-center"
             >
-              {stockChartData && stockChartData.data && stockChartData.data.length > 0 ? (
+              {Array.isArray(stockChartData?.data) && stockChartData.data.length > 0 ? (
                 <StockChart 
                   data={stockChartData.data} 
                   symbol={selectedInfo.symbol} 
