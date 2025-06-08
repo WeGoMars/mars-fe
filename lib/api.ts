@@ -70,9 +70,9 @@ export async function getStockChartData(params: GetStockChartDataRequest): Promi
 
 // 주식 종목 검색
 export async function getStockList(params: GetStockListRequest): Promise<ApiResponse<GetStockListResponse>>{
-  const { query, limit } = params
+  const { option, limit } = params
   const response = await fetch(
-    `api/stocks/search?query=${query}&limit=${limit}`,
+    `api/stocks/list?option=${option}&limit=${limit}`,
     {
       method: 'GET',
       headers: {

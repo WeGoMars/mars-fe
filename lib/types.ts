@@ -74,8 +74,8 @@ export interface GetStockChartDataResponse {
 
 
 export interface GetStockListRequest{
-  // 검색어
-  query: string
+  // 검색 옵션 (hot, owned, liked)
+  option: 'hot' | 'owned' | 'liked'
   // 검색 결과 개수
   limit: number
 }

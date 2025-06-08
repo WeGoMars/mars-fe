@@ -47,7 +47,7 @@ export default function FinanceDashboard() {
   const { data: stockListData, error: stockListError } = useSWR(
     ['stockList'],
     () => getStockList({
-      query: 'A',
+      option: 'hot',
       limit: 10
     })
   );
@@ -325,7 +325,6 @@ export default function FinanceDashboard() {
                   className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                   onClick={() => {
                     setSelectedStock(stock.symbol);
-                    // API 연동 시 여기에 API 호출 로직 추가
                     console.log(`Selected stock: ${stock.symbol}`);
                   }}
                 >
@@ -344,9 +343,9 @@ export default function FinanceDashboard() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-base">${stock.currentPrice}</div>
-                    <div className={`text-xs ${stock.priceDelta.toString().startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}>
-                      {Number(stock.priceDelta) > 0 ? '+' : ''}{Number(stock.priceDelta).toFixed(1)}%
+                    <div className="font-bold text-base">${stock.currentPrice.toFixed(2)}</div>
+                    <div className={`text-xs ${stock.priceDelta >= 0 ? 'text-[#41c3a9]' : 'text-red-500'}`}>
+                      {stock.priceDelta >= 0 ? '+' : ''}{stock.priceDelta.toFixed(2)}%
                     </div>
                   </div>
                 </div>
