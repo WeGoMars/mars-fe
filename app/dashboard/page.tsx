@@ -70,11 +70,8 @@ export default function Dashboard() {
     setSelectedStock(symbol);
   };
 
- 
   const portfolioData = mockPortfolio;
-
   const cashAsset = portfolioData.seedMoney - portfolioData.investmentAmount;
- 
 
   // 관심 종목 상태가 변경될 때마다 하트 상태 업데이트
   useEffect(() => {
