@@ -19,6 +19,8 @@ import { Heart } from 'lucide-react';
 import mockPortfolio from "@/lib/mock/mockportfolio";
 
 import ProfileHandler from "@/components/common/ProfileHandler"
+import useSWR from 'swr';
+import { getStockChartData } from "@/lib/api";
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -101,6 +103,21 @@ export default function Dashboard() {
     const isFavorite = favoriteStocks.some(stock => stock.symbol === selectedStock);
     setIsHeartFilled(isFavorite);
   }, [selectedStock, favoriteStocks]);
+
+  const { data: stockChartData, error: stockChartError } = useSWR(
+    selectedStock ? ['stockChart', selectedStock, activePeriod, selectedMinute] : null,
+    () => getStockChartData({
+      symbol: selectedStock,
+      interval: activePeriod === "분"
+        ? (selectedMinute === "15분" ? "1h" : "1h")
+        : activePeriod === "일"
+          ? "1day"
+          : activePeriod === "주"
+            ? "1week"
+            : "1month",
+      limit: activePeriod === "분" ? 100 : 30
+    })
+  );
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -527,7 +544,11 @@ export default function Dashboard() {
                 id="chart-container"
                 className="w-full h-full flex flex-col items-center justify-center"
               >
-                <StockChart symbol={selectedStock} period={activePeriod} />
+                <StockChart
+                  data={stockChartData && stockChartData.data ? stockChartData.data : []}
+                  symbol={selectedStock}
+                  period={activePeriod}
+                />
               </div>
             </div>
           </div>
