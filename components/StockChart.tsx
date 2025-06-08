@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { StockChartData } from "@/lib/types";
+import type { GetStockChartDataResponse } from "@/lib/types";
 import {
   createChart,
   CandlestickSeries,
@@ -13,7 +13,7 @@ import {
 interface StockChartProps {
   symbol: string; // 종목 심볼
   period: "일" | "주" | "월" | "분"; // 차트 기간
-  data?: StockChartData[];
+  data?: GetStockChartDataResponse[];
 }
 
 // 상태 관리
