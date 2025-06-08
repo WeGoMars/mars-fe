@@ -439,7 +439,18 @@ export default function Dashboard() {
                 className="w-full h-full flex flex-col items-center justify-center"
               >
                 <StockChart
-                  data={Array.isArray(stockChartData?.data) ? stockChartData.data : []}
+                  data={Array.isArray(stockChartData?.data)
+                    ? stockChartData.data.filter(
+                        d =>
+                          d &&
+                          d.timestamp &&
+                          d.open != null &&
+                          d.close != null &&
+                          d.high != null &&
+                          d.low != null &&
+                          d.volume != null
+                      )
+                    : []}
                   symbol={selectedStock}
                   period={activePeriod}
                 />
