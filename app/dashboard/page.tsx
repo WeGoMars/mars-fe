@@ -384,7 +384,6 @@ export default function Dashboard() {
                         const stock = stocks.find(s => s.symbol === selectedStock);
                         if (stock) setFavoriteStocks(prev => [...prev, stock]);
                       }
-                      setIsHeartFilled(!isFavorite);
                     }}
                     className="flex items-center justify-center"
                   >
