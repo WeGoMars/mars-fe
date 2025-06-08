@@ -395,14 +395,13 @@ export default function Dashboard() {
 
         {/* Middle Column */}
         <div className="flex-1 flex flex-col">
-          {/* Search Bar */}
+          {/* Search Bar - Styled like the screenshot */}
           <div className="flex justify-center mb-4">
             <div className="relative w-full max-w-2xl">
               <SearchBar onSelectStock={selectStock} />
             </div>
           </div>
-
-          {/* Main Chart Area */}
+          {/* Main Chart Area - app/page.tsx 참고하여 UI 통일 */}
           <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm flex-1 overflow-auto">
             {/* S&P 500 Header with Tabs + 좋아요 하트 */}
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-3">
@@ -431,16 +430,11 @@ export default function Dashboard() {
                   />
                 </button>
               </div>
-
               {/* Buy/Sell and Time Period Tabs */}
               <div className="flex flex-wrap gap-2">
-                {/* Buy/Sell Tabs */}
                 <button
                   onClick={() => setShowPanel('buy')}
-                  className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activeTab === "매수"
-                    ? "bg-[#fce7e7]"
-                    : "bg-white hover:bg-gray-50"
-                    }`}
+                  className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activeTab === "매수" ? "bg-[#fce7e7]" : "bg-white hover:bg-gray-50"}`}
                 >
                   매수
                 </button>
@@ -450,8 +444,6 @@ export default function Dashboard() {
                 >
                   매도
                 </button>
-
-                {/* Time Period Tabs */}
                 <div className="flex ml-0 md:ml-2 bg-[#f5f7f9] rounded-full relative">
                   {(["월", "주", "일", "분"] as const).map((period) => {
                     if (period === "분") {
@@ -466,10 +458,7 @@ export default function Dashboard() {
                                 setShowMinuteOptions(true);
                               }
                             }}
-                            className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activePeriod === period
-                              ? "bg-white shadow-sm"
-                              : "hover:bg-gray-100"
-                              }`}
+                            className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activePeriod === period ? "bg-white shadow-sm" : "hover:bg-gray-100"}`}
                           >
                             {activePeriod === "분" ? selectedMinute : period}
                           </button>
@@ -505,10 +494,7 @@ export default function Dashboard() {
                             setActivePeriod(period);
                             setShowMinuteOptions(false);
                           }}
-                          className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activePeriod === period
-                            ? "bg-white shadow-sm"
-                            : "hover:bg-gray-100"
-                            }`}
+                          className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activePeriod === period ? "bg-white shadow-sm" : "hover:bg-gray-100"}`}
                         >
                           {period}
                         </button>
@@ -518,26 +504,20 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-
-            {/* Price Display */}
+            {/* 가격, 변동률, 날짜 */}
             <div className="mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl md:text-3xl font-bold">
                   ${stocks.find(stock => stock.symbol === selectedStock)?.price.replace('$', '') || "0.00"}
                 </span>
-                <span className={`${stocks.find(stock => stock.symbol === selectedStock)?.change.startsWith('+')
-                  ? 'text-[#41c3a9] bg-[#e6f7f4]'
-                  : 'text-red-500 bg-red-50'
-                  } px-2 py-0.5 rounded-md text-sm`}>
+                <span className={`${stocks.find(stock => stock.symbol === selectedStock)?.change.startsWith('+') ? 'text-[#41c3a9] bg-[#e6f7f4]' : 'text-red-500 bg-red-50'} px-2 py-0.5 rounded-md text-sm`}>
                   {stocks.find(stock => stock.symbol === selectedStock)?.change || "0.00%"}
                 </span>
               </div>
             </div>
-
             <div className="text-xs text-gray-500 mb-6">
               {new Date().toLocaleString()} · {selectedStock} · Disclaimer
             </div>
-
             {/* Chart Area */}
             <div className="h-[740px] flex flex-col items-center justify-center">
               <div
