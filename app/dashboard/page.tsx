@@ -75,13 +75,6 @@ export default function Dashboard() {
       change: "+1.1%",
       changePercent: "+1.1%"
     },
-    {
-      symbol: "SPOT",
-      name: "Spotify Corp.",
-      price: "$213.10",
-      change: "+2.5%",
-      changePercent: "+2.5%"
-    }
   ]);
   const [showMinuteOptions, setShowMinuteOptions] = useState(false);
   const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
@@ -312,13 +305,6 @@ export default function Dashboard() {
                   changePercent: "+1.1%"
                 },
                 {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                  changePercent: "+2.5%"
-                },
-                {
                   symbol: "MSFT",
                   name: "Microsoft Corp.",
                   price: "$213.10",
@@ -331,13 +317,6 @@ export default function Dashboard() {
                   price: "$213.10",
                   change: "+1.1%",
                   changePercent: "+1.1%"
-                },
-                {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                  changePercent: "+2.5%"
                 },
               ].map((stock, index) => (
                 <div
