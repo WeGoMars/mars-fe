@@ -387,7 +387,7 @@ export default function Dashboard() {
 
           {/* Main Chart Area */}
           <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm flex-1 overflow-auto">
-            {/* S&P 500 Header with Tabs */}
+            {/* S&P 500 Header with Tabs + 좋아요 하트 */}
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-3">
               <div className="flex items-center gap-2">
                 <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs">
@@ -398,7 +398,6 @@ export default function Dashboard() {
                   onClick={() => {
                     const newIsHeartFilled = !isHeartFilled;
                     setIsHeartFilled(newIsHeartFilled);
-
                     if (newIsHeartFilled) {
                       const currentStock = stocks.find(stock => stock.symbol === selectedStock);
                       if (currentStock && !favoriteStocks.some(stock => stock.symbol === currentStock.symbol)) {
@@ -411,8 +410,7 @@ export default function Dashboard() {
                   className="flex items-center justify-center"
                 >
                   <Heart
-                    className={`w-4 h-4 cursor-pointer transition-colors ${isHeartFilled ? 'text-red-500 fill-red-500' : 'text-[#1f2024]'
-                      }`}
+                    className={`w-4 h-4 cursor-pointer transition-colors ${isHeartFilled ? 'text-red-500 fill-red-500' : 'text-[#1f2024]'}`}
                   />
                 </button>
               </div>
