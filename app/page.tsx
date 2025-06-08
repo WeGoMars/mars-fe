@@ -165,6 +165,36 @@ export default function FinanceDashboard() {
     setSelectedStock(symbol);
   };
 
+  // 중앙에 표시할 종목 정보 우선순위: stockListData -> 목데이터
+  const getSelectedStockInfo = () => {
+    // stockListData에서 찾기
+    if (stockListData?.data) {
+      const found = stockListData.data.find((s: any) => s.symbol === selectedStock);
+      if (found) return {
+        symbol: found.symbol,
+        name: found.name,
+        price: found.currentPrice,
+        change: found.priceDelta,
+      };
+    }
+    // 목데이터에서 찾기
+    const fallback = stockData.find((s) => s.symbol === selectedStock);
+    if (fallback) return {
+      symbol: fallback.symbol,
+      name: fallback.name,
+      price: fallback.price,
+      change: fallback.change,
+    };
+    // 기본값
+    return {
+      symbol: selectedStock,
+      name: selectedStock,
+      price: 0,
+      change: 0,
+    };
+  };
+  const selectedInfo = getSelectedStockInfo();
+
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
       {/* Header */}
@@ -367,10 +397,17 @@ export default function FinanceDashboard() {
             {/* S&P 500 Header with Tabs - Styled like the image */}
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-3">
               <div className="flex items-center gap-2">
-                <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs">
-                  <span className="text-[10px]">{selectedStock}</span>
+                <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs overflow-hidden">
+                  <Image
+                    src={`/logos/${selectedInfo.symbol}.png`}
+                    alt={selectedInfo.symbol}
+                    width={28}
+                    height={28}
+                    style={{objectFit:'contain'}}
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
                 </div>
-                <h2 className="text-xl font-bold">{selectedStock}</h2>
+                <h2 className="text-xl font-bold">{selectedInfo.symbol}</h2>
               </div>
 
               {/* Buy/Sell and Time Period Tabs */}
@@ -467,16 +504,16 @@ export default function FinanceDashboard() {
             <div className="mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl md:text-3xl font-bold">
-                  ${stockData.find(stock => stock.symbol === selectedStock)?.price || "0.00"}
+                  ${Number(selectedInfo.price).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
                 </span>
-                <span className={`${stockData.find(stock => stock.symbol === selectedStock)?.change.startsWith('+') ? 'text-[#41c3a9] bg-[#e6f7f4]' : 'text-red-500 bg-red-50'} px-2 py-0.5 rounded-md text-sm`}>
-                  {stockData.find(stock => stock.symbol === selectedStock)?.change || "0.00%"}
+                <span className={`${Number(selectedInfo.change) >= 0 ? 'text-[#41c3a9] bg-[#e6f7f4]' : 'text-red-500 bg-red-50'} px-2 py-0.5 rounded-md text-sm`}>
+                  {Number(selectedInfo.change) >= 0 ? '+' : ''}{Number(selectedInfo.change).toFixed(2)}%
                 </span>
               </div>
             </div>
 
             <div className="text-xs text-gray-500 mb-6">
-              {currentTime} · {selectedStock} · Disclaimer
+              {currentTime} · {selectedInfo.symbol} · Disclaimer
             </div>
              {/* Empty Chart Area (for user to add their own chart) */}
           <div className="h-[740px] flex flex-col items-center justify-center">
@@ -487,7 +524,7 @@ export default function FinanceDashboard() {
               {stockChartData && stockChartData.data && stockChartData.data.length > 0 ? (
                 <StockChart 
                   data={stockChartData.data} 
-                  symbol={selectedStock} 
+                  symbol={selectedInfo.symbol} 
                   period={activePeriod} 
                 />
               ) : (
@@ -632,9 +669,9 @@ export default function FinanceDashboard() {
           ) : (
             // 기존 카드 내용
             <div className="bg-white rounded-xl p-4 md:p-5 shadow-sm flex-1 overflow-auto flex flex-col">
-              {selectedStock && (
+              {selectedInfo.symbol && (
                 <StockDetails
-                  symbol={selectedStock}
+                  symbol={selectedInfo.symbol}
                   activeTab={activeRightTab}
                   onTabChange={(tab) => {
                     console.log('Tab change requested:', tab);
