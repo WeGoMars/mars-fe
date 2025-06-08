@@ -145,3 +145,25 @@ export interface WalletResponse {
   success: false;
   message: string;
 }
+
+export interface TradeRequest {
+  symbol: string;
+  quantity: number;
+  price: number;
+}
+
+export interface TradeResponse {
+  success: boolean;
+  message: string;
+  data: {
+    symbol: string;
+    price: number;
+    balance: number;
+    share: number;
+    tradedAt: string;
+  };
+}
+export interface ErrorResponse {
+  success: false;
+  message: string;
+}

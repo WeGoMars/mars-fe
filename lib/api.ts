@@ -1,5 +1,5 @@
-import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest, WalletResponse } from "./types"
-import type { SignUpRequest, SignUpResponse } from "./types"
+import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest } from "./types"
+import type { SignUpRequest, SignUpResponse, WalletResponse, TradeResponse, TradeRequest } from "./types"
 import { fetchBaseQuery, createApi } from '@reduxjs/toolkit/query/react';
 import type { LoginRequest, LoginResponse, UserProfile } from "./types"
 
@@ -178,3 +178,31 @@ export const {
   useGetWalletQuery,
   useUpdateWalletMutation,
 } = walletApi;
+
+export const tradesApi = createApi({
+  reducerPath: 'tradesApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: '/api/trades',
+    credentials: 'include', // 쿠키 포함 (로그인 필수)
+  }),
+  endpoints: (builder) => ({
+    buyStock: builder.mutation<TradeResponse, TradeRequest>({
+      query: (body) => ({
+        url: 'buy',
+        method: 'POST',
+        body,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    }),
+    sellStock: builder.mutation<TradeResponse, TradeRequest>({
+      query: (body) => ({
+        url: 'sell',
+        method: 'POST',
+        body,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    }),
+  }),
+});
+
+export const { useBuyStockMutation, useSellStockMutation } = tradesApi;
