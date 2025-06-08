@@ -25,22 +25,21 @@ export default function FinanceDashboard() {
   const [currentTime, setCurrentTime] = useState<string>("");
   const [selectedStock, setSelectedStock] = useState<string>("AAPL");
   const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
-  const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "분">("일");
-  const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
+  const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "1시간">("일");
   const [activeRightTab, setActiveRightTab] = useState<"종목정보 상세" | "내 계좌" | "AI 추천">("종목정보 상세");
 
   const { data: stockChartData, error } = useSWR(
-    selectedStock ? ['stockChart', selectedStock, activePeriod, selectedMinute] : null,
+    selectedStock ? ['stockChart', selectedStock, activePeriod] : null,
     () => getStockChartData({
       symbol: selectedStock,
-      interval: activePeriod === "분" 
-        ? (selectedMinute === "15분" ? "1h" : "1h") 
-        : activePeriod === "일" 
-          ? "1day" 
-          : activePeriod === "주" 
-            ? "1week" 
+      interval: activePeriod === "1시간"
+        ? "1h"
+        : activePeriod === "일"
+          ? "1day"
+          : activePeriod === "주"
+            ? "1week"
             : "1month",
-      limit: activePeriod === "분" ? 100 : 30
+      limit: activePeriod === "1시간" ? 100 : 30
     })
   );
 
@@ -454,61 +453,17 @@ export default function FinanceDashboard() {
 
                 {/* Time Period Tabs */}
                 <div className="flex ml-0 md:ml-2 bg-[#f5f7f9] rounded-full relative">
-                  {(["월", "주", "일", "분"] as const).map((period) => {
-                    if (period === "분") {
-                      return (
-                        <div key={period} className="relative">
-                          <button
-                            onClick={() => {
-                              if (activePeriod === "분") {
-                                setShowMinuteOptions((prev) => !prev);
-                              } else {
-                                setActivePeriod("분");
-                                setShowMinuteOptions(true);
-                              }
-                            }}
-                            className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                              activePeriod === period
-                                ? "bg-white shadow-sm"
-                                : "hover:bg-gray-100"
-                            }`}
-                          >
-                            {activePeriod === "분" ? selectedMinute : period}
-                          </button>
-                          {activePeriod === "분" && showMinuteOptions && (
-                            <div className="absolute left-1/2 -translate-x-1/2 mt-2 bg-white border rounded-xl shadow-lg z-10 w-24 flex flex-col">
-                              <button
-                                className={`py-2 px-4 text-sm hover:bg-gray-100 rounded-xl ${selectedMinute === "1시간" ? "font-bold text-blue-600" : ""}`}
-                                onClick={() => {
-                                  setSelectedMinute("1시간");
-                                  setShowMinuteOptions(false);
-                                }}
-                              >
-                                1시간
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    } else {
-                      return (
-                        <button
-                          key={period}
-                          onClick={() => {
-                            setActivePeriod(period);
-                            setShowMinuteOptions(false);
-                          }}
-                          className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                            activePeriod === period
-                              ? "bg-white shadow-sm"
-                              : "hover:bg-gray-100"
-                          }`}
-                        >
-                          {period}
-                        </button>
-                      );
-                    }
-                  })}
+                  {(["월", "주", "일", "1시간"] as const).map((period) => (
+                    <button
+                      key={period}
+                      onClick={() => setActivePeriod(period)}
+                      className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
+                        activePeriod === period ? "bg-white shadow-sm" : "hover:bg-gray-100"
+                      }`}
+                    >
+                      {period}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>

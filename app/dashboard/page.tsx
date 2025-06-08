@@ -50,7 +50,7 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [selectedStock, setSelectedStock] = useState<string>("AAPL");
   const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
-  const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "분">("일");
+  const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "1시간">("일");
   const [activeRightTab, setActiveRightTab] = useState<"종목정보 상세" | "내 계좌" | "AI 추천">("종목정보 상세");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -82,14 +82,14 @@ export default function Dashboard() {
     selectedStock ? ['stockChart', selectedStock, activePeriod, selectedMinute] : null,
     () => getStockChartData({
       symbol: selectedStock,
-      interval: activePeriod === "분"
-        ? (selectedMinute === "15분" ? "1h" : "1h")
+      interval: activePeriod === "1시간"
+        ? "1h"
         : activePeriod === "일"
           ? "1day"
           : activePeriod === "주"
             ? "1week"
             : "1month",
-      limit: activePeriod === "분" ? 100 : 30
+      limit: activePeriod === "1시간" ? 100 : 30
     })
   );
 
@@ -404,7 +404,7 @@ export default function Dashboard() {
                   매도
                 </button>
                 <div className="flex ml-0 md:ml-2 bg-[#f5f7f9] rounded-full relative">
-                  {(["월", "주", "일", "분"] as const).map((period) => (
+                  {(["월", "주", "일", "1시간"] as const).map((period) => (
                     <button
                       key={period}
                       onClick={() => setActivePeriod(period)}
@@ -412,7 +412,7 @@ export default function Dashboard() {
                         activePeriod === period ? "bg-white shadow-sm" : "hover:bg-gray-100"
                       }`}
                     >
-                      {period === "분" ? "1시간" : period}
+                      {period}
                     </button>
                   ))}
                 </div>
