@@ -90,3 +90,43 @@ export interface GetStockListResponse{
   // 가격 변동
   priceDelta: number
 }
+ //회원가입
+export interface SignUpRequest
+{
+  // 이메일
+  email: string
+  // 비밀번호
+  password: string
+  // 닉네임
+  nickname: string
+}
+
+export interface SignUpResponse{
+  success: boolean;
+  message: string;
+  data: {
+    id: number;
+    email: string;
+    nick: string;
+  };
+}
+//로그인
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+   success: boolean;
+   message: string;
+}
+export interface UserProfile {
+  id: number;
+  email: string;
+  nick: string;
+}
+export interface EditProfileRequest {
+  nickname: string;
+  profileImageUrl?: string;
+}
+

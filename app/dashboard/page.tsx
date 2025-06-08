@@ -12,11 +12,13 @@ import SellConfirmModal from "@/components/SellConfirmModal";
 import type { Stock } from "@/lib/types";
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+
 import { Button } from "@/components/ui/button";
 import ProfileModal from "@/components/common/ProfileModal"
 import { Heart } from 'lucide-react';
 import mockPortfolio from "@/lib/mock/mockportfolio";
+
+import ProfileHandler from "@/components/common/ProfileHandler"
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -88,38 +90,11 @@ export default function Dashboard() {
     setSelectedStock(symbol);
   };
 
-  const handleAvatarClick = () => {
-    const url = new URL(window.location.href)
-    url.searchParams.set("modal", "edit")
-    router.push(url.toString())
-  }
-  useEffect(() => {
-   const fetchUser = async () => {
-    try {
-      const res = await fetch("http://localhost:4000/users/whoami", {
-        credentials: "include",
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        setNickname(data.nick)
-        setIsLoggedIn(true)
-      } else {
-        setIsLoggedIn(false)
-        window.location.href = "/"
-      }
-    } catch (err) { 
-      console.error("유저 정보 불러오기 실패:", err)
-      setIsLoggedIn(false)
-      window.location.href = "/"
-    }
-  }
-
-  fetchUser()
-}, [])
+ 
   const portfolioData = mockPortfolio;
 
   const cashAsset = portfolioData.seedMoney - portfolioData.investmentAmount;
+ 
 
   // 관심 종목 상태가 변경될 때마다 하트 상태 업데이트
   useEffect(() => {
@@ -156,11 +131,10 @@ export default function Dashboard() {
             <span>{nickname ? `${nickname}님 환영합니다` : "mars 모투에 오신걸 환영합니다"}</span>
           </Link>
 
-          <Avatar className="w-8 h-8 cursor-pointer hover:opacity-80" onClick={handleAvatarClick}>
-            <AvatarImage src="/placeholder.svg?height=32&width=32&query=user+avatar" />
-            <AvatarFallback>M</AvatarFallback>
-          </Avatar>
-
+          <ProfileHandler
+            onNicknameUpdate={setNickname}
+            onLoginStatusUpdate={setIsLoggedIn}
+          />
           <Link
             href="dashboard/mypage"
             className="flex items-center gap-2 text-sm text-gray-600 hover:opacity-80 transition-opacity"
@@ -246,8 +220,8 @@ export default function Dashboard() {
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
               {favoriteStocks.map((stock, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                   onClick={() => {
                     setSelectedStock(stock.symbol);
@@ -349,8 +323,8 @@ export default function Dashboard() {
                   changePercent: "+2.5%"
                 },
               ].map((stock, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                   onClick={() => {
                     setSelectedStock(stock.symbol);
@@ -424,7 +398,7 @@ export default function Dashboard() {
                   onClick={() => {
                     const newIsHeartFilled = !isHeartFilled;
                     setIsHeartFilled(newIsHeartFilled);
-                    
+
                     if (newIsHeartFilled) {
                       const currentStock = stocks.find(stock => stock.symbol === selectedStock);
                       if (currentStock && !favoriteStocks.some(stock => stock.symbol === currentStock.symbol)) {
@@ -436,10 +410,9 @@ export default function Dashboard() {
                   }}
                   className="flex items-center justify-center"
                 >
-                  <Heart 
-                    className={`w-4 h-4 cursor-pointer transition-colors ${
-                      isHeartFilled ? 'text-red-500 fill-red-500' : 'text-[#1f2024]'
-                    }`} 
+                  <Heart
+                    className={`w-4 h-4 cursor-pointer transition-colors ${isHeartFilled ? 'text-red-500 fill-red-500' : 'text-[#1f2024]'
+                      }`}
                   />
                 </button>
               </div>
@@ -449,11 +422,10 @@ export default function Dashboard() {
                 {/* Buy/Sell Tabs */}
                 <button
                   onClick={() => setShowPanel('buy')}
-                  className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                    activeTab === "매수"
-                      ? "bg-[#fce7e7]"
-                      : "bg-white hover:bg-gray-50"
-                  }`}
+                  className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activeTab === "매수"
+                    ? "bg-[#fce7e7]"
+                    : "bg-white hover:bg-gray-50"
+                    }`}
                 >
                   매수
                 </button>
@@ -479,11 +451,10 @@ export default function Dashboard() {
                                 setShowMinuteOptions(true);
                               }
                             }}
-                            className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                              activePeriod === period
-                                ? "bg-white shadow-sm"
-                                : "hover:bg-gray-100"
-                            }`}
+                            className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activePeriod === period
+                              ? "bg-white shadow-sm"
+                              : "hover:bg-gray-100"
+                              }`}
                           >
                             {activePeriod === "분" ? selectedMinute : period}
                           </button>
@@ -519,11 +490,10 @@ export default function Dashboard() {
                             setActivePeriod(period);
                             setShowMinuteOptions(false);
                           }}
-                          className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                            activePeriod === period
-                              ? "bg-white shadow-sm"
-                              : "hover:bg-gray-100"
-                          }`}
+                          className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activePeriod === period
+                            ? "bg-white shadow-sm"
+                            : "hover:bg-gray-100"
+                            }`}
                         >
                           {period}
                         </button>
@@ -540,11 +510,10 @@ export default function Dashboard() {
                 <span className="text-2xl md:text-3xl font-bold">
                   ${stocks.find(stock => stock.symbol === selectedStock)?.price.replace('$', '') || "0.00"}
                 </span>
-                <span className={`${
-                  stocks.find(stock => stock.symbol === selectedStock)?.change.startsWith('+') 
-                    ? 'text-[#41c3a9] bg-[#e6f7f4]' 
-                    : 'text-red-500 bg-red-50'
-                } px-2 py-0.5 rounded-md text-sm`}>
+                <span className={`${stocks.find(stock => stock.symbol === selectedStock)?.change.startsWith('+')
+                  ? 'text-[#41c3a9] bg-[#e6f7f4]'
+                  : 'text-red-500 bg-red-50'
+                  } px-2 py-0.5 rounded-md text-sm`}>
                   {stocks.find(stock => stock.symbol === selectedStock)?.change || "0.00%"}
                 </span>
               </div>
@@ -610,7 +579,7 @@ export default function Dashboard() {
                     </div>
                     <div className="text-lg font-extrabold">€ 12.00</div>
                   </div>
-                  <button 
+                  <button
                     className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
                     onClick={() => setShowConfirmModal(true)}
                   >
@@ -643,7 +612,7 @@ export default function Dashboard() {
                     </div>
                     <div className="text-lg font-extrabold">€ 12.00</div>
                   </div>
-                  <button 
+                  <button
                     className="w-full py-4 bg-[#b3c6e6] rounded-2xl text-center font-bold text-base text-black mt-6"
                     onClick={() => setShowSellConfirmModal(true)}
                   >
@@ -689,16 +658,14 @@ export default function Dashboard() {
                     <div className="font-bold text-base">평가손익</div>
                     <div className="flex items-center">
                       <span
-                        className={`text-xs mr-1 ${
-                          portfolioData.profitLoss >= 0 ? "text-[#e74c3c]" : "text-[#3498db]"
-                        }`}
+                        className={`text-xs mr-1 ${portfolioData.profitLoss >= 0 ? "text-[#e74c3c]" : "text-[#3498db]"
+                          }`}
                       >
                         $
                       </span>
                       <span
-                        className={`text-xl font-bold ${
-                          portfolioData.profitLoss >= 0 ? "text-[#e74c3c]" : "text-[#3498db]"
-                        }`}
+                        className={`text-xl font-bold ${portfolioData.profitLoss >= 0 ? "text-[#e74c3c]" : "text-[#3498db]"
+                          }`}
                       >
                         {portfolioData.profitLoss >= 0 ? "+" : "-"}
                         {Math.abs(portfolioData.profitLoss).toFixed(2)}
@@ -726,7 +693,7 @@ export default function Dashboard() {
         </div>
       </div>
       <ProfileModal />
-      <BuyConfirmModal 
+      <BuyConfirmModal
         open={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
         onConfirm={() => {
@@ -735,7 +702,7 @@ export default function Dashboard() {
           setShowPanel(false);
         }}
       />
-      <SellConfirmModal 
+      <SellConfirmModal
         open={showSellConfirmModal}
         onClose={() => setShowSellConfirmModal(false)}
         onConfirm={() => {
