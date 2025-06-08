@@ -60,22 +60,7 @@ export default function Dashboard() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSellConfirmModal, setShowSellConfirmModal] = useState(false);
   const [isHeartFilled, setIsHeartFilled] = useState(false);
-  const [favoriteStocks, setFavoriteStocks] = useState<Stock[]>([
-    {
-      symbol: "MSFT",
-      name: "Microsoft Corp.",
-      price: "$213.10",
-      change: "+2.5%",
-      changePercent: "+2.5%"
-    },
-    {
-      symbol: "GOOGL",
-      name: "Alphabet Inc.",
-      price: "$213.10",
-      change: "+1.1%",
-      changePercent: "+1.1%"
-    },
-  ]);
+  const [favoriteStocks, setFavoriteStocks] = useState<Stock[]>([]);
   const [showMinuteOptions, setShowMinuteOptions] = useState(false);
   const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
   const router = useRouter();
