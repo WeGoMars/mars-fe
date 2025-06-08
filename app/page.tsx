@@ -478,16 +478,7 @@ export default function FinanceDashboard() {
                           {activePeriod === "분" && showMinuteOptions && (
                             <div className="absolute left-1/2 -translate-x-1/2 mt-2 bg-white border rounded-xl shadow-lg z-10 w-24 flex flex-col">
                               <button
-                                className={`py-2 px-4 text-sm hover:bg-gray-100 rounded-t-xl ${selectedMinute === "15분" ? "font-bold text-blue-600" : ""}`}
-                                onClick={() => {
-                                  setSelectedMinute("15분");
-                                  setShowMinuteOptions(false);
-                                }}
-                              >
-                                15분
-                              </button>
-                              <button
-                                className={`py-2 px-4 text-sm hover:bg-gray-100 rounded-b-xl ${selectedMinute === "1시간" ? "font-bold text-blue-600" : ""}`}
+                                className={`py-2 px-4 text-sm hover:bg-gray-100 rounded-xl ${selectedMinute === "1시간" ? "font-bold text-blue-600" : ""}`}
                                 onClick={() => {
                                   setSelectedMinute("1시간");
                                   setShowMinuteOptions(false);

@@ -485,7 +485,7 @@ export default function Dashboard() {
                 className="w-full h-full flex flex-col items-center justify-center"
               >
                 <StockChart
-                  data={stockChartData && stockChartData.data ? stockChartData.data : []}
+                  data={Array.isArray(stockChartData?.data) ? stockChartData.data : []}
                   symbol={selectedStock}
                   period={activePeriod}
                 />
