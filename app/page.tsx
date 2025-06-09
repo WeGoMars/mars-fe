@@ -240,6 +240,13 @@ export default function FinanceDashboard() {
     return data.slice().sort((a: any, b: any) => a.timestamp.localeCompare(b.timestamp));
   };
 
+  // 1시간 데이터 콘솔 출력 (디버깅용)
+  useEffect(() => {
+    if (activePeriod === "1시간") {
+      console.log('1시간 getProcessedChartData:', getProcessedChartData());
+    }
+  }, [activePeriod, stockChartData]);
+
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
       {/* Header */}
