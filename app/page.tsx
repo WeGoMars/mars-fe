@@ -23,7 +23,7 @@ export default function FinanceDashboard() {
   const router = useRouter()
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<string>("");
-  const [selectedStock, setSelectedStock] = useState<string>("AAPL");
+  const [selectedStock, setSelectedStock] = useState<string>("GOOGL");
   const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
   const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "1시간">("일");
   const [activeRightTab, setActiveRightTab] = useState<"종목정보 상세" | "내 계좌" | "AI 추천">("종목정보 상세");
