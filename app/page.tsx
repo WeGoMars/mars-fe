@@ -12,7 +12,7 @@ import SellConfirmModal from "@/components/SellConfirmModal";
 import SearchBar from "@/components/SearchBar";
 import StockDetails from "@/components/StockDetails";
 import type { Stock } from "@/lib/types";
-import { getStockChartData, getStockList } from "@/lib/api";
+import { getStockChartData, getStockList, searchStockList } from "@/lib/api";
 import useSWR from 'swr';
 
 
@@ -25,29 +25,28 @@ export default function FinanceDashboard() {
   const [currentTime, setCurrentTime] = useState<string>("");
   const [selectedStock, setSelectedStock] = useState<string>("AAPL");
   const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
-  const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "분">("일");
-  const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
+  const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "1시간">("일");
   const [activeRightTab, setActiveRightTab] = useState<"종목정보 상세" | "내 계좌" | "AI 추천">("종목정보 상세");
 
   const { data: stockChartData, error } = useSWR(
-    selectedStock ? ['stockChart', selectedStock, activePeriod, selectedMinute] : null,
+    selectedStock ? ['stockChart', selectedStock, activePeriod] : null,
     () => getStockChartData({
       symbol: selectedStock,
-      interval: activePeriod === "분" 
-        ? (selectedMinute === "15분" ? "1h" : "1h") 
-        : activePeriod === "일" 
-          ? "1day" 
-          : activePeriod === "주" 
-            ? "1week" 
+      interval: activePeriod === "1시간"
+        ? "1h"
+        : activePeriod === "일"
+          ? "1day"
+          : activePeriod === "주"
+            ? "1week"
             : "1month",
-      limit: activePeriod === "분" ? 100 : 30
+      limit: activePeriod === "1시간" ? 100 : 30
     })
   );
 
   const { data: stockListData, error: stockListError } = useSWR(
     ['stockList'],
     () => getStockList({
-      query: 'A',
+      option: 'hot',
       limit: 10
     })
   );
@@ -161,9 +160,61 @@ export default function FinanceDashboard() {
     }
   ]);
 
-  const handleStockSelect = (symbol: string) => {
+  const [searchedStockInfo, setSearchedStockInfo] = useState<any | null>(null);
+
+  const handleStockSelect = async (symbol: string) => {
     setSelectedStock(symbol);
+    // 종목 검색 결과에서 선택된 경우, 해당 종목의 상세 정보 fetch
+    try {
+      const res = await searchStockList({ query: symbol, limit: 1 });
+      if (res.success && res.data.length > 0) {
+        setSearchedStockInfo(res.data[0]);
+      } else {
+        setSearchedStockInfo(null);
+      }
+    } catch {
+      setSearchedStockInfo(null);
+    }
   };
+
+  // 중앙에 표시할 종목 정보 우선순위: 검색된 종목 > stockListData > 목데이터
+  const getSelectedStockInfo = () => {
+    if (searchedStockInfo && searchedStockInfo.symbol === selectedStock) {
+      return {
+        symbol: searchedStockInfo.symbol,
+        name: searchedStockInfo.name,
+        price: searchedStockInfo.currentPrice,
+        change: searchedStockInfo.priceDelta,
+      };
+    }
+    // stockListData에서 찾기 (data가 배열임을 명확히 단언)
+    const stockListArr = stockListData?.data as any[] | undefined;
+    if (stockListArr) {
+      const found = stockListArr.find((s: any) => s.symbol === selectedStock);
+      if (found) return {
+        symbol: found.symbol,
+        name: found.name,
+        price: found.currentPrice,
+        change: found.priceDelta,
+      };
+    }
+    // 목데이터에서 찾기
+    const fallback = stockData.find((s) => s.symbol === selectedStock);
+    if (fallback) return {
+      symbol: fallback.symbol,
+      name: fallback.name,
+      price: fallback.price,
+      change: fallback.change,
+    };
+    // 기본값
+    return {
+      symbol: selectedStock,
+      name: selectedStock,
+      price: 0,
+      change: 0,
+    };
+  };
+  const selectedInfo = getSelectedStockInfo();
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -319,13 +370,12 @@ export default function FinanceDashboard() {
           {/* 핫 종목 리스트 목 데이터 */}
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
-              {stockListData?.data.map((stock, index) => (
+              {(stockListData?.data as any[] | undefined)?.map((stock, index) => (
                 <div 
                   key={index} 
                   className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                   onClick={() => {
                     setSelectedStock(stock.symbol);
-                    // API 연동 시 여기에 API 호출 로직 추가
                     console.log(`Selected stock: ${stock.symbol}`);
                   }}
                 >
@@ -344,9 +394,9 @@ export default function FinanceDashboard() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-base">${stock.currentPrice}</div>
-                    <div className={`text-xs ${stock.priceDelta.toString().startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}>
-                      {Number(stock.priceDelta) > 0 ? '+' : ''}{Number(stock.priceDelta).toFixed(1)}%
+                    <div className="font-bold text-base">${stock.currentPrice.toFixed(2)}</div>
+                    <div className={`text-xs ${stock.priceDelta >= 0 ? 'text-[#41c3a9]' : 'text-red-500'}`}>
+                      {stock.priceDelta >= 0 ? '+' : ''}{stock.priceDelta.toFixed(2)}%
                     </div>
                   </div>
                 </div>
@@ -368,10 +418,17 @@ export default function FinanceDashboard() {
             {/* S&P 500 Header with Tabs - Styled like the image */}
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-3">
               <div className="flex items-center gap-2">
-                <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs">
-                  <span className="text-[10px]">{selectedStock}</span>
+                <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs overflow-hidden">
+                  <Image
+                    src={`/logos/${selectedInfo.symbol}.png`}
+                    alt={selectedInfo.symbol}
+                    width={28}
+                    height={28}
+                    style={{objectFit:'contain'}}
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
                 </div>
-                <h2 className="text-xl font-bold">{selectedStock}</h2>
+                <h2 className="text-xl font-bold">{selectedInfo.symbol}</h2>
               </div>
 
               {/* Buy/Sell and Time Period Tabs */}
@@ -396,70 +453,17 @@ export default function FinanceDashboard() {
 
                 {/* Time Period Tabs */}
                 <div className="flex ml-0 md:ml-2 bg-[#f5f7f9] rounded-full relative">
-                  {(["월", "주", "일", "분"] as const).map((period) => {
-                    if (period === "분") {
-                      return (
-                        <div key={period} className="relative">
-                          <button
-                            onClick={() => {
-                              if (activePeriod === "분") {
-                                setShowMinuteOptions((prev) => !prev);
-                              } else {
-                                setActivePeriod("분");
-                                setShowMinuteOptions(true);
-                              }
-                            }}
-                            className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                              activePeriod === period
-                                ? "bg-white shadow-sm"
-                                : "hover:bg-gray-100"
-                            }`}
-                          >
-                            {activePeriod === "분" ? selectedMinute : period}
-                          </button>
-                          {activePeriod === "분" && showMinuteOptions && (
-                            <div className="absolute left-1/2 -translate-x-1/2 mt-2 bg-white border rounded-xl shadow-lg z-10 w-24 flex flex-col">
-                              <button
-                                className={`py-2 px-4 text-sm hover:bg-gray-100 rounded-t-xl ${selectedMinute === "15분" ? "font-bold text-blue-600" : ""}`}
-                                onClick={() => {
-                                  setSelectedMinute("15분");
-                                  setShowMinuteOptions(false);
-                                }}
-                              >
-                                15분
-                              </button>
-                              <button
-                                className={`py-2 px-4 text-sm hover:bg-gray-100 rounded-b-xl ${selectedMinute === "1시간" ? "font-bold text-blue-600" : ""}`}
-                                onClick={() => {
-                                  setSelectedMinute("1시간");
-                                  setShowMinuteOptions(false);
-                                }}
-                              >
-                                1시간
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    } else {
-                      return (
-                        <button
-                          key={period}
-                          onClick={() => {
-                            setActivePeriod(period);
-                            setShowMinuteOptions(false);
-                          }}
-                          className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                            activePeriod === period
-                              ? "bg-white shadow-sm"
-                              : "hover:bg-gray-100"
-                          }`}
-                        >
-                          {period}
-                        </button>
-                      );
-                    }
-                  })}
+                  {(["월", "주", "일", "1시간"] as const).map((period) => (
+                    <button
+                      key={period}
+                      onClick={() => setActivePeriod(period)}
+                      className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
+                        activePeriod === period ? "bg-white shadow-sm" : "hover:bg-gray-100"
+                      }`}
+                    >
+                      {period}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
@@ -468,16 +472,16 @@ export default function FinanceDashboard() {
             <div className="mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl md:text-3xl font-bold">
-                  ${stockData.find(stock => stock.symbol === selectedStock)?.price || "0.00"}
+                  ${Number(selectedInfo.price).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
                 </span>
-                <span className={`${stockData.find(stock => stock.symbol === selectedStock)?.change.startsWith('+') ? 'text-[#41c3a9] bg-[#e6f7f4]' : 'text-red-500 bg-red-50'} px-2 py-0.5 rounded-md text-sm`}>
-                  {stockData.find(stock => stock.symbol === selectedStock)?.change || "0.00%"}
+                <span className={`${Number(selectedInfo.change) >= 0 ? 'text-[#41c3a9] bg-[#e6f7f4]' : 'text-red-500 bg-red-50'} px-2 py-0.5 rounded-md text-sm`}>
+                  {Number(selectedInfo.change) >= 0 ? '+' : ''}{Number(selectedInfo.change).toFixed(2)}%
                 </span>
               </div>
             </div>
 
             <div className="text-xs text-gray-500 mb-6">
-              {currentTime} · {selectedStock} · Disclaimer
+              {currentTime} · {selectedInfo.symbol} · Disclaimer
             </div>
              {/* Empty Chart Area (for user to add their own chart) */}
           <div className="h-[740px] flex flex-col items-center justify-center">
@@ -485,10 +489,10 @@ export default function FinanceDashboard() {
               id="chart-container"
               className="w-full h-full flex flex-col items-center justify-center"
             >
-              {stockChartData && stockChartData.data && stockChartData.data.length > 0 ? (
+              {Array.isArray(stockChartData?.data) && stockChartData.data.length > 0 ? (
                 <StockChart 
                   data={stockChartData.data} 
-                  symbol={selectedStock} 
+                  symbol={selectedInfo.symbol} 
                   period={activePeriod} 
                 />
               ) : (
@@ -633,9 +637,9 @@ export default function FinanceDashboard() {
           ) : (
             // 기존 카드 내용
             <div className="bg-white rounded-xl p-4 md:p-5 shadow-sm flex-1 overflow-auto flex flex-col">
-              {selectedStock && (
+              {selectedInfo.symbol && (
                 <StockDetails
-                  symbol={selectedStock}
+                  symbol={selectedInfo.symbol}
                   activeTab={activeRightTab}
                   onTabChange={(tab) => {
                     console.log('Tab change requested:', tab);

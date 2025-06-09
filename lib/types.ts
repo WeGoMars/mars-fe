@@ -4,7 +4,7 @@ export interface ApiResponse<T> {
   // 메시지
   message: string
   // 데이터
-  data: T[]
+  data: T
 }
 
 export interface Stock {
@@ -74,8 +74,8 @@ export interface GetStockChartDataResponse {
 
 
 export interface GetStockListRequest{
-  // 검색어
-  query: string
+  // 검색 옵션 (hot, owned, liked)
+  option: 'hot' | 'owned' | 'liked'
   // 검색 결과 개수
   limit: number
 }
@@ -167,3 +167,18 @@ export interface ErrorResponse {
   success: false;
   message: string;
 }
+export interface GetStockSearchRequest {
+  query: string;
+  limit: number;
+}
+
+export interface GetStockSearchResponse {
+  symbol: string;
+  name: string;
+  sector: string;
+  industry: string;
+  currentPrice: number;
+  priceDelta: number;
+  hourlyVolume: number;
+}
+

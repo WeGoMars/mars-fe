@@ -19,6 +19,8 @@ import { Heart } from 'lucide-react';
 import mockPortfolio from "@/lib/mock/mockportfolio";
 
 import ProfileHandler from "@/components/common/ProfileHandler"
+import useSWR from 'swr';
+import { getStockChartData } from "@/lib/api";
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -46,9 +48,9 @@ export default function Dashboard() {
   ]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedStock, setSelectedStock] = useState<string>("SPY");
+  const [selectedStock, setSelectedStock] = useState<string>("AAPL");
   const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
-  const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "분">("일");
+  const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "1시간">("일");
   const [activeRightTab, setActiveRightTab] = useState<"종목정보 상세" | "내 계좌" | "AI 추천">("종목정보 상세");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -58,30 +60,7 @@ export default function Dashboard() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSellConfirmModal, setShowSellConfirmModal] = useState(false);
   const [isHeartFilled, setIsHeartFilled] = useState(false);
-  const [favoriteStocks, setFavoriteStocks] = useState<Stock[]>([
-    {
-      symbol: "MSFT",
-      name: "Microsoft Corp.",
-      price: "$213.10",
-      change: "+2.5%",
-      changePercent: "+2.5%"
-    },
-    {
-      symbol: "GOOGL",
-      name: "Alphabet Inc.",
-      price: "$213.10",
-      change: "+1.1%",
-      changePercent: "+1.1%"
-    },
-    {
-      symbol: "SPOT",
-      name: "Spotify Corp.",
-      price: "$213.10",
-      change: "+2.5%",
-      changePercent: "+2.5%"
-    }
-  ]);
-  const [showMinuteOptions, setShowMinuteOptions] = useState(false);
+  const [favoriteStocks, setFavoriteStocks] = useState<Stock[]>([]);
   const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
@@ -90,17 +69,29 @@ export default function Dashboard() {
     setSelectedStock(symbol);
   };
 
- 
   const portfolioData = mockPortfolio;
-
   const cashAsset = portfolioData.seedMoney - portfolioData.investmentAmount;
- 
 
   // 관심 종목 상태가 변경될 때마다 하트 상태 업데이트
   useEffect(() => {
     const isFavorite = favoriteStocks.some(stock => stock.symbol === selectedStock);
     setIsHeartFilled(isFavorite);
   }, [selectedStock, favoriteStocks]);
+
+  const { data: stockChartData, error: stockChartError } = useSWR(
+    selectedStock ? ['stockChart', selectedStock, activePeriod, selectedMinute] : null,
+    () => getStockChartData({
+      symbol: selectedStock,
+      interval: activePeriod === "1시간"
+        ? "1h"
+        : activePeriod === "일"
+          ? "1day"
+          : activePeriod === "주"
+            ? "1week"
+            : "1month",
+      limit: activePeriod === "1시간" ? 100 : 30
+    })
+  );
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -295,13 +286,6 @@ export default function Dashboard() {
                   changePercent: "+1.1%"
                 },
                 {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                  changePercent: "+2.5%"
-                },
-                {
                   symbol: "MSFT",
                   name: "Microsoft Corp.",
                   price: "$213.10",
@@ -314,13 +298,6 @@ export default function Dashboard() {
                   price: "$213.10",
                   change: "+1.1%",
                   changePercent: "+1.1%"
-                },
-                {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                  changePercent: "+2.5%"
                 },
               ].map((stock, index) => (
                 <div
@@ -378,54 +355,45 @@ export default function Dashboard() {
 
         {/* Middle Column */}
         <div className="flex-1 flex flex-col">
-          {/* Search Bar */}
+          {/* Search Bar - Styled like the screenshot */}
           <div className="flex justify-center mb-4">
             <div className="relative w-full max-w-2xl">
               <SearchBar onSelectStock={selectStock} />
             </div>
           </div>
-
-          {/* Main Chart Area */}
+          {/* Main Chart Area - app/page.tsx 참고하여 UI 통일 */}
           <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm flex-1 overflow-auto">
-            {/* S&P 500 Header with Tabs */}
+            {/* S&P 500 Header with Tabs + 좋아요 하트 */}
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-3">
               <div className="flex items-center gap-2">
                 <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs">
                   <span className="text-[10px]">{selectedStock}</span>
                 </div>
                 <h2 className="text-xl font-bold">{selectedStock}</h2>
-                <button
-                  onClick={() => {
-                    const newIsHeartFilled = !isHeartFilled;
-                    setIsHeartFilled(newIsHeartFilled);
-
-                    if (newIsHeartFilled) {
-                      const currentStock = stocks.find(stock => stock.symbol === selectedStock);
-                      if (currentStock && !favoriteStocks.some(stock => stock.symbol === currentStock.symbol)) {
-                        setFavoriteStocks(prev => [...prev, currentStock]);
+                {isLoggedIn && (
+                  <button
+                    onClick={() => {
+                      const isFavorite = favoriteStocks.some(stock => stock.symbol === selectedStock);
+                      if (isFavorite) {
+                        setFavoriteStocks(prev => prev.filter(stock => stock.symbol !== selectedStock));
+                      } else {
+                        const stock = stocks.find(s => s.symbol === selectedStock);
+                        if (stock) setFavoriteStocks(prev => [...prev, stock]);
                       }
-                    } else {
-                      setFavoriteStocks(prev => prev.filter(stock => stock.symbol !== selectedStock));
-                    }
-                  }}
-                  className="flex items-center justify-center"
-                >
-                  <Heart
-                    className={`w-4 h-4 cursor-pointer transition-colors ${isHeartFilled ? 'text-red-500 fill-red-500' : 'text-[#1f2024]'
-                      }`}
-                  />
-                </button>
+                    }}
+                    className="flex items-center justify-center"
+                  >
+                    <Heart
+                      className={`w-4 h-4 cursor-pointer transition-colors ${isHeartFilled ? 'text-red-500 fill-red-500' : 'text-[#1f2024]'}`}
+                    />
+                  </button>
+                )}
               </div>
-
               {/* Buy/Sell and Time Period Tabs */}
               <div className="flex flex-wrap gap-2">
-                {/* Buy/Sell Tabs */}
                 <button
                   onClick={() => setShowPanel('buy')}
-                  className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activeTab === "매수"
-                    ? "bg-[#fce7e7]"
-                    : "bg-white hover:bg-gray-50"
-                    }`}
+                  className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activeTab === "매수" ? "bg-[#fce7e7]" : "bg-white hover:bg-gray-50"}`}
                 >
                   매수
                 </button>
@@ -435,101 +403,57 @@ export default function Dashboard() {
                 >
                   매도
                 </button>
-
-                {/* Time Period Tabs */}
                 <div className="flex ml-0 md:ml-2 bg-[#f5f7f9] rounded-full relative">
-                  {(["월", "주", "일", "분"] as const).map((period) => {
-                    if (period === "분") {
-                      return (
-                        <div key={period} className="relative">
-                          <button
-                            onClick={() => {
-                              if (activePeriod === "분") {
-                                setShowMinuteOptions((prev) => !prev);
-                              } else {
-                                setActivePeriod("분");
-                                setShowMinuteOptions(true);
-                              }
-                            }}
-                            className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activePeriod === period
-                              ? "bg-white shadow-sm"
-                              : "hover:bg-gray-100"
-                              }`}
-                          >
-                            {activePeriod === "분" ? selectedMinute : period}
-                          </button>
-                          {activePeriod === "분" && showMinuteOptions && (
-                            <div className="absolute left-1/2 -translate-x-1/2 mt-2 bg-white border rounded-xl shadow-lg z-10 w-24 flex flex-col">
-                              <button
-                                className={`py-2 px-4 text-sm hover:bg-gray-100 rounded-t-xl ${selectedMinute === "15분" ? "font-bold text-blue-600" : ""}`}
-                                onClick={() => {
-                                  setSelectedMinute("15분");
-                                  setShowMinuteOptions(false);
-                                }}
-                              >
-                                15분
-                              </button>
-                              <button
-                                className={`py-2 px-4 text-sm hover:bg-gray-100 rounded-b-xl ${selectedMinute === "1시간" ? "font-bold text-blue-600" : ""}`}
-                                onClick={() => {
-                                  setSelectedMinute("1시간");
-                                  setShowMinuteOptions(false);
-                                }}
-                              >
-                                1시간
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    } else {
-                      return (
-                        <button
-                          key={period}
-                          onClick={() => {
-                            setActivePeriod(period);
-                            setShowMinuteOptions(false);
-                          }}
-                          className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activePeriod === period
-                            ? "bg-white shadow-sm"
-                            : "hover:bg-gray-100"
-                            }`}
-                        >
-                          {period}
-                        </button>
-                      );
-                    }
-                  })}
+                  {(["월", "주", "일", "1시간"] as const).map((period) => (
+                    <button
+                      key={period}
+                      onClick={() => setActivePeriod(period)}
+                      className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
+                        activePeriod === period ? "bg-white shadow-sm" : "hover:bg-gray-100"
+                      }`}
+                    >
+                      {period}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
-
-            {/* Price Display */}
+            {/* 가격, 변동률, 날짜 */}
             <div className="mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl md:text-3xl font-bold">
                   ${stocks.find(stock => stock.symbol === selectedStock)?.price.replace('$', '') || "0.00"}
                 </span>
-                <span className={`${stocks.find(stock => stock.symbol === selectedStock)?.change.startsWith('+')
-                  ? 'text-[#41c3a9] bg-[#e6f7f4]'
-                  : 'text-red-500 bg-red-50'
-                  } px-2 py-0.5 rounded-md text-sm`}>
+                <span className={`${stocks.find(stock => stock.symbol === selectedStock)?.change.startsWith('+') ? 'text-[#41c3a9] bg-[#e6f7f4]' : 'text-red-500 bg-red-50'} px-2 py-0.5 rounded-md text-sm`}>
                   {stocks.find(stock => stock.symbol === selectedStock)?.change || "0.00%"}
                 </span>
               </div>
             </div>
-
             <div className="text-xs text-gray-500 mb-6">
               {new Date().toLocaleString()} · {selectedStock} · Disclaimer
             </div>
-
             {/* Chart Area */}
             <div className="h-[740px] flex flex-col items-center justify-center">
               <div
                 id="chart-container"
                 className="w-full h-full flex flex-col items-center justify-center"
               >
-                <StockChart symbol={selectedStock} period={activePeriod} />
+                <StockChart
+                  data={Array.isArray(stockChartData?.data)
+                    ? stockChartData.data.filter(
+                        d =>
+                          d &&
+                          d.timestamp &&
+                          d.open != null &&
+                          d.close != null &&
+                          d.high != null &&
+                          d.low != null &&
+                          d.volume != null
+                      )
+                    : []}
+                  symbol={selectedStock}
+                  period={activePeriod}
+                />
               </div>
             </div>
           </div>

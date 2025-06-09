@@ -1,5 +1,5 @@
-import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest } from "./types"
-import type { SignUpRequest, SignUpResponse, WalletResponse, TradeResponse, TradeRequest } from "./types"
+import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest, GetStockSearchRequest, GetStockSearchResponse } from "./types"
+import type { SignUpRequest, SignUpResponse, WalletResponse,TradeResponse, TradeRequest } from "./types"
 import { fetchBaseQuery, createApi } from '@reduxjs/toolkit/query/react';
 import type { LoginRequest, LoginResponse, UserProfile } from "./types"
 
@@ -72,9 +72,9 @@ export async function getStockChartData(params: GetStockChartDataRequest): Promi
 
 // 주식 종목 검색
 export async function getStockList(params: GetStockListRequest): Promise<ApiResponse<GetStockListResponse>>{
-  const { query, limit } = params
+  const { option, limit } = params
   const response = await fetch(
-    `api/stocks/search?query=${query}&limit=${limit}`,
+    `api/stocks/list?option=${option}&limit=${limit}`,
     {
       method: 'GET',
       headers: {
@@ -88,6 +88,24 @@ export async function getStockList(params: GetStockListRequest): Promise<ApiResp
   }
 
   return response.json()
+}
+
+// 종목 검색 (query 기반)
+export async function searchStockList(params: GetStockSearchRequest): Promise<ApiResponse<GetStockSearchResponse[]>> {
+  const { query, limit } = params;
+  const response = await fetch(
+    `api/stocks/search?query=${encodeURIComponent(query)}&limit=${limit}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  if (!response.ok) {
+    throw new Error('Failed to fetch search results');
+  }
+  return response.json();
 }
 
 export const userApi = createApi({
