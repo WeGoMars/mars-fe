@@ -65,6 +65,17 @@ export default function Dashboard() {
   const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
+  const [selectedInfo, setSelectedInfo] = useState<{
+    symbol: string;
+    name: string;
+    price: number;
+    change: number;
+  }>({
+    symbol: "GOOGL",
+    name: "Alphabet Inc.",
+    price: 0,
+    change: 0
+  });
 
   const selectStock = (symbol: string) => {
     setSelectedStock(symbol);
@@ -112,6 +123,17 @@ export default function Dashboard() {
       limit: activePeriod === "1시간" ? 100 : 30
     })
   );
+
+  // 관심 종목 클릭 시 정보 업데이트
+  const handleFavoriteStockClick = (stock: any) => {
+    setSelectedStock(stock.symbol);
+    setSelectedInfo({
+      symbol: stock.symbol,
+      name: stock.name,
+      price: stock.currentPrice,
+      change: stock.priceDelta
+    });
+  };
 
   // 하트 버튼 클릭 핸들러
   const handleHeartClick = async () => {
@@ -274,7 +296,7 @@ export default function Dashboard() {
                     key={index}
                     className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                     onClick={() => {
-                      setSelectedStock(stock.symbol);
+                      handleFavoriteStockClick(stock);
                     }}
                   >
                     <div className="flex items-center gap-3">
@@ -457,14 +479,14 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            {/* 가격, 변동률, 날짜 */}
+            {/* s&p500 아이콘, 주가, 변동률 표시 영역 */}
             <div className="mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl md:text-3xl font-bold">
-                  ${stocks.find(stock => stock.symbol === selectedStock)?.price.replace('$', '') || "0.00"}
+                  ${Number(selectedInfo.price).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
                 </span>
-                <span className={`${stocks.find(stock => stock.symbol === selectedStock)?.change.startsWith('+') ? 'text-[#41c3a9] bg-[#e6f7f4]' : 'text-red-500 bg-red-50'} px-2 py-0.5 rounded-md text-sm`}>
-                  {stocks.find(stock => stock.symbol === selectedStock)?.change || "0.00%"}
+                <span className={`${Number(selectedInfo.change) >= 0 ? 'text-[#41c3a9] bg-[#e6f7f4]' : 'text-red-500 bg-red-50'} px-2 py-0.5 rounded-md text-sm`}>
+                  {Number(selectedInfo.change) >= 0 ? '+' : ''}{Number(selectedInfo.change).toFixed(2)}%
                 </span>
               </div>
             </div>
