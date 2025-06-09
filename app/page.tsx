@@ -240,15 +240,16 @@ export default function FinanceDashboard() {
         };
       });
     }
-    // null/undefined, timestamp 또는 open/high/low/close 값이 없는 데이터 제거
+    // null/undefined, timestamp 또는 open/high/low/close 값이 없는 데이터 제거 (문자열 'null', 'undefined', NaN도 제외)
     data = data.filter(
       (item: any) =>
         item &&
         item.timestamp &&
-        item.open != null &&
-        item.high != null &&
-        item.low != null &&
-        item.close != null
+        item.open != null && item.open !== 'null' && item.open !== 'undefined' && !isNaN(Number(item.open)) &&
+        item.high != null && item.high !== 'null' && item.high !== 'undefined' && !isNaN(Number(item.high)) &&
+        item.low != null && item.low !== 'null' && item.low !== 'undefined' && !isNaN(Number(item.low)) &&
+        item.close != null && item.close !== 'null' && item.close !== 'undefined' && !isNaN(Number(item.close)) &&
+        item.volume != null && item.volume !== 'null' && item.volume !== 'undefined' && !isNaN(Number(item.volume))
     );
     // timestamp 기준 정렬
     if (activePeriod === "1시간") {
