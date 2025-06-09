@@ -21,6 +21,7 @@ import mockPortfolio from "@/lib/mock/mockportfolio";
 import ProfileHandler from "@/components/common/ProfileHandler"
 import useSWR from 'swr';
 import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks } from "@/lib/api";
+import BuyPanel from "@/components/BuyPanel"
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -533,39 +534,24 @@ export default function Dashboard() {
                   <X className="w-5 h-5 text-gray-500" />
                 </button>
               </div>
-              {showPanel === 'buy' && (
-                <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
-                      <div className="text-center">
-                        <div className="text-xs font-bold">S&P</div>
-                        <div className="text-xs">500</div>
-                      </div>
-                    </div>
-                    <h2 className="text-xl font-extrabold">S&P 500</h2>
-                  </div>
-                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 재투자하는 ETF</p>
-                  <div className="flex items-center justify-between mt-6">
-                    <div className="font-bold text-base">수량</div>
-                    <div className="flex items-center gap-4">
-                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="text-lg font-bold">1</span>
-                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div className="text-lg font-extrabold">€ 12.00</div>
-                  </div>
-                  <button
-                    className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
-                    onClick={() => setShowConfirmModal(true)}
-                  >
-                    매수
-                  </button>
-                </div>
-              )}
+             {showPanel === 'buy' && (
+              <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
+                <BuyPanel
+                  open={showPanel === 'buy'}
+                  onClose={() => setShowPanel(false)}
+                  symbol={selectedStock}
+                  name={stocks.find((s) => s.symbol === selectedStock)?.name || "이름 없음"}
+                  price={parseFloat(stocks.find((s) => s.symbol === selectedStock)?.price.replace("$", "") || "0")}
+                  description=""
+                />
+                <button
+                  className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
+                  onClick={() => setShowConfirmModal(true)}
+                >
+                  매수
+                </button>
+              </div>
+            )}
               {showPanel === 'sell' && (
                 <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
                   <div className="flex items-center gap-4">

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { X, User, ArrowRight, Camera } from "lucide-react"
 import { useEditProfileMutation } from "@/lib/api";
+import { useGetProfileQuery } from "@/lib/api";
 
 export default function ProfileModal() {
   const router = useRouter()
@@ -28,7 +29,7 @@ export default function ProfileModal() {
     url.searchParams.delete("modal")
     router.push(url.pathname)
   }
-
+ const { refetch } = useGetProfileQuery();
  const handleSubmit = async () => {
   try {
     const body = {
@@ -37,10 +38,10 @@ export default function ProfileModal() {
     };
 
     await editProfile(body).unwrap();
+    await refetch();
 
     alert("닉네임이 성공적으로 변경되었습니다!");
     handleCloseModal();
-    // window.location.reload();
   } catch (error) {
     console.error("프로필 수정 오류:", error);
     alert("서버 오류가 발생했습니다.");
