@@ -236,7 +236,12 @@ export default function FinanceDashboard() {
         item.low != null &&
         item.close != null
     );
-    // timestamp 기준 오름차순 정렬
+    // timestamp 기준 정렬
+    if (activePeriod === "1시간") {
+      // 내림차순 (최신 → 과거)
+      return data.slice().sort((a: any, b: any) => b.timestamp.localeCompare(a.timestamp));
+    }
+    // 나머지는 오름차순
     return data.slice().sort((a: any, b: any) => a.timestamp.localeCompare(b.timestamp));
   };
 
