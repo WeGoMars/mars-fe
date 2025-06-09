@@ -99,7 +99,7 @@ export default function FinanceDashboard() {
     if (modal === "register") {
       setLoginOpen(false)
       setRegisterOpen(true)
-    } else if (modal ==="login") {
+    } else if (modal === "login") {
       setRegisterOpen(false)
       setLoginOpen(true)
     } else {
@@ -108,12 +108,12 @@ export default function FinanceDashboard() {
     }
   }, [searchParams])
   const clearModalQuery = () => {
-  const url = new URL(window.location.href)
-  url.searchParams.delete("modal")
-  router.replace(url.pathname + url.search, { scroll: false })
+    const url = new URL(window.location.href)
+    url.searchParams.delete("modal")
+    router.replace(url.pathname + url.search, { scroll: false })
 
-  setLoginOpen(false)
-  setRegisterOpen(false)
+    setLoginOpen(false)
+    setRegisterOpen(false)
   }
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -218,7 +218,7 @@ export default function FinanceDashboard() {
   };
   const selectedInfo = getSelectedStockInfo();
   const [quantity, setQuantity] = useState<number>(1);
-  
+
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -232,13 +232,13 @@ export default function FinanceDashboard() {
             <Menu className="w-6 h-6 text-gray-700" />
           </button>
           <Link href="/">
-          <Image
-            src="/marslogo.png"
-            alt="Mars 로고"
-            width={30}
-            height={30}
-            className="rounded-full cursor-pointer"
-          />
+            <Image
+              src="/marslogo.png"
+              alt="Mars 로고"
+              width={30}
+              height={30}
+              className="rounded-full cursor-pointer"
+            />
           </Link>
           <span className="text-lg font-medium">Mars</span>
         </div>
@@ -252,7 +252,7 @@ export default function FinanceDashboard() {
               url.searchParams.set("modal", "register")
               router.push(url.toString())
             }}
-          className="border border-[#006ffd] text-[#006ffd] px-4 py-2 rounded-md hover:bg-[#f0f7ff] transition-colors">
+            className="border border-[#006ffd] text-[#006ffd] px-4 py-2 rounded-md hover:bg-[#f0f7ff] transition-colors">
             회원가입
           </button>
           <button
@@ -262,7 +262,7 @@ export default function FinanceDashboard() {
               router.push(url.toString())
             }}
             className="bg-[#006ffd] text-white px-4 py-2 rounded-md hover:bg-[#0057cc] transition-colors"
-            >
+          >
             로그인
           </button>
           <LoginModal
@@ -324,8 +324,8 @@ export default function FinanceDashboard() {
 
           <div className="space-y-6">
             {stockData.map((stock, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                 onClick={() => {
                   setSelectedStock(stock.symbol);
@@ -372,8 +372,8 @@ export default function FinanceDashboard() {
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
               {(stockListData?.data as any[] | undefined)?.map((stock, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                   onClick={() => {
                     setSelectedStock(stock.symbol);
@@ -387,7 +387,7 @@ export default function FinanceDashboard() {
                         alt={stock.symbol}
                         width={28}
                         height={28}
-                        style={{objectFit:'contain'}}
+                        style={{ objectFit: 'contain' }}
                         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                       />
                     </div>
@@ -427,7 +427,7 @@ export default function FinanceDashboard() {
                     alt={selectedInfo.symbol}
                     width={28}
                     height={28}
-                    style={{objectFit:'contain'}}
+                    style={{ objectFit: 'contain' }}
                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                   />
                 </div>
@@ -439,11 +439,10 @@ export default function FinanceDashboard() {
                 {/* Buy/Sell Tabs */}
                 <button
                   onClick={() => setShowPanel('buy')}
-                  className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                    activeTab === "매수"
+                  className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activeTab === "매수"
                       ? "bg-[#fce7e7]"
                       : "bg-white hover:bg-gray-50"
-                  }`}
+                    }`}
                 >
                   매수
                 </button>
@@ -460,9 +459,8 @@ export default function FinanceDashboard() {
                     <button
                       key={period}
                       onClick={() => setActivePeriod(period)}
-                      className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                        activePeriod === period ? "bg-white shadow-sm" : "hover:bg-gray-100"
-                      }`}
+                      className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activePeriod === period ? "bg-white shadow-sm" : "hover:bg-gray-100"
+                        }`}
                     >
                       {period}
                     </button>
@@ -475,7 +473,7 @@ export default function FinanceDashboard() {
             <div className="mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl md:text-3xl font-bold">
-                  ${Number(selectedInfo.price).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
+                  ${Number(selectedInfo.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
                 <span className={`${Number(selectedInfo.change) >= 0 ? 'text-[#41c3a9] bg-[#e6f7f4]' : 'text-red-500 bg-red-50'} px-2 py-0.5 rounded-md text-sm`}>
                   {Number(selectedInfo.change) >= 0 ? '+' : ''}{Number(selectedInfo.change).toFixed(2)}%
@@ -486,23 +484,23 @@ export default function FinanceDashboard() {
             <div className="text-xs text-gray-500 mb-6">
               {currentTime} · {selectedInfo.symbol} · Disclaimer
             </div>
-             {/* Empty Chart Area (for user to add their own chart) */}
-          <div className="h-[740px] flex flex-col items-center justify-center">
-            <div
-              id="chart-container"
-              className="w-full h-full flex flex-col items-center justify-center"
-            >
-              {Array.isArray(stockChartData?.data) && stockChartData.data.length > 0 ? (
-                <StockChart 
-                  data={stockChartData.data} 
-                  symbol={selectedInfo.symbol} 
-                  period={activePeriod} 
-                />
-              ) : (
-                <div className="text-gray-400">차트 데이터를 불러오는 중입니다...</div>
-              )}
+            {/* Empty Chart Area (for user to add their own chart) */}
+            <div className="h-[740px] flex flex-col items-center justify-center">
+              <div
+                id="chart-container"
+                className="w-full h-full flex flex-col items-center justify-center"
+              >
+                {Array.isArray(stockChartData?.data) && stockChartData.data.length > 0 ? (
+                  <StockChart
+                    data={stockChartData.data}
+                    symbol={selectedInfo.symbol}
+                    period={activePeriod}
+                  />
+                ) : (
+                  <div className="text-gray-400">차트 데이터를 불러오는 중입니다...</div>
+                )}
+              </div>
             </div>
-          </div>
           </div>
         </div>
 
@@ -527,69 +525,70 @@ export default function FinanceDashboard() {
                 </button>
               </div>
               {showPanel === 'buy' && (
-  <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
-    {/* 종목 정보 영역 */}
-    <div className="flex items-center gap-4">
-      <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
-        <div className="text-center">
-          <div className="text-xs font-bold">{selectedInfo.symbol.slice(0, 3)}</div>
-          <div className="text-xs">{selectedInfo.symbol.slice(3)}</div>
-        </div>
-      </div>
-      <h2 className="text-xl font-extrabold">{selectedInfo.name}</h2>
-    </div>
+                <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
+                  {/* 종목 정보 영역 */}
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
+                      <div className="text-center">
+                        <div className="text-xs font-bold">{selectedInfo.symbol.slice(0, 3)}</div>
+                        <div className="text-xs">{selectedInfo.symbol.slice(3)}</div>
+                      </div>
+                    </div>
+                    <h2 className="text-xl font-extrabold">{selectedInfo.name}</h2>
+                  </div>
 
-    {/* 종목 설명: 원래 비워뒀으면 이 부분 생략 가능 */}
-    {/* <p className="text-gray-400 text-center text-base font-semibold">
+                  {/* 종목 설명: 원래 비워뒀으면 이 부분 생략 가능 */}
+                  {/* <p className="text-gray-400 text-center text-base font-semibold">
       {selectedInfo.description}
     </p> */}
 
-    {/* 수량 조절 영역 */}
-    <div className="flex items-center justify-between mt-6">
-      <div className="font-bold text-base">수량</div>
-      <div className="flex items-center gap-4">
-        <button
-          onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-          className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold"
-        >
-          <Minus className="w-4 h-4" />
-        </button>
-        <span className="text-lg font-bold">{quantity}</span>
-        <button
-          onClick={() => setQuantity((prev) => prev + 1)}
-          className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold"
-        >
-          <Plus className="w-4 h-4" />
-        </button>
-      </div>
-      <div className="text-lg font-extrabold">
-        ${Number(selectedInfo.price * quantity).toFixed(2)}
-      </div>
-    </div>
+                  {/* 수량 조절 영역 */}
+                  <div className="flex items-center justify-between mt-6">
+                    <div className="font-bold text-base">수량</div>
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                        className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      <span className="text-lg font-bold">{quantity}</span>
+                      <button
+                        onClick={() => setQuantity((prev) => prev + 1)}
+                        className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="text-lg font-extrabold">
+                      ${Number(selectedInfo.price * quantity).toFixed(2)}
+                    </div>
+                  </div>
 
-    {/* 매수 버튼 */}
-    <button
-      className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
-      onClick={async () => {
-        try {
-          const body = {
-            symbol: selectedInfo.symbol,
-            quantity,
-            price: Number(selectedInfo.price),
-          };
-          const res = await buyStock(body).unwrap();
-          alert(`${res.data.symbol} 매수 완료!`);
-          setShowConfirmModal(true); // 추후 모달로 넘어갈 수 있게
-        } catch (err) {
-          alert("매수 실패! 다시 시도해주세요.");
-          console.error(err);
-        }
-      }}
-    >
-      매수
-    </button>
-  </div>
-  )}
+                  {/* 매수 버튼 */}
+                  <button
+                    className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
+                    onClick={async () => {
+                      try {
+                        const body = {
+                          symbol: selectedInfo.symbol,
+                          quantity,
+                          price: Number(selectedInfo.price),
+                        };
+                        const res = await buyStock(body).unwrap();
+                        alert(`${res.data.symbol} 매수 완료!`);
+                        setShowConfirmModal(true); // 추후 모달로 넘어갈 수 있게
+                      } catch (err) {
+                        alert("로그인이 필요합니다.");
+                        console.error(err);
+                        window.location.href = "http://13.220.145.152/?modal=login";
+                      }
+                    }}
+                  >
+                    매수
+                  </button>
+                </div>
+              )}
               {showPanel === 'sell' && (
                 <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
                   <div className="flex items-center gap-4">
@@ -615,7 +614,7 @@ export default function FinanceDashboard() {
                     </div>
                     <div className="text-lg font-extrabold">€ 12.00</div>
                   </div>
-                  <button 
+                  <button
                     className="w-full py-4 bg-[#b3c6e6] rounded-2xl text-center font-bold text-base text-black mt-6"
                     onClick={() => setShowSellConfirmModal(true)}
                   >
@@ -690,7 +689,7 @@ export default function FinanceDashboard() {
       </div>
 
       {/* BuyConfirmModal과 SellConfirmModal 추가 */}
-      <BuyConfirmModal 
+      <BuyConfirmModal
         open={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
         onConfirm={() => {
@@ -699,7 +698,7 @@ export default function FinanceDashboard() {
           setShowPanel(false);
         }}
       />
-      <SellConfirmModal 
+      <SellConfirmModal
         open={showSellConfirmModal}
         onClose={() => setShowSellConfirmModal(false)}
         onConfirm={() => {
