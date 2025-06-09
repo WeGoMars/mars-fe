@@ -110,9 +110,9 @@ export default function Dashboard() {
     setIsHeartFilled(isFavorite);
   }, [selectedStock, favoriteStocksData]);
 
-  // 관심종목 데이터가 로드되면 selectedStock에 해당하는 종목 정보로 selectedInfo를 자동 업데이트
+  // 관심종목 데이터가 로드되면 selectedStock에 해당하는 종목 정보로 selectedInfo를 자동 업데이트 (API만 사용)
   useEffect(() => {
-    if (favoriteStocksData?.data && selectedStock) {
+    if (selectedStock && favoriteStocksData?.data) {
       const found = favoriteStocksData.data.find((s: any) => s.symbol === selectedStock);
       if (found) {
         setSelectedInfo({
@@ -120,6 +120,15 @@ export default function Dashboard() {
           name: found.name,
           price: found.currentPrice,
           change: found.priceDelta
+        });
+        setLogoError(false);
+      } else {
+        // 관심종목에 없으면 0으로 초기화
+        setSelectedInfo({
+          symbol: selectedStock,
+          name: '',
+          price: 0,
+          change: 0
         });
         setLogoError(false);
       }
