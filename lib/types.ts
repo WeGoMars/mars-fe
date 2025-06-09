@@ -20,17 +20,46 @@ export interface Stock {
 }
 
 export interface StockDetails {
-  symbol: string
-  name: string
-  price: string
-  change: string
-  changePercent: string
-  marketCap: string
-  company: string
-  listingDate: string
-  assets: string
-  shares: string
-  description: string
+  /** 종목 고유 ID */
+  stockId: number;
+  /** 종목 코드 (예: AAPL) */
+  symbol: string;
+  /** 종목명 (예: Apple Inc.) */
+  name: string;
+  /** 자기자본이익률 (Return on Equity) */
+  roe: number;
+  /** 주당순이익 (Earnings Per Share) */
+  eps: number;
+  /** 주당순자산 (Book Value Per Share) */
+  bps: number;
+  /** 베타 계수 (시장 대비 변동성) */
+  beta: number;
+  /** 시가총액 (Market Capitalization) */
+  marketCap: number;
+  /** 배당수익률 (Dividend Yield) */
+  dividendYield: number;
+  /** 유동비율 (Current Ratio) */
+  currentRatio: number;
+  /** 부채비율 (Debt Ratio) */
+  debtRatio: number;
+  /** 섹터 (예: Technology) */
+  sector: string;
+  /** 산업군 (예: Consumer Electronics) */
+  industry: string;
+  /** 전일 종가 */
+  lastPrice: number;
+  /** 현재가 */
+  currentPrice: number;
+  /** 시가총액 (예: 4.4조원) */
+  marketCapText?: string;
+  /** 운용사 (예: 삼성자산운용(ETF)) */
+  company?: string;
+  /** 상장일 (예: 2021년 4월 9일) */
+  listingDate?: string;
+  /** 운용자산 (예: 4.4조원) */
+  assets?: string;
+  /** 발행주수 (예: 230,800,000주) */
+  shares?: string;
 }
 
 export interface ChartData {
@@ -143,5 +172,15 @@ export interface GetStockSearchResponse {
   currentPrice: number;
   priceDelta: number;
   hourlyVolume: number;
+}
+
+/** 종목 상세 정보 API 응답 인터페이스 */
+export interface GetStockDetailsResponse {
+  /** API 호출 성공 여부 */
+  success: boolean;
+  /** 응답 메시지 */
+  message: string;
+  /** 종목 상세 정보 데이터 */
+  data: StockDetails;
 }
 

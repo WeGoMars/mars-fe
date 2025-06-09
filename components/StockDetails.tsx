@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { getStockDetails, getStockNews } from '@/lib/api';
-import type { StockDetails as StockDetailsType, NewsItem, Stock } from '@/lib/types';
+import type { StockDetails, NewsItem, Stock } from '@/lib/types';
 import { Check, ChevronDown, ChevronLeft, Heart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,7 +21,7 @@ interface StockDetailsProps {
 }
 
 export default function StockDetails({ symbol, activeTab, onTabChange, favoriteStocks, setFavoriteStocks, isLoggedIn }: StockDetailsProps) {
-  const [details, setDetails] = useState<StockDetailsType | null>(null);
+  const [details, setDetails] = useState<StockDetails | null>(null);
   const [news, setNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,8 +38,12 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
       setIsLoading(true);
       setError(null);
       try {
-        const detailsData = await getStockDetails(symbol);
-        setDetails(detailsData);
+        const response = await getStockDetails(symbol);
+        if (response.success) {
+          setDetails(response.data);
+        } else {
+          setError(response.message);
+        }
 
         const newsData = await getStockNews(symbol);
         setNews(newsData);
@@ -460,84 +464,40 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
           )}
         </div>
       ) : (
-        details ? (
+        activeTab === '종목정보 상세' && details ? (
           <>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs">
-                  <span className="text-[10px]">{symbol.substring(0, 2)}</span>
-                  <span className="text-[10px]">{symbol.substring(2, 4)}</span>
+                  <span className="text-[10px]">{details.symbol.substring(0, 2)}</span>
+                  <span className="text-[10px]">{details.symbol.substring(2, 4)}</span>
                 </div>
                 <h3 className="text-lg md:text-xl font-bold">{details.name}</h3>
               </div>
               <div>
-                <div className="font-bold text-right">{details.price}</div>
-                <div
-                  className={`text-xs text-right ${details.change.startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}
-                >
-                  {details.change.startsWith('+') ? '↑' : '↓'} {details.changePercent}
-                </div>
+                <div className="font-bold text-right">{details.currentPrice.toLocaleString()}원</div>
               </div>
             </div>
-
-            <div className="text-sm text-gray-500 mb-4">{details.description}</div>
-
-            {/* Stock Details */}
             <div className="space-y-3 mb-4">
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">시가총액</span>
-                <span className="text-sm font-medium">{details.marketCap}</span>
+                <span className="text-sm font-medium">{details.marketCapText || '-'}</span>
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">운용사</span>
-                <span className="text-sm font-medium">{details.company}</span>
+                <span className="text-sm font-medium">{details.company || '-'}</span>
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">상장일</span>
-                <span className="text-sm font-medium">{details.listingDate}</span>
+                <span className="text-sm font-medium">{details.listingDate || '-'}</span>
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">운용자산</span>
-                <span className="text-sm font-medium">{details.assets}</span>
+                <span className="text-sm font-medium">{details.assets || '-'}</span>
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">발행주수</span>
-                <span className="text-sm font-medium">{details.shares}</span>
-              </div>
-            </div>
-
-            {/* News */}
-            <div className="mt-4 flex-1 flex flex-col">
-              <div className="py-2 md:py-2.5 px-3 md:px-4 bg-[#f5f7f9] rounded-full mb-3">
-                <h3 className="font-medium text-sm">주요 뉴스</h3>
-              </div>
-              <div className="space-y-5 flex-1">
-                {news.length > 0 ? (
-                  news.map((item) => (
-                    <div key={item.id} className="flex gap-3">
-                      <div className="w-14 h-14 md:w-16 md:h-16 bg-[#f5f7f9] rounded-xl flex items-center justify-center">
-                        <Image
-                          src={
-                            item.imageUrl ||
-                            '/placeholder.svg?height=56&width=56&query=financial news'
-                          }
-                          alt="뉴스 이미지"
-                          width={56}
-                          height={56}
-                          className="md:w-16 md:h-16 rounded-xl object-cover"
-                        />
-                      </div>
-                      <div>
-                        <h4 className="text-xs md:text-sm font-medium">{item.title}</h4>
-                        <div className="text-xs text-gray-500 mt-1">
-                          {item.time} / {item.source}
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center text-gray-400 py-4">뉴스가 없습니다</div>
-                )}
+                <span className="text-sm font-medium">{details.shares || '-'}</span>
               </div>
             </div>
           </>
@@ -546,3 +506,4 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
     </div>
   );
 }
+

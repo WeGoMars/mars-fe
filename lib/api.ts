@@ -1,26 +1,24 @@
-import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest, GetStockSearchRequest, GetStockSearchResponse } from "./types"
+import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest, GetStockSearchRequest, GetStockSearchResponse, GetStockDetailsResponse } from "./types"
 import type { SignUpRequest, SignUpResponse } from "./types"
 import { fetchBaseQuery, createApi } from '@reduxjs/toolkit/query/react';
 import type { LoginRequest, LoginResponse, UserProfile } from "./types"
 // 종목 상세 정보 가져오기
-export async function getStockDetails(symbol: string): Promise<StockDetails> {
-  // 실제 API 호출 대신 더미 데이터 반환
-  return {
-    symbol,
-    name: symbol === "MSFT" ? "Microsoft Corp." : symbol === "GOOGL" ? "Alphabet Inc." : "Spotify Technology",
-    price: "$213.10",
-    change: "+1.1%",
-    changePercent: "1.1%",
-    marketCap: "4.4조원",
-    company: "삼성자산운용(ETF)",
-    listingDate: "2021년 4월 9일",
-    assets: "4.4조원",
-    shares: "230,800,000주",
-    description: "S&P 500에 투자하여 배당금을 제공하는 ETF",
+export async function getStockDetails(symbol: string): Promise<GetStockDetailsResponse> {
+  const response = await fetch(`/api/stocks/${symbol}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch stock details');
   }
+
+  return response.json();
 }
 
-// 뉴스 가져오기
+// 뉴스 가져오기(사용 안함)
 export async function getStockNews(symbol?: string): Promise<NewsItem[]> {
   // 실제 API 호출 대신 더미 데이터 반환
   return [
