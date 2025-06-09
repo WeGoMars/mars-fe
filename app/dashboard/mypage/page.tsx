@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import ProfileModal from "@/components/common/ProfileModal"
 import mockPortfolio from "@/lib/mock/mockportfolio";
-import { useCreateWalletMutation } from "@/lib/api"
+import { useCreateWalletMutation,useGetWalletQuery  } from "@/lib/api"
 
 import ProfileHandler from "@/components/common/ProfileHandler";
 
@@ -28,9 +28,12 @@ export default function MyPage() {
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
   // const { data: walletData, isLoading, isError, error } = useGetWalletQuery();
-  const [createWallet, { data: walletData, isLoading, isError, error }] = useCreateWalletMutation();
+  // const [createWallet, { data: walletData, isLoading, isError, error }] = useCreateWalletMutation();
+  const { data: walletData, isLoading, isError } = useGetWalletQuery();
+  const [createWallet] = useCreateWalletMutation();
 
   useEffect(() => {
+    if (!isLoading && isError)    // getWallet 에서 에러났을 때만 지갑 생성 시도
   createWallet({ amount: 100000 }); // ✅ 여기에서 API 요청을 실제로 보냄
 }, []);
 
