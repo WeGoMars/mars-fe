@@ -97,7 +97,7 @@ export default function Dashboard() {
         symbol: stock.symbol,
         name: stock.name,
         price: `$${stock.currentPrice.toFixed(2)}`,
-        change: `${stock.priceDelta >= 0 ? '+' : ''}${stock.priceDelta.toFixed(2)}`,
+        change: `${stock.priceDelta >= 0 ? '+' : ''}${stock.priceDelta.toFixed(2)}%`,
         changePercent: `${stock.priceDelta >= 0 ? '+' : ''}${((stock.priceDelta / (stock.currentPrice - stock.priceDelta)) * 100).toFixed(2)}%`
       })));
     }
@@ -328,7 +328,7 @@ export default function Dashboard() {
                     <div className="text-right">
                       <div className="font-bold text-base">${stock.currentPrice.toFixed(2)}</div>
                       <div className={`text-xs ${stock.priceDelta >= 0 ? 'text-[#41c3a9]' : 'text-red-500'}`}>
-                        {stock.priceDelta >= 0 ? '+' : ''}{stock.priceDelta.toFixed(2)}
+                        {stock.priceDelta >= 0 ? '+' : ''}{stock.priceDelta.toFixed(2)}%
                       </div>
                     </div>
                   </div>
