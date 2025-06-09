@@ -41,6 +41,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
         const response = await getStockDetails(symbol);
         if (response.success) {
           setDetails(response.data);
+          console.log('종목 상세 정보:', response.data);
         } else {
           setError(response.message);
         }
@@ -468,14 +469,19 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
           <>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs">
-                  <span className="text-[10px]">{details.symbol.substring(0, 2)}</span>
-                  <span className="text-[10px]">{details.symbol.substring(2, 4)}</span>
+                <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs overflow-hidden">
+                  <Image
+                    src={`https://logo.clearbit.com/${details.symbol.toLowerCase()}.com`}
+                    alt={`${details.symbol} 로고`}
+                    width={32}
+                    height={32}
+                    onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.svg?height=32&width=32&query=stock' }}
+                  />
                 </div>
                 <h3 className="text-lg md:text-xl font-bold">{details.name}</h3>
               </div>
               <div>
-                <div className="font-bold text-right">{details.currentPrice.toLocaleString()}원</div>
+                <div className="font-bold text-right">${details.currentPrice.toLocaleString()}</div>
               </div>
             </div>
             <div className="space-y-3 mb-4">
