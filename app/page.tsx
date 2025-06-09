@@ -226,6 +226,16 @@ export default function FinanceDashboard() {
         timestamp: typeof item.timestamp === 'string' ? item.timestamp.slice(0, 10) : item.timestamp,
       }));
     }
+    // null/undefined, timestamp 또는 open/high/low/close 값이 없는 데이터 제거
+    data = data.filter(
+      (item: any) =>
+        item &&
+        item.timestamp &&
+        item.open != null &&
+        item.high != null &&
+        item.low != null &&
+        item.close != null
+    );
     // timestamp 기준 오름차순 정렬
     return data.slice().sort((a: any, b: any) => a.timestamp.localeCompare(b.timestamp));
   };
