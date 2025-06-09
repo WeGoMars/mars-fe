@@ -481,29 +481,53 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                 <h3 className="text-lg md:text-xl font-bold">{details.name}</h3>
               </div>
               <div>
-                <div className="font-bold text-right">${details.currentPrice.toLocaleString()}</div>
+                <div className="font-bold text-right">${details.currentPrice?.toLocaleString() ?? '-'}</div>
               </div>
             </div>
             <div className="space-y-3 mb-4">
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">시가총액</span>
-                <span className="text-sm font-medium">{details.marketCapText || '-'}</span>
+                <span className="text-sm font-medium">{details.marketCap ? `$${details.marketCap.toLocaleString()}` : '-'}</span>
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">운용사</span>
-                <span className="text-sm font-medium">{details.company || '-'}</span>
+                <span className="text-sm text-gray-500">섹터</span>
+                <span className="text-sm font-medium">{details.sector || '-'}</span>
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">상장일</span>
-                <span className="text-sm font-medium">{details.listingDate || '-'}</span>
+                <span className="text-sm text-gray-500">산업군</span>
+                <span className="text-sm font-medium">{details.industry || '-'}</span>
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">운용자산</span>
-                <span className="text-sm font-medium">{details.assets || '-'}</span>
+                <span className="text-sm text-gray-500">전일 종가</span>
+                <span className="text-sm font-medium">{details.lastPrice !== undefined ? `$${details.lastPrice.toLocaleString()}` : '-'}</span>
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">발행주수</span>
-                <span className="text-sm font-medium">{details.shares || '-'}</span>
+                <span className="text-sm text-gray-500">ROE</span>
+                <span className="text-sm font-medium">{details.roe !== undefined ? `${details.roe}` : '-'}</span>
+              </div>
+              <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
+                <span className="text-sm text-gray-500">EPS</span>
+                <span className="text-sm font-medium">{details.eps !== undefined ? `${details.eps}` : '-'}</span>
+              </div>
+              <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
+                <span className="text-sm text-gray-500">BPS</span>
+                <span className="text-sm font-medium">{details.bps !== undefined ? `${details.bps}` : '-'}</span>
+              </div>
+              <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
+                <span className="text-sm text-gray-500">베타</span>
+                <span className="text-sm font-medium">{details.beta !== undefined ? `${details.beta}` : '-'}</span>
+              </div>
+              <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
+                <span className="text-sm text-gray-500">배당수익률</span>
+                <span className="text-sm font-medium">{details.dividendYield !== undefined ? `${(details.dividendYield * 100).toFixed(2)}%` : '-'}</span>
+              </div>
+              <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
+                <span className="text-sm text-gray-500">유동비율</span>
+                <span className="text-sm font-medium">{details.currentRatio !== undefined ? `${details.currentRatio}` : '-'}</span>
+              </div>
+              <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
+                <span className="text-sm text-gray-500">부채비율</span>
+                <span className="text-sm font-medium">{details.debtRatio !== undefined ? `${details.debtRatio}` : '-'}</span>
               </div>
             </div>
           </>
