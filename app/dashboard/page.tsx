@@ -76,6 +76,7 @@ export default function Dashboard() {
     price: 0,
     change: 0
   });
+  const [logoError, setLogoError] = useState(false);
 
   const selectStock = (symbol: string) => {
     setSelectedStock(symbol);
@@ -133,6 +134,7 @@ export default function Dashboard() {
       price: stock.currentPrice,
       change: stock.priceDelta
     });
+    setLogoError(false);
   };
 
   // 하트 버튼 클릭 핸들러
@@ -301,24 +303,18 @@ export default function Dashboard() {
                   >
                     <div className="flex items-center gap-3">
                       <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs overflow-hidden">
-                        <Image
-                          src={`/logos/${stock.symbol}.png`}
-                          alt={stock.symbol}
-                          width={28}
-                          height={28}
-                          style={{objectFit:'contain'}}
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            const parent = target.parentElement;
-                            if (parent) {
-                              const fallback = document.createElement('div');
-                              fallback.className = 'w-8 h-8 bg-gray-200 rounded flex items-center justify-center';
-                              fallback.innerHTML = `<span class="text-xs font-bold">${stock.symbol.slice(0, 2)}</span>`;
-                              parent.appendChild(fallback);
-                            }
-                          }}
-                        />
+                        {!logoError ? (
+                          <Image
+                            src={`/logos/${stock.symbol}.png`}
+                            alt={stock.symbol}
+                            width={28}
+                            height={28}
+                            style={{objectFit:'contain'}}
+                            onError={() => setLogoError(true)}
+                          />
+                        ) : (
+                          <span className="text-xs font-bold">{stock.symbol}</span>
+                        )}
                       </div>
                       <div>
                         <div className="font-bold text-base">{stock.symbol}</div>
@@ -435,10 +431,21 @@ export default function Dashboard() {
             {/* S&P 500 Header with Tabs + 좋아요 하트 */}
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-3">
               <div className="flex items-center gap-2">
-                <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs">
-                  <span className="text-[10px]">{selectedStock}</span>
+                <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs overflow-hidden">
+                  {!logoError ? (
+                    <Image
+                      src={`/logos/${selectedInfo.symbol}.png`}
+                      alt={selectedInfo.symbol}
+                      width={28}
+                      height={28}
+                      style={{objectFit:'contain'}}
+                      onError={() => setLogoError(true)}
+                    />
+                  ) : (
+                    <span className="text-xs font-bold">{selectedInfo.symbol}</span>
+                  )}
                 </div>
-                <h2 className="text-xl font-bold">{selectedStock}</h2>
+                <h2 className="text-xl font-bold">{selectedInfo.symbol}</h2>
                 {isLoggedIn && (
                   <button
                     onClick={handleHeartClick}
@@ -491,7 +498,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="text-xs text-gray-500 mb-6">
-              {new Date().toLocaleString()} · {selectedStock} · Disclaimer
+              {new Date().toLocaleString()} · {selectedInfo.symbol} · Disclaimer
             </div>
             {/* Chart Area */}
             <div className="h-[740px] flex flex-col items-center justify-center">
@@ -512,7 +519,7 @@ export default function Dashboard() {
                           d.volume != null
                       )
                     : []}
-                  symbol={selectedStock}
+                  symbol={selectedInfo.symbol}
                   period={activePeriod}
                 />
               </div>
@@ -663,9 +670,9 @@ export default function Dashboard() {
           ) : (
             // 기존 카드 내용
             <div className="bg-white rounded-xl p-4 md:p-5 shadow-sm flex-1 overflow-auto flex flex-col">
-              {selectedStock && (
+              {selectedInfo.symbol && (
                 <StockDetails
-                  symbol={selectedStock}
+                  symbol={selectedInfo.symbol}
                   activeTab={activeRightTab}
                   onTabChange={setActiveRightTab}
                   favoriteStocks={favoriteStocks}
