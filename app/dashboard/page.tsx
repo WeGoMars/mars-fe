@@ -548,13 +548,14 @@ export default function Dashboard() {
              {showPanel === 'buy' && (
               <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
                 <BuyPanel
-                  open={showPanel === 'buy'}
-                  onClose={() => setShowPanel(false)}
-                  symbol={selectedStock}
-                  name={stocks.find((s) => s.symbol === selectedStock)?.name || "이름 없음"}
-                  price={parseFloat(stocks.find((s) => s.symbol === selectedStock)?.price.replace("$", "") || "0")}
-                  description=""
-                />
+                open={true}
+                onClose={() => setShowPanel(false)}
+                symbol={selectedStock}
+                name={stocks.find((s) => s.symbol === selectedStock)?.name || "이름 없음"}
+                price={parseFloat(stocks.find((s) => s.symbol === selectedStock)?.price.replace("$", "") || "0")}
+                description={stocks.find((s) => s.symbol === selectedStock)?.description || ""}
+              />
+            
                 <button
                   className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
                   onClick={() => setShowConfirmModal(true)}
