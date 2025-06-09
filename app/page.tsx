@@ -15,8 +15,8 @@ import type { Stock } from "@/lib/types";
 import { getStockChartData, getStockList, searchStockList } from "@/lib/api";
 import useSWR from 'swr';
 import LogoutButton from "@/components/common/LogoutButton"
-
-
+import { useBuyStockMutation } from "@/lib/api"; // RTK 훅 import
+import BuyPanel from "@/components/BuyPanel";
 import { useSearchParams, useRouter } from "next/navigation";
 
 export default function FinanceDashboard() {
@@ -28,6 +28,7 @@ export default function FinanceDashboard() {
   const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
   const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "1시간">("일");
   const [activeRightTab, setActiveRightTab] = useState<"종목정보 상세" | "내 계좌" | "AI 추천">("종목정보 상세");
+  const [buyStock, { isLoading: isBuying }] = useBuyStockMutation();
 
   const { data: stockChartData, error } = useSWR(
     selectedStock ? ['stockChart', selectedStock, activePeriod] : null,
@@ -216,6 +217,8 @@ export default function FinanceDashboard() {
     };
   };
   const selectedInfo = getSelectedStockInfo();
+  const [quantity, setQuantity] = useState<number>(1);
+  
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -524,38 +527,69 @@ export default function FinanceDashboard() {
                 </button>
               </div>
               {showPanel === 'buy' && (
-                <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
-                      <div className="text-center">
-                        <div className="text-xs font-bold">S&P</div>
-                        <div className="text-xs">500</div>
-                      </div>
-                    </div>
-                    <h2 className="text-xl font-extrabold">S&P 500</h2>
-                  </div>
-                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 재투자하는 ETF</p>
-                  <div className="flex items-center justify-between mt-6">
-                    <div className="font-bold text-base">수량</div>
-                    <div className="flex items-center gap-4">
-                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="text-lg font-bold">1</span>
-                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div className="text-lg font-extrabold">€ 12.00</div>
-                  </div>
-                  <button 
-                    className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
-                    onClick={() => setShowConfirmModal(true)}
-                  >
-                    매수
-                  </button>
-                </div>
-              )}
+  <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
+    {/* 종목 정보 영역 */}
+    <div className="flex items-center gap-4">
+      <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
+        <div className="text-center">
+          <div className="text-xs font-bold">{selectedInfo.symbol.slice(0, 3)}</div>
+          <div className="text-xs">{selectedInfo.symbol.slice(3)}</div>
+        </div>
+      </div>
+      <h2 className="text-xl font-extrabold">{selectedInfo.name}</h2>
+    </div>
+
+    {/* 종목 설명: 원래 비워뒀으면 이 부분 생략 가능 */}
+    {/* <p className="text-gray-400 text-center text-base font-semibold">
+      {selectedInfo.description}
+    </p> */}
+
+    {/* 수량 조절 영역 */}
+    <div className="flex items-center justify-between mt-6">
+      <div className="font-bold text-base">수량</div>
+      <div className="flex items-center gap-4">
+        <button
+          onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+          className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold"
+        >
+          <Minus className="w-4 h-4" />
+        </button>
+        <span className="text-lg font-bold">{quantity}</span>
+        <button
+          onClick={() => setQuantity((prev) => prev + 1)}
+          className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold"
+        >
+          <Plus className="w-4 h-4" />
+        </button>
+      </div>
+      <div className="text-lg font-extrabold">
+        ${Number(selectedInfo.price * quantity).toFixed(2)}
+      </div>
+    </div>
+
+    {/* 매수 버튼 */}
+    <button
+      className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
+      onClick={async () => {
+        try {
+          const body = {
+            symbol: selectedInfo.symbol,
+            quantity,
+            price: Number(selectedInfo.price),
+          };
+          const res = await buyStock(body).unwrap();
+          alert(`${res.data.symbol} 매수 완료!`);
+          setShowConfirmModal(true); // 추후 모달로 넘어갈 수 있게
+        } catch (err) {
+          alert("매수 실패! 다시 시도해주세요.");
+          console.error(err);
+        }
+      }}
+    >
+      매수
+    </button>
+  </div>
+  )}
               {showPanel === 'sell' && (
                 <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
                   <div className="flex items-center gap-4">
