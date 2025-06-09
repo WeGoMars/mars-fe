@@ -20,7 +20,7 @@ import mockPortfolio from "@/lib/mock/mockportfolio";
 
 import ProfileHandler from "@/components/common/ProfileHandler"
 import useSWR from 'swr';
-import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks } from "@/lib/api";
+import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, getStockDetails } from "@/lib/api";
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -115,24 +115,10 @@ export default function Dashboard() {
     if (selectedStock && favoriteStocksData?.data) {
       const found = favoriteStocksData.data.find((s: any) => s.symbol === selectedStock);
       if (found) {
-        setSelectedInfo({
-          symbol: found.symbol,
-          name: found.name,
-          price: found.currentPrice,
-          change: found.priceDelta
-        });
-        setLogoError(false);
-      } else {
-        // 관심종목에 없으면 0으로 초기화
-        setSelectedInfo({
-          symbol: selectedStock,
-          name: '',
-          price: 0,
-          change: 0
-        });
-        setLogoError(false);
+        handleFavoriteStockClick(found);
       }
     }
+    // eslint-disable-next-line
   }, [favoriteStocksData, selectedStock]);
 
   const { data: stockChartData, error: stockChartError } = useSWR(
@@ -150,16 +136,38 @@ export default function Dashboard() {
     })
   );
 
-  // 관심 종목 클릭 시 정보 업데이트
-  const handleFavoriteStockClick = (stock: any) => {
+  // 종목 클릭 시 상세정보 API로 받아와서 중앙에 바인딩
+  const handleFavoriteStockClick = async (stock: any) => {
     setSelectedStock(stock.symbol);
-    setSelectedInfo({
-      symbol: stock.symbol,
-      name: stock.name,
-      price: stock.currentPrice,
-      change: stock.priceDelta
-    });
     setLogoError(false);
+    try {
+      const res = await getStockDetails(stock.symbol);
+      if (res.success && res.data) {
+        const price = res.data.currentPrice;
+        const lastPrice = res.data.lastPrice;
+        const change = lastPrice !== 0 && lastPrice !== undefined && lastPrice !== null ? ((price - lastPrice) / lastPrice) * 100 : 0;
+        setSelectedInfo({
+          symbol: res.data.symbol,
+          name: res.data.name,
+          price: price,
+          change: change
+        });
+      } else {
+        setSelectedInfo({
+          symbol: stock.symbol,
+          name: stock.name,
+          price: 0,
+          change: 0
+        });
+      }
+    } catch {
+      setSelectedInfo({
+        symbol: stock.symbol,
+        name: stock.name,
+        price: 0,
+        change: 0
+      });
+    }
   };
 
   // 하트 버튼 클릭 핸들러
