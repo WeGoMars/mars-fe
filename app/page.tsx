@@ -380,12 +380,14 @@ export default function FinanceDashboard() {
                   }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8">
+                    <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs overflow-hidden">
                       <Image
                         src={`/logos/${stock.symbol}.png`}
                         alt={stock.symbol}
-                        width={32}
-                        height={32}
+                        width={28}
+                        height={28}
+                        style={{objectFit:'contain'}}
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                       />
                     </div>
                     <div>
