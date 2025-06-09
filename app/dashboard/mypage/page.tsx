@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import ProfileModal from "@/components/common/ProfileModal"
 import mockPortfolio from "@/lib/mock/mockportfolio";
-import { useGetWalletQuery } from "@/lib/api"
+import { useCreateWalletMutation } from "@/lib/api"
 
 import ProfileHandler from "@/components/common/ProfileHandler";
 
@@ -27,7 +27,8 @@ export default function MyPage() {
   }
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
-  const { data: walletData, isLoading, isError, error } = useGetWalletQuery();
+  // const { data: walletData, isLoading, isError, error } = useGetWalletQuery();
+  const [createWallet, { data: walletData, isLoading, isError, error }] = useCreateWalletMutation();
   useEffect(() => {
   console.log("📦 walletData:", walletData);
   console.log("📛 error:", error);
