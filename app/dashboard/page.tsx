@@ -20,7 +20,7 @@ import mockPortfolio from "@/lib/mock/mockportfolio";
 
 import ProfileHandler from "@/components/common/ProfileHandler"
 import useSWR from 'swr';
-import { getStockChartData } from "@/lib/api";
+import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks } from "@/lib/api";
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -48,7 +48,8 @@ export default function Dashboard() {
   ]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedStock, setSelectedStock] = useState<string>("AAPL");
+  // 첫 화면 종목 선택 GOOGL로 설정함.
+  const [selectedStock, setSelectedStock] = useState<string>("GOOGL");
   const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
   const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "1시간">("일");
   const [activeRightTab, setActiveRightTab] = useState<"종목정보 상세" | "내 계좌" | "AI 추천">("종목정보 상세");
@@ -72,11 +73,30 @@ export default function Dashboard() {
   const portfolioData = mockPortfolio;
   const cashAsset = portfolioData.seedMoney - portfolioData.investmentAmount;
 
+  // 관심 종목 목록을 가져오는 SWR 훅
+  const { data: favoriteStocksData, mutate: mutateFavoriteStocks } = useSWR(
+    isLoggedIn ? '/api/portfolios/like' : null,
+    () => getFavoriteStocks()
+  );
+
+  // 관심 종목 상태 업데이트
+  useEffect(() => {
+    if (favoriteStocksData?.data) {
+      setFavoriteStocks(favoriteStocksData.data.map(stock => ({
+        symbol: stock.symbol,
+        name: stock.name,
+        price: `$${stock.currentPrice.toFixed(2)}`,
+        change: `${stock.priceDelta >= 0 ? '+' : ''}${stock.priceDelta.toFixed(2)}`,
+        changePercent: `${stock.priceDelta >= 0 ? '+' : ''}${((stock.priceDelta / (stock.currentPrice - stock.priceDelta)) * 100).toFixed(2)}%`
+      })));
+    }
+  }, [favoriteStocksData]);
+
   // 관심 종목 상태가 변경될 때마다 하트 상태 업데이트
   useEffect(() => {
-    const isFavorite = favoriteStocks.some(stock => stock.symbol === selectedStock);
+    const isFavorite = favoriteStocksData?.data?.some(stock => stock.symbol === selectedStock) ?? false;
     setIsHeartFilled(isFavorite);
-  }, [selectedStock, favoriteStocks]);
+  }, [selectedStock, favoriteStocksData]);
 
   const { data: stockChartData, error: stockChartError } = useSWR(
     selectedStock ? ['stockChart', selectedStock, activePeriod, selectedMinute] : null,
@@ -92,6 +112,30 @@ export default function Dashboard() {
       limit: activePeriod === "1시간" ? 100 : 30
     })
   );
+
+  // 하트 버튼 클릭 핸들러
+  const handleHeartClick = async () => {
+    if (!isLoggedIn) {
+      alert('로그인이 필요한 기능입니다.');
+      return;
+    }
+
+    try {
+      const isFavorite = favoriteStocks.some(stock => stock.symbol === selectedStock);
+      
+      if (isFavorite) {
+        await removeFromFavorites({ symbol: selectedStock });
+      } else {
+        await addToFavorites({ symbol: selectedStock });
+      }
+      
+      // 관심 종목 목록 새로고침
+      await mutateFavoriteStocks();
+    } catch (error) {
+      console.error('Failed to update favorite status:', error);
+      alert('관심 종목 업데이트에 실패했습니다.');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -209,58 +253,77 @@ export default function Dashboard() {
           </div>
 
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
-            <div className="space-y-6">
-              {favoriteStocks.map((stock, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
-                  onClick={() => {
-                    setSelectedStock(stock.symbol);
-                    // API 연동 시 여기에 API 호출 로직 추가
-                    console.log(`Selected favorite stock: ${stock.symbol}`);
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8">
-                      {stock.symbol === "MSFT" && (
-                        <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
-                          <div className="bg-[#f25022]"></div>
-                          <div className="bg-[#7fba00]"></div>
-                          <div className="bg-[#00a4ef]"></div>
-                          <div className="bg-[#ffb900]"></div>
-                        </div>
-                      )}
-                      {stock.symbol === "GOOGL" && (
-                        <Image
-                          src="/google-logo.png"
-                          alt="Google"
-                          width={32}
-                          height={32}
-                        />
-                      )}
-                      {stock.symbol === "SPOT" && (
-                        <Image
-                          src="/spotify-logo.png"
-                          alt="Spotify"
-                          width={32}
-                          height={32}
-                        />
-                      )}
+            {!isLoggedIn ? (
+              <div className="text-center text-gray-500 py-4">
+                로그인이 필요한 기능입니다.
+              </div>
+            ) : favoriteStocksData === undefined ? (
+              <div className="text-center py-4">로딩 중...</div>
+            ) : favoriteStocksData.success === false ? (
+              <div className="text-center text-red-500 py-4">
+                관심 종목을 불러오는데 실패했습니다.
+              </div>
+            ) : favoriteStocksData.data.length === 0 ? (
+              <div className="text-center text-gray-500 py-4">
+                관심 종목이 없습니다.
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {favoriteStocksData.data.map((stock, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                    onClick={() => {
+                      setSelectedStock(stock.symbol);
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8">
+                        {stock.symbol === "MSFT" && (
+                          <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
+                            <div className="bg-[#f25022]"></div>
+                            <div className="bg-[#7fba00]"></div>
+                            <div className="bg-[#00a4ef]"></div>
+                            <div className="bg-[#ffb900]"></div>
+                          </div>
+                        )}
+                        {stock.symbol === "GOOGL" && (
+                          <Image
+                            src="/google-logo.png"
+                            alt="Google"
+                            width={32}
+                            height={32}
+                          />
+                        )}
+                        {stock.symbol === "SPOT" && (
+                          <Image
+                            src="/spotify-logo.png"
+                            alt="Spotify"
+                            width={32}
+                            height={32}
+                          />
+                        )}
+                        {!["MSFT", "GOOGL", "SPOT"].includes(stock.symbol) && (
+                          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                            <span className="text-xs font-bold">{stock.symbol.slice(0, 2)}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <div className="font-bold text-base">{stock.symbol}</div>
+                        <div className="text-xs text-gray-500">{stock.name}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-bold text-base">{stock.symbol}</div>
-                      <div className="text-xs text-gray-500">{stock.name}</div>
+                    <div className="text-right">
+                      <div className="font-bold text-base">${stock.currentPrice.toFixed(2)}</div>
+                      <div className={`text-xs ${stock.priceDelta >= 0 ? 'text-[#41c3a9]' : 'text-red-500'}`}>
+                        {stock.priceDelta >= 0 ? '+' : ''}{stock.priceDelta.toFixed(2)}
+                      </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="font-bold text-base">{stock.price}</div>
-                    <div className={`text-xs ${stock.change.startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}>
-                      {stock.change}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Purchased Stocks Section */}
@@ -372,15 +435,7 @@ export default function Dashboard() {
                 <h2 className="text-xl font-bold">{selectedStock}</h2>
                 {isLoggedIn && (
                   <button
-                    onClick={() => {
-                      const isFavorite = favoriteStocks.some(stock => stock.symbol === selectedStock);
-                      if (isFavorite) {
-                        setFavoriteStocks(prev => prev.filter(stock => stock.symbol !== selectedStock));
-                      } else {
-                        const stock = stocks.find(s => s.symbol === selectedStock);
-                        if (stock) setFavoriteStocks(prev => [...prev, stock]);
-                      }
-                    }}
+                    onClick={handleHeartClick}
                     className="flex items-center justify-center"
                   >
                     <Heart
