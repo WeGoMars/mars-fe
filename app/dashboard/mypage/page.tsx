@@ -12,6 +12,7 @@ import mockPortfolio from "@/lib/mock/mockportfolio";
 import { useCreateWalletMutation,useGetWalletQuery  } from "@/lib/api"
 
 import ProfileHandler from "@/components/common/ProfileHandler";
+import LogoutButton from "@/components/common/LogoutButton"
 
 export default function MyPage() {
 
@@ -69,15 +70,11 @@ export default function MyPage() {
                 onNicknameUpdate={setNickname}
                 onLoginStatusUpdate={setIsLoggedIn}
               />
-            <Button variant="default" size="sm" className="bg-[#5f80f8] hover:bg-[#4c6ef5] text-white"
-            onClick={() => {
-                localStorage.removeItem("logInUser")
-                alert("로그아웃 되었습니다.")
-                router.push("/")
-              }}
-            >
-              로그아웃
-            </Button>
+            <LogoutButton redirectTo="/" >
+              <span className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full block text-center">
+                로그아웃
+              </span>
+            </LogoutButton>
           </div>
         </div>
       </header>

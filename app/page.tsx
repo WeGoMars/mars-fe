@@ -14,6 +14,7 @@ import StockDetails from "@/components/StockDetails";
 import type { Stock } from "@/lib/types";
 import { getStockChartData, getStockList, searchStockList } from "@/lib/api";
 import useSWR from 'swr';
+import LogoutButton from "@/components/common/LogoutButton"
 
 
 import { useSearchParams, useRouter } from "next/navigation";
@@ -287,14 +288,11 @@ export default function FinanceDashboard() {
             <div className="text-sm text-gray-600">
               oo님 mars 모투에 오신걸 환영합니다
             </div>
-            <button onClick={() => {
-              localStorage.removeItem("logInUser") // 저장된 로그인정보 제거
-              alert("로그아웃 되었습니다.")
-              router.push("/")
-            }}
-              className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full">
-              로그아웃
-            </button>
+            <LogoutButton redirectTo="/" >
+              <span className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full block text-center">
+                로그아웃
+              </span>
+            </LogoutButton>
             <button
               className="flex items-center justify-center gap-2 bg-[#f0f0f0] p-3 rounded-xl w-full"
               onClick={() => {

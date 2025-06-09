@@ -22,6 +22,7 @@ import ProfileHandler from "@/components/common/ProfileHandler"
 import useSWR from 'swr';
 import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks } from "@/lib/api";
 import BuyPanel from "@/components/BuyPanel"
+import LogoutButton from "@/components/common/LogoutButton"
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -178,14 +179,11 @@ export default function Dashboard() {
           >
             내계좌
           </Link>
-          <Button variant="default" size="sm" className="bg-[#5f80f8] hover:bg-[#4c6ef5] text-white"
-            onClick={() => {
-              localStorage.removeItem("logInUser")
-              alert("로그아웃 되었습니다.")
-              router.push("/")
-            }}>
+          <LogoutButton redirectTo="/" >
+          <span className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full block text-center">
             로그아웃
-          </Button>
+          </span>
+        </LogoutButton>
         </div>
 
         <div className="md:hidden">

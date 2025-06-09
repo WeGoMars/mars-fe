@@ -198,6 +198,13 @@ export const userApi = createApi({
         credentials: "include",
       }),
     }),
+    logout: builder.query<{ success: string; message: string }, void>({
+      query: () => ({
+        url: "/users/logout",
+        method: "GET",
+        credentials: "include", // 세션 쿠키 사용 시 필수
+  }),
+}),
   }),
 });
 export const {
@@ -205,6 +212,7 @@ export const {
   useLogInMutation,
   useEditProfileMutation,
   useGetProfileQuery,
+  useLogoutQuery,
 } = userApi;
 
 export const walletApi = createApi({
