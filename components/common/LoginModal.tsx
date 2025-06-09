@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { X } from "lucide-react"
-import { useLogInMutation } from "@/lib/api";
+import { useGetProfileQuery, useLogInMutation } from "@/lib/api";
 
 
 interface LoginModalProps {
@@ -24,6 +24,7 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
 
   const router = useRouter()
   const [logIn, { isLoading }] = useLogInMutation();
+  const { refetch } = useGetProfileQuery(); // 상단에서 호출해둬야 함
   
   // 백엔드 로그인 테스트 !!
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,6 +32,8 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
 
      try {
     const data = await logIn({ email, password }).unwrap();
+
+    await refetch(); // 👈 로그인 성공 직후 프로필 강제 갱신
     
 
     setEmail("");
