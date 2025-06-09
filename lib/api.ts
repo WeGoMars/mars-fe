@@ -1,4 +1,4 @@
-import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest, GetStockSearchRequest, GetStockSearchResponse, GetStockDetailsResponse } from "./types"
+import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest, GetStockSearchRequest, GetStockSearchResponse, GetStockDetailsResponse, LikeStockRequest, LikeStockResponse, UnlikeStockResponse, GetLikedStocksResponse } from "./types"
 import type { SignUpRequest, SignUpResponse } from "./types"
 import { fetchBaseQuery, createApi } from '@reduxjs/toolkit/query/react';
 import type { LoginRequest, LoginResponse, UserProfile } from "./types"
@@ -101,6 +101,56 @@ export async function searchStockList(params: GetStockSearchRequest): Promise<Ap
   if (!response.ok) {
     throw new Error('Failed to fetch search results');
   }
+  return response.json();
+}
+
+// 관심 종목 추가
+export async function addToFavorites(params: LikeStockRequest): Promise<LikeStockResponse> {
+  const response = await fetch('/api/portfolios/like', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(params),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to add stock to favorites');
+  }
+
+  return response.json();
+}
+
+// 관심 종목 삭제
+export async function removeFromFavorites(params: LikeStockRequest): Promise<UnlikeStockResponse> {
+  const response = await fetch('/api/portfolios/like', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(params),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to remove stock from favorites');
+  }
+
+  return response.json();
+}
+
+// 관심 종목 목록 조회
+export async function getFavoriteStocks(): Promise<GetLikedStocksResponse> {
+  const response = await fetch('/api/portfolios/like', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch favorite stocks');
+  }
+
   return response.json();
 }
 

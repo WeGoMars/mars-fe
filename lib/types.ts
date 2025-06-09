@@ -184,3 +184,35 @@ export interface GetStockDetailsResponse {
   data: StockDetails;
 }
 
+export interface LikeStockRequest {
+  symbol: string;
+}
+
+export interface LikeStockResponse {
+  success: boolean;
+  message: string;
+  data: {
+    symbol: string;
+    createdAt: string;
+  };
+}
+
+export interface UnlikeStockResponse {
+  success: boolean;
+  message: string;
+  data: boolean;
+}
+
+export interface GetLikedStocksResponse {
+  success: boolean;
+  message: string;
+  data: {
+    symbol: string;
+    name: string;
+    sector: string;
+    industry: string;
+    currentPrice: number;
+    priceDelta: number;
+  }[];
+}
+
