@@ -469,14 +469,14 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
           <>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="bg-gray-200 w-6 h-6 flex items-center justify-center rounded overflow-hidden">
+                <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded overflow-hidden">
                   <Image
                     src={`https://logo.clearbit.com/${details.symbol.toLowerCase()}.com`}
                     alt={`${details.symbol} 로고`}
-                    width={24}
-                    height={24}
+                    width={32}
+                    height={32}
                     style={{ objectFit: 'contain' }}
-                    onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.svg?height=24&width=24&query=stock' }}
+                    onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.svg?height=32&width=32&query=stock' }}
                   />
                 </div>
                 <h3 className="text-lg md:text-xl font-bold">{details.name}</h3>
@@ -504,7 +504,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">ROE</span>
-                <span className="text-sm font-medium">{details.roe !== undefined ? details.roe.toFixed(2) : '-'}</span>
+                <span className="text-sm font-medium">{details.roe !== undefined ? `${details.roe.toFixed(2)}%` : '-'}</span>
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">EPS</span>
@@ -524,11 +524,11 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">유동비율</span>
-                <span className="text-sm font-medium">{details.currentRatio !== undefined ? details.currentRatio.toFixed(2) : '-'}</span>
+                <span className="text-sm font-medium">{details.currentRatio !== undefined ? `${details.currentRatio.toFixed(2)}%` : '-'}</span>
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">부채비율</span>
-                <span className="text-sm font-medium">{details.debtRatio !== undefined ? details.debtRatio.toFixed(2) : '-'}</span>
+                <span className="text-sm font-medium">{details.debtRatio !== undefined ? `${details.debtRatio.toFixed(2)}%` : '-'}</span>
               </div>
             </div>
           </>
