@@ -198,7 +198,7 @@ export const userApi = createApi({
         credentials: "include",
       }),
     }),
-    logout: builder.query<{ success: string; message: string }, void>({
+    logout: builder.mutation<{ success: string; message: string }, void>({
       query: () => ({
         url: "/users/logout",
         method: "GET",
@@ -212,7 +212,7 @@ export const {
   useLogInMutation,
   useEditProfileMutation,
   useGetProfileQuery,
-  useLogoutQuery,
+  useLogoutMutation,
 } = userApi;
 
 export const walletApi = createApi({
