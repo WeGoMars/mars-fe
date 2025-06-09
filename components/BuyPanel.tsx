@@ -9,10 +9,9 @@ interface BuyPanelProps {
   symbol :string;
   name : string;
   price: number;
-  description: string;
 }
 
-export default function BuyPanel({ open, onClose, symbol, name, price, description }: BuyPanelProps) {
+export default function BuyPanel({ open, onClose, symbol, name, price }: BuyPanelProps) {
   const [quantity, setQuantity] = useState(1);
   const [buyStock, { isLoading }] = useBuyStockMutation();  
   
