@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import ProfileModal from "@/components/common/ProfileModal"
 import mockPortfolio from "@/lib/mock/mockportfolio";
-import { useCreateWalletMutation,useGetWalletQuery  } from "@/lib/api"
+import { useCreateWalletMutation,useGetProfileQuery,useGetWalletQuery  } from "@/lib/api"
 
 import ProfileHandler from "@/components/common/ProfileHandler";
 import LogoutButton from "@/components/common/LogoutButton"
@@ -43,7 +43,13 @@ export default function MyPage() {
 //   console.log("📛 error:", error);
 // }, [walletData, error]);
    
-  
+  const { data } = useGetProfileQuery();
+useEffect(() => {
+  if (data?.nick) {
+    setNickname(data.nick);
+    localStorage.setItem("nickname", data.nick);
+  }
+}, [data]);
   return (
     
     <div className="min-h-screen bg-[#f5f7f9]">

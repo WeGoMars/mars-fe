@@ -20,7 +20,7 @@ import mockPortfolio from "@/lib/mock/mockportfolio";
 
 import ProfileHandler from "@/components/common/ProfileHandler"
 import useSWR from 'swr';
-import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks } from "@/lib/api";
+import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, useGetProfileQuery } from "@/lib/api";
 import BuyPanel from "@/components/BuyPanel"
 import LogoutButton from "@/components/common/LogoutButton"
 
@@ -138,6 +138,13 @@ export default function Dashboard() {
       alert('관심 종목 업데이트에 실패했습니다.');
     }
   };
+  const { data } = useGetProfileQuery();
+useEffect(() => {
+  if (data?.nick) {
+    setNickname(data.nick);
+    localStorage.setItem("nickname", data.nick);
+  }
+}, [data]);
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
