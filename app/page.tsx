@@ -16,7 +16,8 @@ import { getStockChartData, getStockList, searchStockList } from "@/lib/api";
 import useSWR from 'swr';
 import LogoutButton from "@/components/common/LogoutButton"
 import { useBuyStockMutation, useSellStockMutation } from "@/lib/api"; // RTK 훅 import
-import BuyPanel from "@/components/BuyPanel";
+
+import SellPanel from "@/components/SellPanel"
 import { useSearchParams, useRouter } from "next/navigation";
 
 export default function FinanceDashboard() {
@@ -538,10 +539,6 @@ export default function FinanceDashboard() {
                     <h2 className="text-xl font-extrabold">{selectedInfo.name}</h2>
                   </div>
 
-                  {/* 종목 설명: 원래 비워뒀으면 이 부분 생략 가능 */}
-                  {/* <p className="text-gray-400 text-center text-base font-semibold">
-      {selectedInfo.description}
-    </p> */}
 
                   {/* 수량 조절 영역 */}
                   <div className="flex items-center justify-between mt-6">
@@ -590,27 +587,66 @@ export default function FinanceDashboard() {
                   </button>
                 </div>
               )}
-              <button
-                className="w-full py-4 bg-[#b3c6e6] rounded-2xl text-center font-bold text-base text-black mt-6"
-                onClick={async () => {
-                  try {
-                    const body = {
-                      symbol: selectedInfo.symbol,
-                      quantity,
-                      price: Number(selectedInfo.price),
-                    };
-                    const res = await sellStock(body).unwrap();
-                    alert(`${res.data.symbol} 매도 완료!`);
-                    setShowSellConfirmModal(true); // 매도 확인 모달 표시
-                  } catch (err) {
-                    alert("로그인이 필요합니다.");
-                    console.error(err);
-                    window.location.href = "http://13.220.145.152/?modal=login";
-                  }
-                }}
-              >
-                매도
-              </button>
+              {showPanel === 'sell' && (
+                <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
+                  {/* 종목 정보 영역 */}
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
+                      <div className="text-center">
+                        <div className="text-xs font-bold">{selectedInfo.symbol.slice(0, 3)}</div>
+                        <div className="text-xs">{selectedInfo.symbol.slice(3)}</div>
+                      </div>
+                    </div>
+                    <h2 className="text-xl font-extrabold">{selectedInfo.name}</h2>
+                  </div>
+
+                  {/* 수량 조절 영역 */}
+                  <div className="flex items-center justify-between mt-6">
+                    <div className="font-bold text-base">수량</div>
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                        className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      <span className="text-lg font-bold">{quantity}</span>
+                      <button
+                        onClick={() => setQuantity((prev) => prev + 1)}
+                        className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="text-lg font-extrabold">
+                      ${Number(selectedInfo.price * quantity).toFixed(2)}
+                    </div>
+                  </div>
+
+                  {/* 매도 버튼 */}
+                  <button
+                    className="w-full py-4 bg-[#b3c6e6] rounded-2xl text-center font-bold text-base text-black mt-6"
+                    onClick={async () => {
+                      try {
+                        const body = {
+                          symbol: selectedInfo.symbol,
+                          quantity,
+                          price: Number(selectedInfo.price),
+                        };
+                        const res = await sellStock(body).unwrap();
+                        alert(`${res.data.symbol} 매도 완료!`);
+                        setShowSellConfirmModal(true); // 모달로 연결
+                      } catch (err) {
+                        alert("로그인이 필요합니다.");
+                        console.error(err);
+                        window.location.href = "http://13.220.145.152/?modal=login";
+                      }
+                    }}
+                  >
+                    매도
+                  </button>
+                </div>
+              )}
               {/* 내 계좌 영역 */}
               <div>
                 <div className="flex justify-center mb-6">
