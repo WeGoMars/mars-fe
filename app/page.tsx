@@ -15,7 +15,7 @@ import type { Stock } from "@/lib/types";
 import { getStockChartData, getStockList, searchStockList } from "@/lib/api";
 import useSWR from 'swr';
 import LogoutButton from "@/components/common/LogoutButton"
-import { useBuyStockMutation } from "@/lib/api"; // RTK 훅 import
+import { useBuyStockMutation, useSellStockMutation } from "@/lib/api"; // RTK 훅 import
 import BuyPanel from "@/components/BuyPanel";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -29,6 +29,7 @@ export default function FinanceDashboard() {
   const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "1시간">("일");
   const [activeRightTab, setActiveRightTab] = useState<"종목정보 상세" | "내 계좌" | "AI 추천">("종목정보 상세");
   const [buyStock, { isLoading: isBuying }] = useBuyStockMutation();
+  const [sellStock] = useSellStockMutation();
 
   const { data: stockChartData, error } = useSWR(
     selectedStock ? ['stockChart', selectedStock, activePeriod] : null,
@@ -440,8 +441,8 @@ export default function FinanceDashboard() {
                 <button
                   onClick={() => setShowPanel('buy')}
                   className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activeTab === "매수"
-                      ? "bg-[#fce7e7]"
-                      : "bg-white hover:bg-gray-50"
+                    ? "bg-[#fce7e7]"
+                    : "bg-white hover:bg-gray-50"
                     }`}
                 >
                   매수
@@ -589,39 +590,27 @@ export default function FinanceDashboard() {
                   </button>
                 </div>
               )}
-              {showPanel === 'sell' && (
-                <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
-                      <div className="text-center">
-                        <div className="text-xs font-bold">S&P</div>
-                        <div className="text-xs">500</div>
-                      </div>
-                    </div>
-                    <h2 className="text-xl font-extrabold">S&P 500</h2>
-                  </div>
-                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 재투자하는 ETF</p>
-                  <div className="flex items-center justify-between mt-6">
-                    <div className="font-bold text-base">수량</div>
-                    <div className="flex items-center gap-4">
-                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="text-lg font-bold">1</span>
-                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div className="text-lg font-extrabold">€ 12.00</div>
-                  </div>
-                  <button
-                    className="w-full py-4 bg-[#b3c6e6] rounded-2xl text-center font-bold text-base text-black mt-6"
-                    onClick={() => setShowSellConfirmModal(true)}
-                  >
-                    매도
-                  </button>
-                </div>
-              )}
+              <button
+                className="w-full py-4 bg-[#b3c6e6] rounded-2xl text-center font-bold text-base text-black mt-6"
+                onClick={async () => {
+                  try {
+                    const body = {
+                      symbol: selectedInfo.symbol,
+                      quantity,
+                      price: Number(selectedInfo.price),
+                    };
+                    const res = await sellStock(body).unwrap();
+                    alert(`${res.data.symbol} 매도 완료!`);
+                    setShowSellConfirmModal(true); // 매도 확인 모달 표시
+                  } catch (err) {
+                    alert("로그인이 필요합니다.");
+                    console.error(err);
+                    window.location.href = "http://13.220.145.152/?modal=login";
+                  }
+                }}
+              >
+                매도
+              </button>
               {/* 내 계좌 영역 */}
               <div>
                 <div className="flex justify-center mb-6">
