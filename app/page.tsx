@@ -216,15 +216,29 @@ export default function FinanceDashboard() {
   };
   const selectedInfo = getSelectedStockInfo();
 
-  // 1시간일 때 timestamp를 YYYY-MM-DD로 변환하는 함수
+  // 1시간일 때 timestamp를 YYYY-MM-DDTHH:00:00.000Z 형식(ISO 8601, 1시간 단위)으로 변환하는 함수
   const getProcessedChartData = () => {
     if (!Array.isArray(stockChartData?.data)) return [];
     let data = stockChartData.data as any[];
     if (activePeriod === "1시간") {
-      data = data.map((item: any) => ({
-        ...item,
-        timestamp: typeof item.timestamp === 'string' ? item.timestamp.slice(0, 10) : item.timestamp,
-      }));
+      data = data.map((item: any) => {
+        let isoTimestamp = item.timestamp;
+        // 이미 ISO 8601 형식이 아니면 변환
+        if (typeof isoTimestamp === 'string' && isoTimestamp.length === 10) {
+          // 'YYYY-MM-DD' -> 'YYYY-MM-DDT00:00:00.000Z'
+          isoTimestamp = isoTimestamp + 'T00:00:00.000Z';
+        } else if (typeof isoTimestamp === 'string' && isoTimestamp.length === 13) {
+          // 'YYYY-MM-DDTHH' -> 'YYYY-MM-DDTHH:00:00.000Z'
+          isoTimestamp = isoTimestamp + ':00:00.000Z';
+        } else if (typeof isoTimestamp === 'string' && isoTimestamp.length === 16) {
+          // 'YYYY-MM-DDTHH:MM' -> 'YYYY-MM-DDTHH:00:00.000Z'
+          isoTimestamp = isoTimestamp.slice(0, 13) + ':00:00.000Z';
+        }
+        return {
+          ...item,
+          timestamp: isoTimestamp,
+        };
+      });
     }
     // null/undefined, timestamp 또는 open/high/low/close 값이 없는 데이터 제거
     data = data.filter(
