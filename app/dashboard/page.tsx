@@ -23,6 +23,7 @@ import useSWR from 'swr';
 import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, useGetProfileQuery } from "@/lib/api";
 import BuyPanel from "@/components/BuyPanel"
 import LogoutButton from "@/components/common/LogoutButton"
+import { useBuyStockMutation } from "@/lib/api";
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -48,7 +49,7 @@ export default function Dashboard() {
       changePercent: "-2.32%"
     }
   ]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+ 
   const [error, setError] = useState<string | null>(null);
   // 첫 화면 종목 선택 GOOGL로 설정함.
   const [selectedStock, setSelectedStock] = useState<string>("GOOGL");
@@ -151,6 +152,14 @@ export default function Dashboard() {
       setNickname(savedNick);
     }
   }, []); 
+  const [quantity, setQuantity] = useState(1);
+  const [buyStock, { isLoading }] = useBuyStockMutation();
+
+  // 예시로 종목 정보를 props로 받는다고 가정
+  const stock = stocks.find((s) => s.symbol === selectedStock);
+  const symbol = stock?.symbol || "SPY";
+  const name = stock?.name || "S&P 500";
+  const price = parseFloat(stock?.price.replace("$", "") || "0");
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -545,39 +554,61 @@ export default function Dashboard() {
                   <X className="w-5 h-5 text-gray-500" />
                 </button>
               </div>
-              {showPanel === 'buy' && (
-                <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
-                      <div className="text-center">
-                        <div className="text-xs font-bold">S&P</div>
-                        <div className="text-xs">500</div>
-                      </div>
-                    </div>
-                    <h2 className="text-xl font-extrabold">S&P 500</h2>
-                  </div>
-                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 재투자하는 ETF</p>
-                  <div className="flex items-center justify-between mt-6">
-                    <div className="font-bold text-base">수량</div>
-                    <div className="flex items-center gap-4">
-                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="text-lg font-bold">1</span>
-                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div className="text-lg font-extrabold">€ 12.00</div>
-                  </div>
-                  <button
-                    className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
-                    onClick={() => setShowConfirmModal(true)}
-                  >
-                    매수
-                  </button>
-                </div>
-              )}
+              {showPanel === 'buy' && stock && (
+  <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
+    {/* 종목 정보 */}
+    <div className="flex items-center gap-4">
+      <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
+        <div className="text-center">
+          <div className="text-xs font-bold">{stock.symbol.slice(0, 3)}</div>
+          <div className="text-xs">{stock.symbol.slice(3)}</div>
+        </div>
+      </div>
+      <h2 className="text-xl font-extrabold">{stock.name}</h2>
+    </div>
+
+  
+
+    {/* 수량 및 가격 */}
+    <div className="flex items-center justify-between mt-6">
+      <div className="font-bold text-base">수량</div>
+      <div className="flex items-center gap-4">
+        <button
+          onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+          className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold"
+        >
+          <Minus className="w-4 h-4" />
+        </button>
+        <span className="text-lg font-bold">{quantity}</span>
+        <button
+          onClick={() => setQuantity((prev) => prev + 1)}
+          className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold"
+        >
+          <Plus className="w-4 h-4" />
+        </button>
+      </div>
+      <div className="text-lg font-extrabold">${(price * quantity).toFixed(2)}</div>
+    </div>
+
+    {/* 매수 버튼 */}
+    <button
+      className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
+      onClick={async () => {
+        try {
+          const body = { symbol: stock.symbol, quantity, price };
+          const res = await buyStock(body).unwrap();
+          alert(`${res.data.symbol} 매수 완료!`);
+          setShowConfirmModal(true);
+        } catch (err) {
+          alert("매수 실패! 다시 시도해주세요.");
+          console.error(err);
+        }
+      }}
+    >
+      매수
+    </button>
+  </div>
+)}
               {showPanel === 'sell' && (
                 <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
                   <div className="flex items-center gap-4">
