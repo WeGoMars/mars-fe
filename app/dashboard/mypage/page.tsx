@@ -44,12 +44,18 @@ export default function MyPage() {
 // }, [walletData, error]);
    
   const { data } = useGetProfileQuery();
-useEffect(() => {
-  if (data?.nick) {
-    setNickname(data.nick);
-    localStorage.setItem("nickname", data.nick);
-  }
-}, [data]);
+  useEffect(() => {
+    if (data?.nick) {
+      setNickname(data.nick);
+      localStorage.setItem("nickname", data.nick);
+    }
+  }, [data]);
+  useEffect(() => {
+      const savedNick = localStorage.getItem("nickname");
+      if (savedNick) {
+        setNickname(savedNick);
+      }
+    }, []); 
   return (
     
     <div className="min-h-screen bg-[#f5f7f9]">
