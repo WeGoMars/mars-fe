@@ -216,6 +216,20 @@ export default function FinanceDashboard() {
   };
   const selectedInfo = getSelectedStockInfo();
 
+  // 1시간일 때 timestamp를 YYYY-MM-DD로 변환하는 함수
+  const getProcessedChartData = () => {
+    if (!Array.isArray(stockChartData?.data)) return [];
+    let data = stockChartData.data as any[];
+    if (activePeriod === "1시간") {
+      data = data.map((item: any) => ({
+        ...item,
+        timestamp: typeof item.timestamp === 'string' ? item.timestamp.slice(0, 10) : item.timestamp,
+      }));
+    }
+    // timestamp 기준 오름차순 정렬
+    return data.slice().sort((a: any, b: any) => a.timestamp.localeCompare(b.timestamp));
+  };
+
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
       {/* Header */}
@@ -491,9 +505,9 @@ export default function FinanceDashboard() {
               id="chart-container"
               className="w-full h-full flex flex-col items-center justify-center"
             >
-              {Array.isArray(stockChartData?.data) && stockChartData.data.length > 0 ? (
+              {getProcessedChartData().length > 0 ? (
                 <StockChart 
-                  data={stockChartData.data} 
+                  data={getProcessedChartData()} 
                   symbol={selectedInfo.symbol} 
                   period={activePeriod} 
                 />
