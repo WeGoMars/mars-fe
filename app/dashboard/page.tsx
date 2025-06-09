@@ -278,36 +278,25 @@ export default function Dashboard() {
                     }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8">
-                        {stock.symbol === "MSFT" && (
-                          <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
-                            <div className="bg-[#f25022]"></div>
-                            <div className="bg-[#7fba00]"></div>
-                            <div className="bg-[#00a4ef]"></div>
-                            <div className="bg-[#ffb900]"></div>
-                          </div>
-                        )}
-                        {stock.symbol === "GOOGL" && (
-                          <Image
-                            src="/google-logo.png"
-                            alt="Google"
-                            width={32}
-                            height={32}
-                          />
-                        )}
-                        {stock.symbol === "SPOT" && (
-                          <Image
-                            src="/spotify-logo.png"
-                            alt="Spotify"
-                            width={32}
-                            height={32}
-                          />
-                        )}
-                        {!["MSFT", "GOOGL", "SPOT"].includes(stock.symbol) && (
-                          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                            <span className="text-xs font-bold">{stock.symbol.slice(0, 2)}</span>
-                          </div>
-                        )}
+                      <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs overflow-hidden">
+                        <Image
+                          src={`/logos/${stock.symbol}.png`}
+                          alt={stock.symbol}
+                          width={28}
+                          height={28}
+                          style={{objectFit:'contain'}}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const parent = target.parentElement;
+                            if (parent) {
+                              const fallback = document.createElement('div');
+                              fallback.className = 'w-8 h-8 bg-gray-200 rounded flex items-center justify-center';
+                              fallback.innerHTML = `<span class="text-xs font-bold">${stock.symbol.slice(0, 2)}</span>`;
+                              parent.appendChild(fallback);
+                            }
+                          }}
+                        />
                       </div>
                       <div>
                         <div className="font-bold text-base">{stock.symbol}</div>
@@ -374,30 +363,25 @@ export default function Dashboard() {
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8">
-                      {stock.symbol === "MSFT" && (
-                        <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
-                          <div className="bg-[#f25022]"></div>
-                          <div className="bg-[#7fba00]"></div>
-                          <div className="bg-[#00a4ef]"></div>
-                          <div className="bg-[#ffb900]"></div>
-                        </div>
-                      )}
-                      {stock.symbol === "GOOGL" && (
-                        <Image
-                          src="/google-logo.png"
-                          alt="Google"
-                          width={32}
-                          height={32}
-                        />
-                      )}
-                      {stock.symbol === "SPOT" && (
-                        <Image
-                          src="/spotify-logo.png"
-                          alt="Spotify"
-                          width={32}
-                          height={32}
-                        />
-                      )}
+                      <Image
+                        src={`/logos/${stock.symbol}.png`}
+                        alt={stock.symbol}
+                        width={32}
+                        height={32}
+                        className="rounded-full"
+                        onError={(e) => {
+                          // 이미지 로드 실패 시 기본 텍스트 표시
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            const fallback = document.createElement('div');
+                            fallback.className = 'w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center';
+                            fallback.innerHTML = `<span class="text-xs font-bold">${stock.symbol.slice(0, 2)}</span>`;
+                            parent.appendChild(fallback);
+                          }
+                        }}
+                      />
                     </div>
                     <div>
                       <div className="font-bold text-base">{stock.symbol}</div>
