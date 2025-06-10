@@ -40,10 +40,23 @@ export default function BuyPanel({ open, onClose, symbol, name, price, totalAsse
       </div>
       <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
-            <div className="text-center">
-              <div className="text-xs font-bold">{symbol}</div>
-            </div>
+          <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200 overflow-hidden">
+            <img
+              src={`/logos/${symbol}.png`}
+              alt={symbol}
+              className="w-10 h-10 object-contain"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const parent = target.parentElement;
+                if (parent) {
+                  const fallback = document.createElement('div');
+                  fallback.className = 'w-14 h-14 flex items-center justify-center';
+                  fallback.innerHTML = `<span class='text-xs font-bold'>${symbol}</span>`;
+                  parent.appendChild(fallback);
+                }
+              }}
+            />
           </div>
           <h2 className="text-xl font-extrabold">{name}</h2>
         </div>
