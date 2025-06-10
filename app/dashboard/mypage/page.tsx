@@ -8,9 +8,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation" 
 import { useEffect, useState } from "react"
 import ProfileModal from "@/components/common/ProfileModal"
-import mockPortfolio from "@/lib/mock/mockportfolio";
-import { useCreateWalletMutation,useGetProfileQuery,useGetWalletQuery  } from "@/lib/api"
 
+import { useGetProfileQuery,useGetWalletQuery  } from "@/lib/api"
+import { useGetOverallPortfolioQuery } from "@/lib/api"; 
 import ProfileHandler from "@/components/common/ProfileHandler";
 import LogoutButton from "@/components/common/LogoutButton"
 
@@ -20,7 +20,7 @@ export default function MyPage() {
   const holdings = [{ name: "테슬라", purchasePrice: 300, currentPrice: 344, Quantity: 2 , gain: 44, returnRate: 14.67 }]
   const router = useRouter()
   const [nickname, setNickname] = useState<string | null>(null)
-  const [portfolioData, setPortfolioData] = useState(mockPortfolio);
+  
   const handleAvatarClick = () => {
   const url = new URL(window.location.href)
   url.searchParams.set("modal", "edit")
@@ -28,15 +28,18 @@ export default function MyPage() {
   }
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
-  // const { data: walletData, isLoading, isError, error } = useGetWalletQuery();
-  // const [createWallet, { data: walletData, isLoading, isError, error }] = useCreateWalletMutation();
   const { data: walletData, isLoading, isError } = useGetWalletQuery();
-//   const [createWallet] = useCreateWalletMutation();
+  const { data, isLoading: Loading, error } = useGetOverallPortfolioQuery();
+  if (isLoading) return <div>로딩 중...</div>;
+  if (error || !data?.data) return <div>에러 발생</div>;
 
-//   useEffect(() => {
-//     if (!isLoading && isError)    // getWallet 에서 에러났을 때만 지갑 생성 시도
-//   createWallet({ amount: 100000 }); // ✅ 여기에서 API 요청을 실제로 보냄
-// }, []);
+  const portfolioData = {
+    totalAssets: data.data.totalAsset,
+    investmentAmount: data.data.investedAmount,
+    profitLoss: data.data.evalGain,
+    returnRate: data.data.returnRate * 100, // %로 보기 좋게
+    cash: data.data.cash,
+  };
 
   return (
     
@@ -392,7 +395,7 @@ export default function MyPage() {
                 <div className="text-center">
                   <div className="text-xs text-[#8f9098] mb-1">총 투자 비율</div>
                   <div className="text-lg font-semibold text-[#1c2730]">
-                    {/* {((portfolioData.investmentAmount / 4000) * 100).toFixed(1)}% */}
+                    {((portfolioData.investmentAmount / 4000) * 100).toFixed(1)}%
                   </div>
                 </div>
                
@@ -400,10 +403,10 @@ export default function MyPage() {
                     <div className="text-xs text-[#8f9098] mb-1">현금 자산</div>
                     <div className="text-lg font-semibold">
                       ${" "}
-                      {/* {(portfolioData.seedMoney - portfolioData.investmentAmount).toLocaleString("en-US", {
+                      {portfolioData.cash.toLocaleString("en-US", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
-                      })} */}
+                      })}
                     </div>
                   </div>
               </div>

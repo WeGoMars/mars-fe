@@ -1,4 +1,4 @@
-import type { SignUpRequest, SignUpResponse, WalletResponse,TradeResponse, TradeRequest } from "./types"
+import type { SignUpRequest, SignUpResponse, WalletResponse,TradeResponse, TradeRequest,OverallPortfolioResponse } from "./types"
 import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest, GetStockSearchRequest, GetStockSearchResponse, GetStockDetailsResponse, LikeStockRequest, LikeStockResponse, UnlikeStockResponse, GetLikedStocksResponse } from "./types"
 import { fetchBaseQuery, createApi } from '@reduxjs/toolkit/query/react';
 import type { LoginRequest, LoginResponse, UserProfile } from "./types"
@@ -280,3 +280,21 @@ export const tradesApi = createApi({
 });
 
 export const { useBuyStockMutation, useSellStockMutation } = tradesApi;
+
+export const portfolioApi = createApi({
+  reducerPath: 'portfolioApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: '/api/portfolios',
+    credentials: 'include', // 로그인 세션 유지
+  }),
+  endpoints: (builder) => ({
+    getOverallPortfolio: builder.query<OverallPortfolioResponse, void>({
+      query: () => ({
+        url: 'overall',
+        method: 'GET',
+      }),
+    }),
+  }),
+});
+
+export const { useGetOverallPortfolioQuery } = portfolioApi;
