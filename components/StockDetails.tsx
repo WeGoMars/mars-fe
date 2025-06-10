@@ -265,8 +265,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               {/* Investment Amount */}
               <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">투자금액</span>
-                
-               <div>
+                <div>
                 <span className="text-[#439a86] text-xs mr-1">$</span>
                 <span className="text-xl font-bold text-[#439a86] ">
                   {portfolioData.investmentAmount.toLocaleString("en-US", {
