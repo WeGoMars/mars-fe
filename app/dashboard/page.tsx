@@ -403,79 +403,61 @@ export default function Dashboard() {
 
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
-              {[
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                  changePercent: "+2.5%"
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                  changePercent: "+1.1%"
-                },
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                  changePercent: "+2.5%"
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                  changePercent: "+1.1%"
-                },
-              ].map((stock, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
-                  onClick={() => {
-                    setSelectedStock(stock.symbol);
-                    // API 연동 시 여기에 API 호출 로직 추가
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8">
-                      <Image
-                        src={`/logos/${stock.symbol}.png`}
-                        alt={stock.symbol}
-                        width={32}
-                        height={32}
-                        className="rounded-full"
-                        onError={(e) => {
-                          // 이미지 로드 실패 시 기본 텍스트 표시
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const parent = target.parentElement;
-                          if (parent) {
-                            const fallback = document.createElement('div');
-                            fallback.className = 'w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center';
-                            fallback.innerHTML = `<span class="text-xs font-bold">${stock.symbol.slice(0, 2)}</span>`;
-                            parent.appendChild(fallback);
-                          }
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <div className="font-bold text-base">{stock.symbol}</div>
-                      <div className="text-xs text-gray-500">{stock.name}</div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-bold text-base">{stock.price}</div>
-                    <div className={`text-xs ${stock.change.startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}>
-                      {stock.change}
-                    </div>
-                  </div>
+              {myStocksData === undefined ? (
+                <div className="text-center py-4">로딩 중...</div>
+              ) : myStocksData.success === false ? (
+                <div className="text-center text-red-500 py-4">
+                  내가 구매한 종목을 불러오는데 실패했습니다.
                 </div>
-              ))}
+              ) : myStocksData.data.length === 0 ? (
+                <div className="text-center text-gray-500 py-4">
+                  내가 구매한 종목이 없습니다.
+                </div>
+              ) : (
+                myStocksData.data.map((stock, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                    onClick={() => {
+                      setSelectedStock(stock.symbol);
+                      // 필요시 상세정보 API 연동
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8">
+                        <Image
+                          src={`/logos/${stock.symbol}.png`}
+                          alt={stock.symbol}
+                          width={32}
+                          height={32}
+                          className="rounded-full"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const parent = target.parentElement;
+                            if (parent) {
+                              const fallback = document.createElement('div');
+                              fallback.className = 'w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center';
+                              fallback.innerHTML = `<span class='text-xs font-bold'>${stock.symbol.slice(0, 2)}</span>`;
+                              parent.appendChild(fallback);
+                            }
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <div className="font-bold text-base">{stock.symbol}</div>
+                        <div className="text-xs text-gray-500">{stock.name}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold text-base">${stock.currentPrice.toFixed(2)}</div>
+                      <div className={`text-xs ${stock.priceDelta >= 0 ? 'text-[#41c3a9]' : 'text-red-500'}`}> 
+                        {stock.priceDelta >= 0 ? '+' : ''}{stock.priceDelta.toFixed(2)}%
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
