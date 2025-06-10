@@ -79,6 +79,14 @@ export default function Dashboard() {
     change: 0
   });
   const [logoError, setLogoError] = useState(false);
+  const [buyParams, setBuyParams] = useState<{
+    symbol: string;
+    name: string;
+    price: number;
+    quantity: number;
+    fee: number;
+    total: number;
+  } | null>(null);
 
   const selectStock = (stock: GetStockSearchResponse) => {
     setSelectedStock(stock.symbol);
@@ -596,7 +604,10 @@ export default function Dashboard() {
                   seedMoney={portfolioData.seedMoney}
                   investmentAmount={portfolioData.investmentAmount}
                   profitLoss={portfolioData.profitLoss}
-                  onBuyClick={() => setShowConfirmModal(true)}
+                  onBuyClick={(params) => {
+                    setBuyParams(params);
+                    setShowConfirmModal(true);
+                  }}
                 />
               )}
               {/* 매도 패널 */}
@@ -695,6 +706,12 @@ export default function Dashboard() {
           setShowConfirmModal(false);
           setShowPanel(false);
         }}
+        symbol={buyParams?.symbol || ''}
+        name={buyParams?.name || ''}
+        price={buyParams?.price || 0}
+        quantity={buyParams?.quantity || 1}
+        fee={buyParams?.fee || 0}
+        total={buyParams?.total || 0}
       />
       <SellConfirmModal
         open={showSellConfirmModal}
