@@ -145,6 +145,17 @@ export default function FinanceDashboard() {
   ]);
 
   const [searchedStockInfo, setSearchedStockInfo] = useState<any | null>(null);
+  const [selectedInfo, setSelectedInfo] = useState<{
+    symbol: string;
+    name: string;
+    price: number;
+    change: number;
+  }>({
+    symbol: "GOOGL",
+    name: "Alphabet Inc.",
+    price: 0,
+    change: 0
+  });
 
   const handleStockSelect = async (symbol: string) => {
     setSelectedStock(symbol);
@@ -157,15 +168,37 @@ export default function FinanceDashboard() {
         const change = lastPrice !== 0 && lastPrice !== undefined && lastPrice !== null 
           ? ((price - lastPrice) / lastPrice) * 100 
           : 0;
+        
+        // 검색 결과 정보 업데이트
         setSearchedStockInfo({
           ...res.data,
           priceDelta: change
         });
+
+        // 중앙 정보 업데이트
+        setSelectedInfo({
+          symbol: res.data.symbol,
+          name: res.data.name,
+          price: price,
+          change: change
+        });
       } else {
         setSearchedStockInfo(null);
+        setSelectedInfo({
+          symbol: symbol,
+          name: symbol,
+          price: 0,
+          change: 0
+        });
       }
     } catch {
       setSearchedStockInfo(null);
+      setSelectedInfo({
+        symbol: symbol,
+        name: symbol,
+        price: 0,
+        change: 0
+      });
     }
   };
 
@@ -199,14 +232,19 @@ export default function FinanceDashboard() {
       change: fallback.change,
     };
     // 기본값
-    return {
-      symbol: selectedStock,
-      name: selectedStock,
-      price: 0,
-      change: 0,
-    };
+    return selectedInfo;
   };
-  const selectedInfo = getSelectedStockInfo();
+
+  // selectedInfo가 변경될 때마다 getSelectedStockInfo()의 결과로 업데이트
+  useEffect(() => {
+    const newInfo = getSelectedStockInfo();
+    if (newInfo.symbol !== selectedInfo.symbol || 
+        newInfo.name !== selectedInfo.name || 
+        newInfo.price !== selectedInfo.price || 
+        newInfo.change !== selectedInfo.change) {
+      setSelectedInfo(newInfo);
+    }
+  }, [selectedStock, searchedStockInfo, stockListData, stockData]);
 
   // 1시간일 때 timestamp를 YYYY-MM-DDTHH:00:00.000Z 형식(ISO 8601, 1시간 단위)으로 변환하는 함수
   const getProcessedChartData = () => {
