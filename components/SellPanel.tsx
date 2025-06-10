@@ -7,9 +7,14 @@ interface SellPanelProps {
   symbol: string;
   name: string;
   price: number;
+  totalAssets: number;
+  cashAsset: number;
+  seedMoney: number;
+  investmentAmount: number;
+  profitLoss: number;
 }
 
-export default function SellPanel({ open, onClose, symbol, name, price }: SellPanelProps) {
+export default function SellPanel({ open, onClose, symbol, name, price, totalAssets, cashAsset, seedMoney, investmentAmount, profitLoss }: SellPanelProps) {
   useEffect(() => {
     if (open) {
       console.log('[매도 패널 진입] 선택된 종목:', { symbol, name, price });
@@ -57,6 +62,58 @@ export default function SellPanel({ open, onClose, symbol, name, price }: SellPa
         </div>
         {/* 매도 버튼 */}
         <button className="w-full py-4 bg-[#b3c6e6] rounded-xl text-center font-medium mt-6">매도</button>
+      </div>
+      {/* 내 계좌 영역 */}
+      <div>
+        <div className="flex justify-center mb-6">
+          <span className="px-8 py-2 rounded-full bg-[#f4f5f9] text-base font-semibold text-center">내 계좌</span>
+        </div>
+        <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6">
+          <div className="flex justify-between items-center">
+            <div className="font-bold text-base">총자산</div>
+            <div>
+              <span className="text-[#006ffd] text-xs mr-1">$</span>
+              <span className="text-[#006ffd] text-xl font-bold">{totalAssets.toFixed(2)}</span>
+            </div>
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="font-bold text-base">현금자산</div>
+            <div>
+              <span className="text-xs mr-1">$</span>
+              <span className="text-xl font-bold">{cashAsset.toFixed(2)}</span>
+            </div>
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="font-bold text-base">시드머니</div>
+            <div>
+              <span className="text-[#006ffd] text-xs mr-1">$</span>
+              <span className="text-[#006ffd] text-xl font-bold">{seedMoney.toFixed(2)}</span>
+            </div>
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="font-bold text-base">투자금액</div>
+            <div>
+              <span className="text-[#439a86] text-xs mr-1">$</span>
+              <span className="text-[#439a86] text-xl font-bold">{investmentAmount.toFixed(2)}</span>
+            </div>
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="font-bold text-base">평가손익</div>
+            <div className="flex items-center">
+              <span
+                className={`text-xs mr-1 ${profitLoss >= 0 ? "text-[#e74c3c]" : "text-[#3498db]"}`}
+              >
+                $
+              </span>
+              <span
+                className={`text-xl font-bold ${profitLoss >= 0 ? "text-[#e74c3c]" : "text-[#3498db]"}`}
+              >
+                {profitLoss >= 0 ? "+" : "-"}
+                {Math.abs(profitLoss).toFixed(2)}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

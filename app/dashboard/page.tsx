@@ -591,6 +591,11 @@ export default function Dashboard() {
                   symbol={selectedInfo.symbol}
                   name={selectedInfo.name}
                   price={selectedInfo.price}
+                  totalAssets={portfolioData.totalAssets}
+                  cashAsset={cashAsset}
+                  seedMoney={portfolioData.seedMoney}
+                  investmentAmount={portfolioData.investmentAmount}
+                  profitLoss={portfolioData.profitLoss}
                 />
               )}
               {/* 매도 패널 */}
@@ -601,9 +606,14 @@ export default function Dashboard() {
                   symbol={selectedInfo.symbol}
                   name={selectedInfo.name}
                   price={selectedInfo.price}
+                  totalAssets={portfolioData.totalAssets}
+                  cashAsset={cashAsset}
+                  seedMoney={portfolioData.seedMoney}
+                  investmentAmount={portfolioData.investmentAmount}
+                  profitLoss={portfolioData.profitLoss}
                 />
               )}
-              {/* 내 계좌 영역 */}
+              {/* 내 계좌 영역
               <div>
                 <div className="flex justify-center mb-6">
                   <span className="px-8 py-2 rounded-full bg-[#f4f5f9] text-base font-semibold text-center">내 계좌</span>
@@ -656,7 +666,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </>
           ) : (
             // 기존 카드 내용
