@@ -7,15 +7,15 @@ import type { Stock } from "@/lib/types";
 // 주식 클릭 시 목록 보여주는 컴포넌트
 interface StockListProps {
   stocks: Stock[];
-  onSelectStock: (symbol: string) => void;
+  onSelectStock: (stock: Stock) => void;
 }
 
 export default function StockList({ stocks, onSelectStock }: StockListProps) {
   const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
 
-  const handleSelectStock = (symbol: string) => {
-    setSelectedSymbol(symbol);
-    onSelectStock(symbol);
+  const handleSelectStock = (stock: Stock) => {
+    setSelectedSymbol(stock.symbol);
+    onSelectStock(stock);
   };
 
   return (
@@ -26,7 +26,7 @@ export default function StockList({ stocks, onSelectStock }: StockListProps) {
           className={`flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors ${
             selectedSymbol === stock.symbol ? "bg-gray-50" : ""
           }`}
-          onClick={() => handleSelectStock(stock.symbol)}
+          onClick={() => handleSelectStock(stock)}
         >
           <div className="flex items-center gap-3">
             <div className="w-8 h-8">

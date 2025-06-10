@@ -166,54 +166,34 @@ export default function FinanceDashboard() {
     change: 0
   });
 
-  const handleStockSelect = async (symbol: string) => {
-    setSelectedStock(symbol);
+  const handleStockSelect = async (stock: any) => {
+    setSelectedStock(stock.symbol);
     setLogoError(false);
-    // 종목 검색 결과에서 선택된 경우, 해당 종목의 상세 정보 fetch
-    try {
-      const res = await getStockDetails(symbol);
-      if (res.success && res.data) {
-        const price = res.data.currentPrice;
-        const lastPrice = res.data.lastPrice;
-        const change = lastPrice !== 0 && lastPrice !== undefined && lastPrice !== null 
-          ? ((price - lastPrice) / lastPrice) * 100 
-          : 0;
-        
-        // 검색 결과 정보 업데이트
-        const newStockInfo = {
-          ...res.data,
-          priceDelta: change
-        };
-        setSearchedStockInfo(newStockInfo);
+    
+    // 검색 결과에서 받은 데이터를 직접 사용
+    const newStockInfo = {
+      symbol: stock.symbol,
+      name: stock.name,
+      currentPrice: stock.currentPrice,
+      priceDelta: stock.priceDelta,
+      sector: stock.sector,
+      industry: stock.industry,
+      hourlyVolume: stock.hourlyVolume
+    };
+    
+    // 검색 결과 정보 업데이트
+    setSearchedStockInfo(newStockInfo);
 
-        // 중앙 정보 업데이트
-        setSelectedInfo({
-          symbol: newStockInfo.symbol,
-          name: newStockInfo.name,
-          price: newStockInfo.currentPrice,
-          change: newStockInfo.priceDelta
-        });
+    // 중앙 정보 업데이트
+    setSelectedInfo({
+      symbol: newStockInfo.symbol,
+      name: newStockInfo.name,
+      price: newStockInfo.currentPrice,
+      change: newStockInfo.priceDelta
+    });
 
-        // 차트 데이터 갱신을 위한 상태 업데이트
-        setActivePeriod(activePeriod);
-      } else {
-        setSearchedStockInfo(null);
-        setSelectedInfo({
-          symbol: symbol,
-          name: symbol,
-          price: 0,
-          change: 0
-        });
-      }
-    } catch {
-      setSearchedStockInfo(null);
-      setSelectedInfo({
-        symbol: symbol,
-        name: symbol,
-        price: 0,
-        change: 0
-      });
-    }
+    // 차트 데이터 갱신을 위한 상태 업데이트
+    setActivePeriod(activePeriod);
   };
 
   // 중앙에 표시할 종목 정보 우선순위: 검색된 종목 > 관심종목 > stockListData > 목데이터

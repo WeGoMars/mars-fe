@@ -9,7 +9,7 @@ import StockDetails from "@/components/StockDetails";
 import StockList from "@/components/StockList";
 import BuyConfirmModal from "@/components/BuyConfirmModal";
 import SellConfirmModal from "@/components/SellConfirmModal";
-import type { Stock } from "@/lib/types";
+import type { Stock, GetStockSearchResponse } from "@/lib/types";
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 
@@ -78,8 +78,8 @@ export default function Dashboard() {
   });
   const [logoError, setLogoError] = useState(false);
 
-  const selectStock = (symbol: string) => {
-    setSelectedStock(symbol);
+  const selectStock = (stock: GetStockSearchResponse) => {
+    setSelectedStock(stock.symbol);
   };
 
   const portfolioData = mockPortfolio;
@@ -292,8 +292,16 @@ export default function Dashboard() {
           ) : (
             <StockList
               stocks={stocks}
-              onSelectStock={(symbol: string) => {
-                selectStock(symbol);
+              onSelectStock={(stock: Stock) => {
+                selectStock({
+                  symbol: stock.symbol,
+                  name: stock.name,
+                  sector: "",
+                  industry: "",
+                  currentPrice: parseFloat(stock.price.replace("$", "")),
+                  priceDelta: parseFloat(stock.change.replace("%", "")),
+                  hourlyVolume: 0
+                });
                 setMobileSidebarOpen(false);
               }}
             />
