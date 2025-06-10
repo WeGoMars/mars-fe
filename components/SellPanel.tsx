@@ -24,44 +24,46 @@ export default function SellPanel({ open, onClose, symbol, name, price, totalAss
   return (
     <div
       className={`
-        fixed top-0 right-0 h-full w-full max-w-md bg-white z-50 shadow-lg
-        transition-transform duration-300
+        bg-white rounded-3xl border border-gray-200 p-6 w-full max-w-md md:max-w-md lg:max-w-md xl:max-w-lg flex flex-col fixed top-0 right-0 h-full z-50 shadow-lg transform transition-transform duration-500 animate-slide-in-right
         ${open ? "translate-x-0" : "translate-x-full"}
       `}
     >
-      <div className="p-4 flex justify-between items-center">
-        <div className="w-8"></div>
-        <div className="text-center font-medium text-lg bg-[#f4f5f9] px-8 py-2 rounded-full mx-4">매도</div>
-        <button onClick={onClose}>
-          <X className="w-5 h-5" />
+      {/* 매도 영역 */}
+      <div className="flex items-center justify-center mb-8 relative">
+        <span className="px-8 py-2 rounded-full bg-[#f4f5f9] text-base font-semibold text-center">
+          매도
+        </span>
+        <button onClick={onClose} className="absolute right-0 top-1/2 -translate-y-1/2">
+          <X className="w-5 h-5 text-gray-500" />
         </button>
       </div>
-      <div className="p-6 space-y-6">
-        {/* 종목 정보 */}
+      <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center border">
+          <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
             <div className="text-center">
-              <div className="text-xs font-semibold">{symbol}</div>
+              <div className="text-xs font-bold">{symbol}</div>
             </div>
           </div>
-          <h2 className="text-2xl font-bold">{name}</h2>
+          <h2 className="text-xl font-extrabold">{name}</h2>
         </div>
-        {/* 수량 선택 */}
-        <div className="flex justify-between items-center mt-8">
-          <div className="font-medium">수량</div>
+        <div className="flex items-center justify-between mt-6">
+          <div className="font-bold text-base">수량</div>
           <div className="flex items-center gap-4">
-            <button className="w-8 h-8 rounded-full bg-[#eaf2ff] flex items-center justify-center text-[#006ffd]">
+            <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
               <Minus className="w-4 h-4" />
             </button>
-            <span className="text-xl font-medium">1</span>
-            <button className="w-8 h-8 rounded-full bg-[#eaf2ff] flex items-center justify-center text-[#006ffd]">
+            <span className="text-lg font-bold">1</span>
+            <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
               <Plus className="w-4 h-4" />
             </button>
           </div>
-          <div className="text-xl font-semibold">${price.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
+          <div className="text-lg font-extrabold">${price.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
         </div>
-        {/* 매도 버튼 */}
-        <button className="w-full py-4 bg-[#b3c6e6] rounded-xl text-center font-medium mt-6">매도</button>
+        <button
+          className="w-full py-4 bg-[#b3c6e6] rounded-2xl text-center font-bold text-base text-black mt-6"
+        >
+          매도
+        </button>
       </div>
       {/* 내 계좌 영역 */}
       <div>
