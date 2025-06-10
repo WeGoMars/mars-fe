@@ -1,19 +1,18 @@
 import { X, Minus, Plus } from "lucide-react";
 import { useEffect } from "react";
 
-// 매수, 매도 슬라이드 컴포넌트
-interface BuyPanelProps {
-  open: boolean; // 패널 표시 여부
-  onClose: () => void; // 패널 닫기 함수
+interface SellPanelProps {
+  open: boolean;
+  onClose: () => void;
   symbol: string;
   name: string;
   price: number;
 }
 
-export default function BuyPanel({ open, onClose, symbol, name, price }: BuyPanelProps) {
+export default function SellPanel({ open, onClose, symbol, name, price }: SellPanelProps) {
   useEffect(() => {
     if (open) {
-      console.log('[매수 패널 진입] 선택된 종목:', { symbol, name, price });
+      console.log('[매도 패널 진입] 선택된 종목:', { symbol, name, price });
     }
   }, [open, symbol, name, price]);
 
@@ -27,7 +26,7 @@ export default function BuyPanel({ open, onClose, symbol, name, price }: BuyPane
     >
       <div className="p-4 flex justify-between items-center">
         <div className="w-8"></div>
-        <div className="text-center font-medium text-lg bg-[#f4f5f9] px-8 py-2 rounded-full mx-4">매수</div>
+        <div className="text-center font-medium text-lg bg-[#f4f5f9] px-8 py-2 rounded-full mx-4">매도</div>
         <button onClick={onClose}>
           <X className="w-5 h-5" />
         </button>
@@ -42,9 +41,7 @@ export default function BuyPanel({ open, onClose, symbol, name, price }: BuyPane
           </div>
           <h2 className="text-2xl font-bold">{name}</h2>
         </div>
-        {/* Description
-        <p className="text-gray-500 text-center">S&P 500에 투자하여 배당금을 재투자하는 ETF</p> */}
-        {/* Quantity Selector */}
+        {/* 수량 선택 */}
         <div className="flex justify-between items-center mt-8">
           <div className="font-medium">수량</div>
           <div className="flex items-center gap-4">
@@ -58,8 +55,8 @@ export default function BuyPanel({ open, onClose, symbol, name, price }: BuyPane
           </div>
           <div className="text-xl font-semibold">${price.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
         </div>
-        {/* Purchase Button */}
-        <button className="w-full py-4 bg-[#f9e0de] rounded-xl text-center font-medium mt-6">구매</button>
+        {/* 매도 버튼 */}
+        <button className="w-full py-4 bg-[#b3c6e6] rounded-xl text-center font-medium mt-6">매도</button>
       </div>
     </div>
   );

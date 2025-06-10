@@ -21,6 +21,8 @@ import mockPortfolio from "@/lib/mock/mockportfolio";
 import ProfileHandler from "@/components/common/ProfileHandler"
 import useSWR from 'swr';
 import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, getStockDetails, getMyStocks } from "@/lib/api";
+import BuyPanel from "@/components/BuyPanel";
+import SellPanel from "@/components/SellPanel";
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -580,81 +582,26 @@ export default function Dashboard() {
 
           {/* showPanel이 true일 때 매수/매도 화면을 위아래로 동시에 보여줌 */}
           {showPanel ? (
-            <div className="bg-white rounded-3xl border border-gray-200 p-6 w-full max-w-md md:max-w-md lg:max-w-md xl:max-w-lg flex flex-col fixed top-0 right-0 h-full z-50 shadow-lg transform transition-transform duration-500 animate-slide-in-right">
-              {/* 매수/매도 영역 */}
-              <div className="flex items-center justify-center mb-8 relative">
-                <span className="px-8 py-2 rounded-full bg-[#f4f5f9] text-base font-semibold text-center">
-                  {showPanel === 'buy' ? '매수' : '매도'}
-                </span>
-                <button onClick={() => setShowPanel(false)} className="absolute right-0 top-1/2 -translate-y-1/2">
-                  <X className="w-5 h-5 text-gray-500" />
-                </button>
-              </div>
+            <>
+              {/* 매수 패널 */}
               {showPanel === 'buy' && (
-                <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
-                      <div className="text-center">
-                        <div className="text-xs font-bold">S&P</div>
-                        <div className="text-xs">500</div>
-                      </div>
-                    </div>
-                    <h2 className="text-xl font-extrabold">S&P 500</h2>
-                  </div>
-                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 재투자하는 ETF</p>
-                  <div className="flex items-center justify-between mt-6">
-                    <div className="font-bold text-base">수량</div>
-                    <div className="flex items-center gap-4">
-                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="text-lg font-bold">1</span>
-                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div className="text-lg font-extrabold">€ 12.00</div>
-                  </div>
-                  <button
-                    className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
-                    onClick={() => setShowConfirmModal(true)}
-                  >
-                    매수
-                  </button>
-                </div>
+                <BuyPanel
+                  open={showPanel === 'buy'}
+                  onClose={() => setShowPanel(false)}
+                  symbol={selectedInfo.symbol}
+                  name={selectedInfo.name}
+                  price={selectedInfo.price}
+                />
               )}
+              {/* 매도 패널 */}
               {showPanel === 'sell' && (
-                <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
-                      <div className="text-center">
-                        <div className="text-xs font-bold">S&P</div>
-                        <div className="text-xs">500</div>
-                      </div>
-                    </div>
-                    <h2 className="text-xl font-extrabold">S&P 500</h2>
-                  </div>
-                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 재투자하는 ETF</p>
-                  <div className="flex items-center justify-between mt-6">
-                    <div className="font-bold text-base">수량</div>
-                    <div className="flex items-center gap-4">
-                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="text-lg font-bold">1</span>
-                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div className="text-lg font-extrabold">€ 12.00</div>
-                  </div>
-                  <button
-                    className="w-full py-4 bg-[#b3c6e6] rounded-2xl text-center font-bold text-base text-black mt-6"
-                    onClick={() => setShowSellConfirmModal(true)}
-                  >
-                    매도
-                  </button>
-                </div>
+                <SellPanel
+                  open={showPanel === 'sell'}
+                  onClose={() => setShowPanel(false)}
+                  symbol={selectedInfo.symbol}
+                  name={selectedInfo.name}
+                  price={selectedInfo.price}
+                />
               )}
               {/* 내 계좌 영역 */}
               <div>
@@ -710,7 +657,7 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-            </div>
+            </>
           ) : (
             // 기존 카드 내용
             <div className="bg-white rounded-xl p-4 md:p-5 shadow-sm flex-1 overflow-auto flex flex-col">
