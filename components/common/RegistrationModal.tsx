@@ -199,7 +199,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
               회원가입
             </button>
           </form>
-
+          {/* test */}
 
           <div className="text-center text-sm">
             <span className="text-[#747480] dark:text-gray-400">이미 계정이 있으신가요?</span>{" "}
