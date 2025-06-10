@@ -31,12 +31,12 @@ export default function MyPage() {
   // const { data: walletData, isLoading, isError, error } = useGetWalletQuery();
   // const [createWallet, { data: walletData, isLoading, isError, error }] = useCreateWalletMutation();
   const { data: walletData, isLoading, isError } = useGetWalletQuery();
-  const [createWallet] = useCreateWalletMutation();
+//   const [createWallet] = useCreateWalletMutation();
 
-  useEffect(() => {
-    if (!isLoading && isError)    // getWallet 에서 에러났을 때만 지갑 생성 시도
-  createWallet({ amount: 100000 }); // ✅ 여기에서 API 요청을 실제로 보냄
-}, []);
+//   useEffect(() => {
+//     if (!isLoading && isError)    // getWallet 에서 에러났을 때만 지갑 생성 시도
+//   createWallet({ amount: 100000 }); // ✅ 여기에서 API 요청을 실제로 보냄
+// }, []);
 
   return (
     
