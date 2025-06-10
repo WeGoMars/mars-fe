@@ -13,9 +13,10 @@ interface BuyPanelProps {
   seedMoney: number;
   investmentAmount: number;
   profitLoss: number;
+  onBuyClick: () => void;
 }
 
-export default function BuyPanel({ open, onClose, symbol, name, price, totalAssets, cashAsset, seedMoney, investmentAmount, profitLoss }: BuyPanelProps) {
+export default function BuyPanel({ open, onClose, symbol, name, price, totalAssets, cashAsset, seedMoney, investmentAmount, profitLoss, onBuyClick }: BuyPanelProps) {
   useEffect(() => {
     if (open) {
       console.log('[매수 패널 진입] 선택된 종목:', { symbol, name, price });
@@ -75,7 +76,7 @@ export default function BuyPanel({ open, onClose, symbol, name, price, totalAsse
         </div>
         <button
           className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
-          // onClick={() => setShowConfirmModal(true)}
+          onClick={onBuyClick}
         >
           매수
         </button>

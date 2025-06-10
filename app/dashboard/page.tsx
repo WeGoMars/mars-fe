@@ -596,6 +596,7 @@ export default function Dashboard() {
                   seedMoney={portfolioData.seedMoney}
                   investmentAmount={portfolioData.investmentAmount}
                   profitLoss={portfolioData.profitLoss}
+                  onBuyClick={() => setShowConfirmModal(true)}
                 />
               )}
               {/* 매도 패널 */}
