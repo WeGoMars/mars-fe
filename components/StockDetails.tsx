@@ -41,7 +41,6 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
         const response = await getStockDetails(symbol);
         if (response.success) {
           setDetails(response.data);
-          console.log('종목 상세 정보:', response.data);
         } else {
           setError(response.message);
         }
@@ -76,7 +75,6 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   }
 
   const handleTabClick = (tab: '종목정보 상세' | '내 계좌' | 'AI 추천') => {
-    console.log('Tab clicked:', tab);
     onTabChange(tab);
   };
 

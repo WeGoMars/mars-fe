@@ -80,7 +80,6 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("회원가입 버튼 클릭")
 
     if (!validateForm())
       return

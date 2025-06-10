@@ -31,7 +31,7 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
       item.low == null ||
       item.volume == null
     )) {
-     console.log("data", data);
+
     }
     // 메인 차트(캔들)
     const mainChart = createChart(mainChartRef.current, {

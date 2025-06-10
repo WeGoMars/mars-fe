@@ -409,7 +409,6 @@ export default function Dashboard() {
                   onClick={() => {
                     setSelectedStock(stock.symbol);
                     // API 연동 시 여기에 API 호출 로직 추가
-                    console.log(`Selected purchased stock: ${stock.symbol}`);
                   }}
                 >
                   <div className="flex items-center gap-3">

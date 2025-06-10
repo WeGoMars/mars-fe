@@ -51,22 +51,6 @@ export default function FinanceDashboard() {
     })
   );
 
-  if (stockChartData) {
-    console.log('Stock Chart Data:', stockChartData);
-  }
-
-  if (stockListData) {
-    console.log('Stock List Data:', stockListData);
-  }
-
-  if (stockListError) {
-    console.error('Failed to fetch stock list:', stockListError);
-  }
-
-  if (error) {
-    console.error('Failed to fetch stock data:', error);
-  }
-
   useEffect(() => {
     const checkLoginStatus = () => {
       try {
@@ -260,13 +244,6 @@ export default function FinanceDashboard() {
     return data.slice().sort((a: any, b: any) => a.timestamp.localeCompare(b.timestamp));
   };
 
-  // 1시간 데이터 콘솔 출력 (디버깅용)
-  useEffect(() => {
-    if (activePeriod === "1시간") {
-      console.log('1시간 getProcessedChartData:', getProcessedChartData());
-    }
-  }, [activePeriod, stockChartData]);
-
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
       {/* Header */}
@@ -380,7 +357,6 @@ export default function FinanceDashboard() {
                 onClick={() => {
                   setSelectedStock(stock.symbol);
                   // API 연동 시 여기에 API 호출 로직 추가
-                  console.log(`Selected stock: ${stock.symbol}`);
                 }}
               >
                 <div className="flex items-center gap-3">
@@ -427,7 +403,6 @@ export default function FinanceDashboard() {
                   className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                   onClick={() => {
                     setSelectedStock(stock.symbol);
-                    console.log(`Selected stock: ${stock.symbol}`);
                   }}
                 >
                   <div className="flex items-center gap-3">
@@ -695,7 +670,6 @@ export default function FinanceDashboard() {
                   symbol={selectedInfo.symbol}
                   activeTab={activeRightTab}
                   onTabChange={(tab) => {
-                    console.log('Tab change requested:', tab);
                     setActiveRightTab(tab);
                   }}
                   favoriteStocks={favoriteStocks}
