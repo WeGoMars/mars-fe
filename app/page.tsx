@@ -100,6 +100,7 @@ export default function FinanceDashboard() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [logoError, setLogoError] = useState(false);
 
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
@@ -159,6 +160,7 @@ export default function FinanceDashboard() {
 
   const handleStockSelect = async (symbol: string) => {
     setSelectedStock(symbol);
+    setLogoError(false);
     // 종목 검색 결과에서 선택된 경우, 해당 종목의 상세 정보 fetch
     try {
       const res = await getStockDetails(symbol);
@@ -175,13 +177,16 @@ export default function FinanceDashboard() {
           priceDelta: change
         });
 
-        // 중앙 정보 업데이트
+        // 중앙 정보 업데이트 (handleFavoriteStockClick과 동일한 방식)
         setSelectedInfo({
           symbol: res.data.symbol,
           name: res.data.name,
           price: price,
           change: change
         });
+
+        // 차트 데이터 갱신을 위한 상태 업데이트
+        setActivePeriod(activePeriod);
       } else {
         setSearchedStockInfo(null);
         setSelectedInfo({
