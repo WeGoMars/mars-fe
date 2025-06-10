@@ -80,6 +80,15 @@ export default function Dashboard() {
 
   const selectStock = (stock: GetStockSearchResponse) => {
     setSelectedStock(stock.symbol);
+    setLogoError(false);
+    
+    // 중앙 정보 직접 업데이트
+    setSelectedInfo({
+      symbol: stock.symbol,
+      name: stock.name,
+      price: stock.currentPrice,
+      change: stock.priceDelta
+    });
   };
 
   const portfolioData = mockPortfolio;
