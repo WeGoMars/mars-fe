@@ -20,9 +20,10 @@ import mockPortfolio from "@/lib/mock/mockportfolio";
 
 import ProfileHandler from "@/components/common/ProfileHandler"
 import useSWR from 'swr';
-import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, getStockDetails, getMyStocks } from "@/lib/api";
+import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, getStockDetails, getMyStocks, buyStock } from "@/lib/api";
 import BuyPanel from "@/components/BuyPanel";
 import SellPanel from "@/components/SellPanel";
+import { mutate } from 'swr';
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -701,10 +702,20 @@ export default function Dashboard() {
       <BuyConfirmModal
         open={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
-        onConfirm={() => {
-          // TODO: 매수 로직 구현
-          setShowConfirmModal(false);
-          setShowPanel(false);
+        onConfirm={async () => {
+          if (!buyParams) return;
+          try {
+            await buyStock({
+              symbol: buyParams.symbol,
+              price: buyParams.price,
+              quantity: buyParams.quantity,
+            });
+            mutate('/api/portfolios/list'); // 내가 구매한 종목 새로고침
+            setShowConfirmModal(false);
+            setShowPanel(false);
+          } catch (e) {
+            alert('매수에 실패했습니다.');
+          }
         }}
         symbol={buyParams?.symbol || ''}
         name={buyParams?.name || ''}

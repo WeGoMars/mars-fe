@@ -289,3 +289,15 @@ export const tradesApi = createApi({
 });
 
 export const { useBuyStockMutation, useSellStockMutation } = tradesApi;
+
+// 주식 매수 (직접 호출용)
+export async function buyStock(params: TradeRequest): Promise<TradeResponse> {
+  const response = await fetch('/api/trades/buy', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+    credentials: 'include',
+  });
+  if (!response.ok) throw new Error('매수 실패');
+  return response.json();
+}
