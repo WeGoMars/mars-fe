@@ -12,7 +12,7 @@ import SellConfirmModal from "@/components/SellConfirmModal";
 import SearchBar from "@/components/SearchBar";
 import StockDetails from "@/components/StockDetails";
 import type { Stock } from "@/lib/types";
-import { getStockChartData, getStockList, searchStockList } from "@/lib/api";
+import { getStockChartData, getStockList, searchStockList, getStockDetails } from "@/lib/api";
 import useSWR from 'swr';
 
 
@@ -150,9 +150,17 @@ export default function FinanceDashboard() {
     setSelectedStock(symbol);
     // 종목 검색 결과에서 선택된 경우, 해당 종목의 상세 정보 fetch
     try {
-      const res = await searchStockList({ query: symbol, limit: 1 });
-      if (res.success && res.data.length > 0) {
-        setSearchedStockInfo(res.data[0]);
+      const res = await getStockDetails(symbol);
+      if (res.success && res.data) {
+        const price = res.data.currentPrice;
+        const lastPrice = res.data.lastPrice;
+        const change = lastPrice !== 0 && lastPrice !== undefined && lastPrice !== null 
+          ? ((price - lastPrice) / lastPrice) * 100 
+          : 0;
+        setSearchedStockInfo({
+          ...res.data,
+          priceDelta: change
+        });
       } else {
         setSearchedStockInfo(null);
       }
