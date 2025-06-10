@@ -75,7 +75,7 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
 
     // 데이터 변환 및 설정
     const chartData = sortedData.map(item => ({
-      time: item.timestamp,
+      time: Math.floor(new Date(item.timestamp).getTime() / 1000) as Time,
       open: Number(item.open),
       high: Number(item.high),
       low: Number(item.low),
@@ -119,7 +119,7 @@ export default function StockChart({ data, symbol, period }: StockChartProps) {
     });
 
     const volumeData = sortedData.map((item) => ({
-      time: item.timestamp,
+      time: Math.floor(new Date(item.timestamp).getTime() / 1000) as Time,
       value: Number(item.volume),
       color: Number(item.close) >= Number(item.open) ? '#26a69a' : '#ef5350',
     }));
