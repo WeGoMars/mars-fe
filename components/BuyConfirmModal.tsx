@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { useBuyStockMutation } from "@/lib/api";
+import { useGetOverallPortfolioQuery, useGetWalletQuery } from "@/lib/api";
 
 interface BuyConfirmModalProps {
   open: boolean;
@@ -23,9 +24,11 @@ export default function BuyConfirmModal({
 }: BuyConfirmModalProps) {
   // RTK Query 훅 사용
   const [buyStock, { isLoading, error }] = useBuyStockMutation();
-
+  
   const stockAmount = price * quantity;
   const totalAmount = stockAmount + fee;
+  const { refetch: refetchPortfolio } = useGetOverallPortfolioQuery();
+  const { refetch: refetchWallet } = useGetWalletQuery();
 
   const handleConfirmPurchase = async () => {
     try {
@@ -38,6 +41,8 @@ export default function BuyConfirmModal({
       console.log('매수 성공:', result);
       onClose(); // 성공 시 모달 닫기
       
+       refetchPortfolio();
+       refetchWallet();
     } catch (err) {
       console.error('매수 실패:', err);
       // 에러는 UI에 표시하고 모달은 열어둠

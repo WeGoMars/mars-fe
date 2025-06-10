@@ -257,20 +257,6 @@ export interface GetLikedStocksResponse {
   }[];
 }
 
-export interface TradePortfolioResponse {
-  success: boolean;
-  message: string;
-  data: {
-    totalAsset: number;
-    investedAmount: number;
-    evalGain: number;
-    returnRate: number;
-    totalSeed: number;
-    investRatio: number;
-    cash: number;
-  };
-}
-
 
 export interface OverallPortfolioResponse {
   success: boolean;
@@ -285,3 +271,4 @@ export interface OverallPortfolioResponse {
     cash: number;
   };
 }
+

@@ -155,7 +155,7 @@ export async function getFavoriteStocks(): Promise<GetLikedStocksResponse> {
 
   return response.json();
 }
-
+//회원가입,로그인, 프로필 수정, 프로필 조회, 로그아웃 API
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/api", credentials: "include" }),
@@ -214,7 +214,7 @@ export const {
   useGetProfileQuery,
   useLogoutMutation,
 } = userApi;
-
+//지갑 관련 API
 export const walletApi = createApi({
   reducerPath: "walletApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/api", credentials: "include" }),

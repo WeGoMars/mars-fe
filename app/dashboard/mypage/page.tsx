@@ -26,10 +26,11 @@ export default function MyPage() {
   url.searchParams.set("modal", "edit")
   router.push(url.toString())
   }
+  
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
-  const { data: walletData, isLoading, isError } = useGetWalletQuery();
-  const { data, isLoading: Loading, error } = useGetOverallPortfolioQuery();
+  const { data: walletData, isLoading, isError,refetch: refetchWallet } = useGetWalletQuery();
+  const { data, isLoading: Loading, isError:error,refetch: refetchPortfolio } = useGetOverallPortfolioQuery();
   if (isLoading) return <div>로딩 중...</div>;
   if (error || !data?.data) return <div>에러 발생</div>;
 
