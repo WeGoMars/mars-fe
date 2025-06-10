@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import mockPortfolio from "@/lib/mock/mockportfolio";
 import { TrendingUp, TrendingDown } from "lucide-react"
 
+// test
 // 주식 상세 정보를 보여주는 컴포넌트(종목정보 상세, 내 계좌, AI 추천 탭)
 interface StockDetailsProps {
   symbol: string; // 주식 심볼
