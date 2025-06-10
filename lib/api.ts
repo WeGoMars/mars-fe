@@ -1,5 +1,5 @@
 import type { SignUpRequest, SignUpResponse, WalletResponse,TradeResponse, TradeRequest } from "./types"
-import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest, GetStockSearchRequest, GetStockSearchResponse, GetStockDetailsResponse, LikeStockRequest, LikeStockResponse, UnlikeStockResponse, GetLikedStocksResponse } from "./types"
+import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest, GetStockSearchRequest, GetStockSearchResponse, GetStockDetailsResponse, LikeStockRequest, LikeStockResponse, UnlikeStockResponse, GetLikedStocksResponse, GetMyStocksResponse } from "./types"
 import { fetchBaseQuery, createApi } from '@reduxjs/toolkit/query/react';
 import type { LoginRequest, LoginResponse, UserProfile } from "./types"
 
@@ -151,6 +151,23 @@ export async function getFavoriteStocks(): Promise<GetLikedStocksResponse> {
 
   if (!response.ok) {
     throw new Error('Failed to fetch favorite stocks');
+  }
+
+  return response.json();
+}
+
+// 내 종목 목록 조회(내가 구매한 종목)
+export async function getMyStocks(): Promise<GetMyStocksResponse> {
+  const response = await fetch('/api/portfolios/list', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include', // 로그인 필수
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch my stocks');
   }
 
   return response.json();

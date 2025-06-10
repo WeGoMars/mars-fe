@@ -257,3 +257,15 @@ export interface GetLikedStocksResponse {
   }[];
 }
 
+// 내 종목 목록 조회(내가 구매한 종목)
+export interface GetMyStocksResponse {
+  success: boolean;
+  message: string;
+  data: {
+    symbol: string;
+    name: string;
+    currentPrice: number;
+    priceDelta: number;
+  }[];
+}
+

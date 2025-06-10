@@ -20,7 +20,7 @@ import mockPortfolio from "@/lib/mock/mockportfolio";
 
 import ProfileHandler from "@/components/common/ProfileHandler"
 import useSWR from 'swr';
-import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, getStockDetails } from "@/lib/api";
+import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, getStockDetails, getMyStocks } from "@/lib/api";
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -202,6 +202,19 @@ export default function Dashboard() {
       alert('관심 종목 업데이트에 실패했습니다.');
     }
   };
+
+  // 내 종목 목록을 가져오는 SWR 훅
+  const { data: myStocksData } = useSWR(
+    isLoggedIn ? '/api/portfolios/list' : null,
+    () => getMyStocks()
+  );
+
+  // 내 종목 목록 데이터가 변경될 때마다 콘솔에 출력
+  useEffect(() => {
+    if (myStocksData) {
+      console.log('내 종목 목록:', myStocksData);
+    }
+  }, [myStocksData]);
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
