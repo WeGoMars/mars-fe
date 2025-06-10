@@ -1,38 +1,24 @@
 import { X, Minus, Plus } from "lucide-react";
 import { useState } from "react";
-import { useBuyStockMutation } from "@/lib/api";
 
-// 매수, 매도 슬라이드 컴포넌트
 interface BuyPanelProps {
-  open: boolean; // 패널 표시 여부
-  onClose: () => void; // 패널 닫기 함수
-  symbol :string;
-  name : string;
+  open: boolean;
+  onClose: () => void;
+  symbol: string;
+  name: string;
   price: number;
+  onConfirm: (quantity: number) => void; // 확인 버튼 클릭 시 호출될 함수
 }
 
-export default function BuyPanel({ open, onClose, symbol, name, price }: BuyPanelProps) {
+export default function BuyPanel({ open, onClose, symbol, name, price, onConfirm }: BuyPanelProps) {
   const [quantity, setQuantity] = useState(1);
-  const [buyStock, { isLoading }] = useBuyStockMutation();  
-  
-  const handleBuy = async () => {
-    try {
-      const body = {
-        symbol,
-        quantity,
-        price,
-      };
-      await buyStock(body).unwrap();
-      alert("매수 주문이 완료되었습니다.");
-      onClose(); // 패널 닫기
-    } catch (err) {
-      console.error("매수 주문 오류:", err);
-      alert("매수 주문에 실패했습니다. 다시 시도해주세요.");
-    }
-  };
 
   const increaseQuantity = () => setQuantity((prev) => prev + 1);
   const decreaseQuantity = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+
+  const handleProceedToConfirm = () => {
+    onConfirm(quantity); // 모달 띄우기 위해 quantity 전달
+  };
 
   return (
     <div
@@ -42,13 +28,14 @@ export default function BuyPanel({ open, onClose, symbol, name, price }: BuyPane
         ${open ? "translate-x-0" : "translate-x-full"}
       `}
     >
-       <div className="p-4 flex justify-between items-center">
+      <div className="p-4 flex justify-between items-center">
         <div className="w-8"></div>
         <div className="text-center font-medium text-lg bg-[#f4f5f9] px-8 py-2 rounded-full mx-4">매수</div>
         <button onClick={onClose}>
           <X className="w-5 h-5" />
         </button>
       </div>
+
       <div className="p-6 space-y-6">
         {/* Symbol Info */}
         <div className="flex items-center gap-4">
@@ -59,7 +46,6 @@ export default function BuyPanel({ open, onClose, symbol, name, price }: BuyPane
           </div>
           <h2 className="text-2xl font-bold">{name}</h2>
         </div>
-
 
         {/* Quantity Selector */}
         <div className="flex justify-between items-center mt-8">
@@ -82,13 +68,12 @@ export default function BuyPanel({ open, onClose, symbol, name, price }: BuyPane
           <div className="text-xl font-semibold">${(price * quantity).toFixed(2)}</div>
         </div>
 
-        {/* Purchase Button */}
+        {/* Next Step Button */}
         <button
-          onClick={handleBuy}
-          disabled={isLoading}
+          onClick={handleProceedToConfirm}
           className="w-full py-4 bg-[#f9e0de] rounded-xl text-center font-medium mt-6"
         >
-          {isLoading ? "처리 중..." : "구매"}
+          다음
         </button>
       </div>
     </div>

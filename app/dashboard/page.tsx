@@ -20,7 +20,7 @@ import mockPortfolio from "@/lib/mock/mockportfolio";
 
 import ProfileHandler from "@/components/common/ProfileHandler"
 import useSWR from 'swr';
-import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, useGetProfileQuery, getStockDetails} from "@/lib/api";
+import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, useGetProfileQuery, getStockDetails } from "@/lib/api";
 import BuyPanel from "@/components/BuyPanel"
 import LogoutButton from "@/components/common/LogoutButton"
 import { useBuyStockMutation } from "@/lib/api";
@@ -49,7 +49,7 @@ export default function Dashboard() {
       changePercent: "-2.32%"
     }
   ]);
- 
+
   const [error, setError] = useState<string | null>(null);
   // 첫 화면 종목 선택 GOOGL로 설정함.
   const [selectedStock, setSelectedStock] = useState<string>("GOOGL");
@@ -84,7 +84,7 @@ export default function Dashboard() {
   const selectStock = (stock: GetStockSearchResponse) => {
     setSelectedStock(stock.symbol);
     setLogoError(false);
-    
+
     // 중앙 정보 직접 업데이트
     setSelectedInfo({
       symbol: stock.symbol,
@@ -191,13 +191,13 @@ export default function Dashboard() {
 
     try {
       const isFavorite = favoriteStocks.some(stock => stock.symbol === selectedStock);
-      
+
       if (isFavorite) {
         await removeFromFavorites({ symbol: selectedStock });
       } else {
         await addToFavorites({ symbol: selectedStock });
       }
-      
+
       // 관심 종목 목록 새로고침
       await mutateFavoriteStocks();
     } catch (error) {
@@ -217,7 +217,7 @@ export default function Dashboard() {
     if (savedNick) {
       setNickname(savedNick);
     }
-  }, []); 
+  }, []);
   const [quantity, setQuantity] = useState(1);
   const [buyStock, { isLoading }] = useBuyStockMutation();
 
@@ -268,10 +268,10 @@ export default function Dashboard() {
             내계좌
           </Link>
           <LogoutButton redirectTo="/" >
-          <span className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full block text-center">
-            로그아웃
-          </span>
-        </LogoutButton>
+            <span className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full block text-center">
+              로그아웃
+            </span>
+          </LogoutButton>
         </div>
 
         <div className="md:hidden">
@@ -380,7 +380,7 @@ export default function Dashboard() {
                             alt={stock.symbol}
                             width={28}
                             height={28}
-                            style={{objectFit:'contain'}}
+                            style={{ objectFit: 'contain' }}
                             onError={() => setLogoError(true)}
                           />
                         ) : (
@@ -508,7 +508,7 @@ export default function Dashboard() {
                       alt={selectedInfo.symbol}
                       width={28}
                       height={28}
-                      style={{objectFit:'contain'}}
+                      style={{ objectFit: 'contain' }}
                       onError={() => setLogoError(true)}
                     />
                   ) : (
@@ -546,9 +546,8 @@ export default function Dashboard() {
                     <button
                       key={period}
                       onClick={() => setActivePeriod(period)}
-                      className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                        activePeriod === period ? "bg-white shadow-sm" : "hover:bg-gray-100"
-                      }`}
+                      className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activePeriod === period ? "bg-white shadow-sm" : "hover:bg-gray-100"
+                        }`}
                     >
                       {period}
                     </button>
@@ -560,7 +559,7 @@ export default function Dashboard() {
             <div className="mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl md:text-3xl font-bold">
-                  ${Number(selectedInfo.price).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
+                  ${Number(selectedInfo.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
                 <span className={`${Number(selectedInfo.change) >= 0 ? 'text-[#41c3a9] bg-[#e6f7f4]' : 'text-red-500 bg-red-50'} px-2 py-0.5 rounded-md text-sm`}>
                   {Number(selectedInfo.change) >= 0 ? '+' : ''}{Number(selectedInfo.change).toFixed(2)}%
@@ -579,15 +578,15 @@ export default function Dashboard() {
                 <StockChart
                   data={Array.isArray(stockChartData?.data)
                     ? stockChartData.data.filter(
-                        d =>
-                          d &&
-                          d.timestamp &&
-                          d.open != null &&
-                          d.close != null &&
-                          d.high != null &&
-                          d.low != null &&
-                          d.volume != null
-                      )
+                      d =>
+                        d &&
+                        d.timestamp &&
+                        d.open != null &&
+                        d.close != null &&
+                        d.high != null &&
+                        d.low != null &&
+                        d.volume != null
+                    )
                     : []}
                   symbol={selectedInfo.symbol}
                   period={activePeriod}
@@ -604,7 +603,7 @@ export default function Dashboard() {
             <div className="h-11"></div>
           </div>
 
-                    {/* showPanel이 true일 때 매수/매도 화면을 위아래로 동시에 보여줌 */}
+          {/* showPanel이 true일 때 매수/매도 화면을 위아래로 동시에 보여줌 */}
           {showPanel ? (
             <div className="bg-white rounded-3xl border border-gray-200 p-6 w-full max-w-md md:max-w-md lg:max-w-md xl:max-w-lg flex flex-col fixed top-0 right-0 h-full z-50 shadow-lg transform transition-transform duration-500 animate-slide-in-right">
               {/* 매수/매도 영역 */}
@@ -621,26 +620,40 @@ export default function Dashboard() {
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
                       <div className="text-center">
-                        <div className="text-xs font-bold">S&P</div>
-                        <div className="text-xs">500</div>
+                        <div className="text-xs font-bold">{selectedInfo.symbol.slice(0, 3)}</div>
+                        <div className="text-xs">{selectedInfo.symbol.slice(3)}</div>
                       </div>
                     </div>
-                    <h2 className="text-xl font-extrabold">S&P 500</h2>
+                    <h2 className="text-xl font-extrabold">{selectedInfo.name}</h2>
                   </div>
-                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 재투자하는 ETF</p>
+
+                  <p className="text-gray-400 text-center text-base font-semibold">
+                    {selectedInfo.name}에 투자하여 수익을 기대해보세요.
+                  </p>
+
+                  {/* 수량 선택 */}
                   <div className="flex items-center justify-between mt-6">
                     <div className="font-bold text-base">수량</div>
                     <div className="flex items-center gap-4">
-                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
+                      <button
+                        className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold"
+                        onClick={() => setQuantity((prev) => Math.max(prev - 1, 1))}
+                      >
                         <Minus className="w-4 h-4" />
                       </button>
-                      <span className="text-lg font-bold">1</span>
-                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
+                      <span className="text-lg font-bold">{quantity}</span>
+                      <button
+                        className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold"
+                        onClick={() => setQuantity((prev) => prev + 1)}
+                      >
                         <Plus className="w-4 h-4" />
                       </button>
                     </div>
-                    <div className="text-lg font-extrabold">€ 12.00</div>
+                    <div className="text-lg font-extrabold">
+                      ${(selectedInfo.price * quantity).toFixed(2)}
+                    </div>
                   </div>
+
                   <button
                     className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
                     onClick={() => setShowConfirmModal(true)}
@@ -757,12 +770,15 @@ export default function Dashboard() {
       <ProfileModal />
       <BuyConfirmModal
         open={showConfirmModal}
-        onClose={() => setShowConfirmModal(false)}
-        onConfirm={() => {
-          // TODO: 매수 로직 구현
+        onClose={() => {
           setShowConfirmModal(false);
           setShowPanel(false);
         }}
+        symbol={selectedInfo.symbol}
+        name={selectedInfo.name}
+        price={selectedInfo.price}
+        quantity={quantity}
+        fee={selectedInfo.price * quantity * 0.0025}
       />
       <SellConfirmModal
         open={showSellConfirmModal}

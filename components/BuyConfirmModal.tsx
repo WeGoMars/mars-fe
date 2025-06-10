@@ -1,82 +1,116 @@
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { X } from "lucide-react";
+import { useBuyStockMutation } from "@/lib/api";
 
-// 매수, 매도 모달 컴포넌트
 interface BuyConfirmModalProps {
-  open: boolean; // 모달 표시 여부
-  onClose: () => void; // 모달 닫기 함수
-  onConfirm: () => void; // 매수 확인 함수
+  open: boolean;
+  onClose: () => void;
+  symbol: string;
+  name: string;
+  price: number;
+  quantity: number;
+  fee: number;
+  onConfirm?: () => void;
 }
 
-export default function BuyConfirmModal({ open, onClose, onConfirm }: BuyConfirmModalProps) {
+export default function BuyConfirmModal({ 
+  open, 
+  onClose, 
+  symbol, 
+  name, 
+  price, 
+  quantity,
+  fee,
+}: BuyConfirmModalProps) {
+  // RTK Query 훅 사용
+  const [buyStock, { isLoading, error }] = useBuyStockMutation();
+
+  const stockAmount = price * quantity;
+  const totalAmount = stockAmount + fee;
+
+  const handleConfirmPurchase = async () => {
+    try {
+      const result = await buyStock({
+        symbol,
+        quantity,
+        price
+      }).unwrap();
+      
+      console.log('매수 성공:', result);
+      onClose(); // 성공 시 모달 닫기
+      
+    } catch (err) {
+      console.error('매수 실패:', err);
+      // 에러는 UI에 표시하고 모달은 열어둠
+    }
+  };
+
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="w-[343px] h-[400px] bg-gray-100 p-4 mx-auto rounded-3xl">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl p-6 m-4 max-w-sm w-full">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-lg font-semibold">매수 확인</h3>
+          <button onClick={onClose} disabled={isLoading}>
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
-        {/* 매수 클릭 시 "1주당 희망 가격..." 모달 창 */}
-        {/* Header - 분리된 회색 박스 */}
-        <div className="bg-[#eeeeee] rounded-3xl px-6 py-6 text-center mb-4">
-          <div className="flex items-center justify-center gap-3">
-            <div className="bg-white rounded-lg px-3 py-2">
-              <div className="text-xs text-[#8f9098] font-medium">S&P</div>
-              <div className="text-xs text-[#8f9098] font-medium">500</div>
-            </div>
-            <h1 className="text-2xl font-bold text-[#2f3036]">S&P 500</h1>
+        {/* Stock Info */}
+        <div className="space-y-4 mb-6">
+          <div className="flex justify-between">
+            <span className="text-gray-600">종목</span>
+            <span className="font-medium">{symbol} - {name}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">가격</span>
+            <span className="font-medium">${price.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">수량</span>
+            <span className="font-medium">{quantity}주</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">주식 금액</span>
+            <span className="font-medium">${stockAmount.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">수수료 (0.25%)</span>
+            <span className="font-medium">${fee.toFixed(2)}</span>
+          </div>
+          <hr />
+          <div className="flex justify-between text-lg font-semibold">
+            <span>총 결제 금액</span>
+            <span className="text-blue-600">${totalAmount.toFixed(2)}</span>
           </div>
         </div>
 
-        {/* 메인 흰색 컨테이너 박스 - 버튼까지 포함 */}
-        <div className="bg-white rounded-3xl px-4 py-4 flex-1">
-          {/* Content Cards */}
-          <div className="space-y-3">
-            {/* Target Price Per Share */}
-            <Card className="bg-white border border-gray-200 rounded-2xl px-4 py-3">
-              <div className="flex justify-between items-center">
-                <span className="text-[#8f9098] font-medium text-sm">1주당 희망 가격</span>
-                <span className="text-[#2f3036] font-semibold">$38.02</span>
-              </div>
-            </Card>
-
-            {/* Expected Commission */}
-            <Card className="bg-white border border-gray-200 rounded-2xl px-4 py-3">
-              <div className="flex justify-between items-center">
-                <span className="text-[#8f9098] font-medium text-sm">예상 수수료</span>
-                <span className="text-[#2f3036] font-semibold">$8.01</span>
-              </div>
-            </Card>
-
-            {/* Total Order Amount */}
-            <Card className="bg-white border border-gray-200 rounded-2xl px-4 py-3">
-              <div className="flex justify-between items-center">
-                <span className="text-[#8f9098] font-medium text-sm">총 주문 금액</span>
-                <span className="text-[#2f3036] font-semibold">$92.01</span>
-              </div>
-            </Card>
+        {/* Error Display */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-600 text-sm mb-4">
+            매수 중 오류가 발생했습니다. 다시 시도해주세요.
           </div>
+        )}
 
-          {/* Bottom Buttons */}
-          <div className="mt-4">
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                className="flex-[1.2] bg-[#f4f5f9] border-0 text-[#8f9098] font-medium py-4 rounded-2xl hover:bg-[#eeeeee]"
-                onClick={onClose}
-              >
-                취소
-              </Button>
-              <Button
-                className="flex-1 bg-[#f4f5f9] border-0 text-[#2f3036] font-medium py-4 rounded-2xl hover:bg-[#eeeeee]"
-                variant="outline"
-                onClick={onConfirm}
-              >
-                확인
-              </Button>
-            </div>
-          </div>
+        {/* Action Buttons */}
+        <div className="flex gap-3">
+          <button
+            onClick={onClose}
+            disabled={isLoading}
+            className="flex-1 py-3 border border-gray-300 rounded-lg font-medium disabled:opacity-50"
+          >
+            취소
+          </button>
+          <button
+            onClick={handleConfirmPurchase}
+            disabled={isLoading}
+            className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-medium disabled:opacity-50"
+          >
+            {isLoading ? '매수 중...' : '매수 확정'}
+          </button>
         </div>
       </div>
     </div>
-  )
-} 
+  );
+}
