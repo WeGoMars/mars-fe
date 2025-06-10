@@ -37,12 +37,6 @@ export default function MyPage() {
   createWallet({ amount: 100000 }); // ✅ 여기에서 API 요청을 실제로 보냄
 }, []);
 
-//   useEffect(() => {
-//   console.log("📦 walletData:", walletData);
-//   console.log("📛 error:", error);
-// }, [walletData, error]);
-   
-  
   return (
     
     <div className="min-h-screen bg-[#f5f7f9]">

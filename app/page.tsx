@@ -51,6 +51,14 @@ export default function FinanceDashboard() {
     })
   );
 
+  const { data: favoriteStocksData } = useSWR(
+    ['favoriteStocks'],
+    () => getStockList({
+      option: 'liked',
+      limit: 10
+    })
+  );
+
   useEffect(() => {
     const checkLoginStatus = () => {
       try {
@@ -172,17 +180,18 @@ export default function FinanceDashboard() {
           : 0;
         
         // 검색 결과 정보 업데이트
-        setSearchedStockInfo({
+        const newStockInfo = {
           ...res.data,
           priceDelta: change
-        });
+        };
+        setSearchedStockInfo(newStockInfo);
 
-        // 중앙 정보 업데이트 (handleFavoriteStockClick과 동일한 방식)
+        // 중앙 정보 업데이트
         setSelectedInfo({
-          symbol: res.data.symbol,
-          name: res.data.name,
-          price: price,
-          change: change
+          symbol: newStockInfo.symbol,
+          name: newStockInfo.name,
+          price: newStockInfo.currentPrice,
+          change: newStockInfo.priceDelta
         });
 
         // 차트 데이터 갱신을 위한 상태 업데이트
@@ -207,8 +216,9 @@ export default function FinanceDashboard() {
     }
   };
 
-  // 중앙에 표시할 종목 정보 우선순위: 검색된 종목 > stockListData > 목데이터
+  // 중앙에 표시할 종목 정보 우선순위: 검색된 종목 > 관심종목 > stockListData > 목데이터
   const getSelectedStockInfo = () => {
+    // 1. 검색된 종목 정보 확인
     if (searchedStockInfo && searchedStockInfo.symbol === selectedStock) {
       return {
         symbol: searchedStockInfo.symbol,
@@ -217,7 +227,21 @@ export default function FinanceDashboard() {
         change: searchedStockInfo.priceDelta,
       };
     }
-    // stockListData에서 찾기 (data가 배열임을 명확히 단언)
+
+    // 2. 관심 종목에서 찾기
+    if (favoriteStocks && favoriteStocks.length > 0) {
+      const found = favoriteStocks.find((s) => s.symbol === selectedStock);
+      if (found) {
+        return {
+          symbol: found.symbol,
+          name: found.name,
+          price: parseFloat(found.price),
+          change: parseFloat(found.change),
+        };
+      }
+    }
+
+    // 3. stockListData에서 찾기
     const stockListArr = stockListData?.data as any[] | undefined;
     if (stockListArr) {
       const found = stockListArr.find((s: any) => s.symbol === selectedStock);
@@ -228,15 +252,17 @@ export default function FinanceDashboard() {
         change: found.priceDelta,
       };
     }
-    // 목데이터에서 찾기
+
+    // 4. 목데이터에서 찾기
     const fallback = stockData.find((s) => s.symbol === selectedStock);
     if (fallback) return {
       symbol: fallback.symbol,
       name: fallback.name,
-      price: fallback.price,
-      change: fallback.change,
+      price: parseFloat(fallback.price),
+      change: parseFloat(fallback.change),
     };
-    // 기본값
+
+    // 5. 기본값
     return selectedInfo;
   };
 
@@ -249,7 +275,7 @@ export default function FinanceDashboard() {
         newInfo.change !== selectedInfo.change) {
       setSelectedInfo(newInfo);
     }
-  }, [selectedStock, searchedStockInfo, stockListData, stockData]);
+  }, [selectedStock, searchedStockInfo, favoriteStocks, stockListData, stockData]);
 
   // 1시간일 때 timestamp를 YYYY-MM-DDTHH:00:00.000Z 형식(ISO 8601, 1시간 단위)으로 변환하는 함수
   const getProcessedChartData = () => {
