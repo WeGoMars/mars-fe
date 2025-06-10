@@ -38,24 +38,6 @@ export default function MyPage() {
   createWallet({ amount: 100000 }); // ✅ 여기에서 API 요청을 실제로 보냄
 }, []);
 
-//   useEffect(() => {
-//   console.log("📦 walletData:", walletData);
-//   console.log("📛 error:", error);
-// }, [walletData, error]);
-   
-  const { data } = useGetProfileQuery();
-  useEffect(() => {
-    if (data?.nick) {
-      setNickname(data.nick);
-      localStorage.setItem("nickname", data.nick);
-    }
-  }, [data]);
-  useEffect(() => {
-      const savedNick = localStorage.getItem("nickname");
-      if (savedNick) {
-        setNickname(savedNick);
-      }
-    }, []); 
   return (
     
     <div className="min-h-screen bg-[#f5f7f9]">

@@ -9,7 +9,7 @@ import StockDetails from "@/components/StockDetails";
 import StockList from "@/components/StockList";
 import BuyConfirmModal from "@/components/BuyConfirmModal";
 import SellConfirmModal from "@/components/SellConfirmModal";
-import type { Stock } from "@/lib/types";
+import type { Stock, GetStockSearchResponse } from "@/lib/types";
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 
@@ -20,7 +20,7 @@ import mockPortfolio from "@/lib/mock/mockportfolio";
 
 import ProfileHandler from "@/components/common/ProfileHandler"
 import useSWR from 'swr';
-import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, useGetProfileQuery } from "@/lib/api";
+import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, useGetProfileQuery, getStockDetails} from "@/lib/api";
 import BuyPanel from "@/components/BuyPanel"
 import LogoutButton from "@/components/common/LogoutButton"
 import { useBuyStockMutation } from "@/lib/api";
@@ -68,9 +68,30 @@ export default function Dashboard() {
   const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
+  const [selectedInfo, setSelectedInfo] = useState<{
+    symbol: string;
+    name: string;
+    price: number;
+    change: number;
+  }>({
+    symbol: "GOOGL",
+    name: "Alphabet Inc.",
+    price: 0,
+    change: 0
+  });
+  const [logoError, setLogoError] = useState(false);
 
-  const selectStock = (symbol: string) => {
-    setSelectedStock(symbol);
+  const selectStock = (stock: GetStockSearchResponse) => {
+    setSelectedStock(stock.symbol);
+    setLogoError(false);
+    
+    // 중앙 정보 직접 업데이트
+    setSelectedInfo({
+      symbol: stock.symbol,
+      name: stock.name,
+      price: stock.currentPrice,
+      change: stock.priceDelta
+    });
   };
 
   const portfolioData = mockPortfolio;
@@ -89,7 +110,7 @@ export default function Dashboard() {
         symbol: stock.symbol,
         name: stock.name,
         price: `$${stock.currentPrice.toFixed(2)}`,
-        change: `${stock.priceDelta >= 0 ? '+' : ''}${stock.priceDelta.toFixed(2)}`,
+        change: `${stock.priceDelta >= 0 ? '+' : ''}${stock.priceDelta.toFixed(2)}%`,
         changePercent: `${stock.priceDelta >= 0 ? '+' : ''}${((stock.priceDelta / (stock.currentPrice - stock.priceDelta)) * 100).toFixed(2)}%`
       })));
     }
@@ -100,6 +121,17 @@ export default function Dashboard() {
     const isFavorite = favoriteStocksData?.data?.some(stock => stock.symbol === selectedStock) ?? false;
     setIsHeartFilled(isFavorite);
   }, [selectedStock, favoriteStocksData]);
+
+  // 관심종목 데이터가 로드되면 selectedStock에 해당하는 종목 정보로 selectedInfo를 자동 업데이트 (API만 사용)
+  useEffect(() => {
+    if (selectedStock && favoriteStocksData?.data) {
+      const found = favoriteStocksData.data.find((s: any) => s.symbol === selectedStock);
+      if (found) {
+        handleFavoriteStockClick(found);
+      }
+    }
+    // eslint-disable-next-line
+  }, [favoriteStocksData, selectedStock]);
 
   const { data: stockChartData, error: stockChartError } = useSWR(
     selectedStock ? ['stockChart', selectedStock, activePeriod, selectedMinute] : null,
@@ -115,6 +147,40 @@ export default function Dashboard() {
       limit: activePeriod === "1시간" ? 100 : 30
     })
   );
+
+  // 종목 클릭 시 상세정보 API로 받아와서 상단 정보도 즉시 바인딩
+  const handleFavoriteStockClick = async (stock: any) => {
+    setSelectedStock(stock.symbol);
+    setLogoError(false);
+    try {
+      const res = await getStockDetails(stock.symbol);
+      if (res.success && res.data) {
+        const price = res.data.currentPrice;
+        const lastPrice = res.data.lastPrice;
+        const change = lastPrice !== 0 && lastPrice !== undefined && lastPrice !== null ? ((price - lastPrice) / lastPrice) * 100 : 0;
+        setSelectedInfo({
+          symbol: res.data.symbol,
+          name: res.data.name,
+          price: price,
+          change: change
+        });
+      } else {
+        setSelectedInfo({
+          symbol: stock.symbol,
+          name: stock.name,
+          price: 0,
+          change: 0
+        });
+      }
+    } catch {
+      setSelectedInfo({
+        symbol: stock.symbol,
+        name: stock.name,
+        price: 0,
+        change: 0
+      });
+    }
+  };
 
   // 하트 버튼 클릭 핸들러
   const handleHeartClick = async () => {
@@ -256,8 +322,16 @@ export default function Dashboard() {
           ) : (
             <StockList
               stocks={stocks}
-              onSelectStock={(symbol: string) => {
-                selectStock(symbol);
+              onSelectStock={(stock: Stock) => {
+                selectStock({
+                  symbol: stock.symbol,
+                  name: stock.name,
+                  sector: "",
+                  industry: "",
+                  currentPrice: parseFloat(stock.price.replace("$", "")),
+                  priceDelta: parseFloat(stock.change.replace("%", "")),
+                  hourlyVolume: 0
+                });
                 setMobileSidebarOpen(false);
               }}
             />
@@ -295,39 +369,22 @@ export default function Dashboard() {
                     key={index}
                     className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                     onClick={() => {
-                      setSelectedStock(stock.symbol);
+                      handleFavoriteStockClick(stock);
                     }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8">
-                        {stock.symbol === "MSFT" && (
-                          <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
-                            <div className="bg-[#f25022]"></div>
-                            <div className="bg-[#7fba00]"></div>
-                            <div className="bg-[#00a4ef]"></div>
-                            <div className="bg-[#ffb900]"></div>
-                          </div>
-                        )}
-                        {stock.symbol === "GOOGL" && (
+                      <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs overflow-hidden">
+                        {!logoError ? (
                           <Image
-                            src="/google-logo.png"
-                            alt="Google"
-                            width={32}
-                            height={32}
+                            src={`/logos/${stock.symbol}.png`}
+                            alt={stock.symbol}
+                            width={28}
+                            height={28}
+                            style={{objectFit:'contain'}}
+                            onError={() => setLogoError(true)}
                           />
-                        )}
-                        {stock.symbol === "SPOT" && (
-                          <Image
-                            src="/spotify-logo.png"
-                            alt="Spotify"
-                            width={32}
-                            height={32}
-                          />
-                        )}
-                        {!["MSFT", "GOOGL", "SPOT"].includes(stock.symbol) && (
-                          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                            <span className="text-xs font-bold">{stock.symbol.slice(0, 2)}</span>
-                          </div>
+                        ) : (
+                          <span className="text-xs font-bold">{stock.symbol}</span>
                         )}
                       </div>
                       <div>
@@ -338,7 +395,7 @@ export default function Dashboard() {
                     <div className="text-right">
                       <div className="font-bold text-base">${stock.currentPrice.toFixed(2)}</div>
                       <div className={`text-xs ${stock.priceDelta >= 0 ? 'text-[#41c3a9]' : 'text-red-500'}`}>
-                        {stock.priceDelta >= 0 ? '+' : ''}{stock.priceDelta.toFixed(2)}
+                        {stock.priceDelta >= 0 ? '+' : ''}{stock.priceDelta.toFixed(2)}%
                       </div>
                     </div>
                   </div>
@@ -390,35 +447,29 @@ export default function Dashboard() {
                   onClick={() => {
                     setSelectedStock(stock.symbol);
                     // API 연동 시 여기에 API 호출 로직 추가
-                    console.log(`Selected purchased stock: ${stock.symbol}`);
                   }}
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8">
-                      {stock.symbol === "MSFT" && (
-                        <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
-                          <div className="bg-[#f25022]"></div>
-                          <div className="bg-[#7fba00]"></div>
-                          <div className="bg-[#00a4ef]"></div>
-                          <div className="bg-[#ffb900]"></div>
-                        </div>
-                      )}
-                      {stock.symbol === "GOOGL" && (
-                        <Image
-                          src="/google-logo.png"
-                          alt="Google"
-                          width={32}
-                          height={32}
-                        />
-                      )}
-                      {stock.symbol === "SPOT" && (
-                        <Image
-                          src="/spotify-logo.png"
-                          alt="Spotify"
-                          width={32}
-                          height={32}
-                        />
-                      )}
+                      <Image
+                        src={`/logos/${stock.symbol}.png`}
+                        alt={stock.symbol}
+                        width={32}
+                        height={32}
+                        className="rounded-full"
+                        onError={(e) => {
+                          // 이미지 로드 실패 시 기본 텍스트 표시
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            const fallback = document.createElement('div');
+                            fallback.className = 'w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center';
+                            fallback.innerHTML = `<span class="text-xs font-bold">${stock.symbol.slice(0, 2)}</span>`;
+                            parent.appendChild(fallback);
+                          }
+                        }}
+                      />
                     </div>
                     <div>
                       <div className="font-bold text-base">{stock.symbol}</div>
@@ -450,10 +501,21 @@ export default function Dashboard() {
             {/* S&P 500 Header with Tabs + 좋아요 하트 */}
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-3">
               <div className="flex items-center gap-2">
-                <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs">
-                  <span className="text-[10px]">{selectedStock}</span>
+                <div className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded text-xs overflow-hidden">
+                  {!logoError ? (
+                    <Image
+                      src={`/logos/${selectedInfo.symbol}.png`}
+                      alt={selectedInfo.symbol}
+                      width={28}
+                      height={28}
+                      style={{objectFit:'contain'}}
+                      onError={() => setLogoError(true)}
+                    />
+                  ) : (
+                    <span className="text-xs font-bold">{selectedInfo.symbol}</span>
+                  )}
                 </div>
-                <h2 className="text-xl font-bold">{selectedStock}</h2>
+                <h2 className="text-xl font-bold">{selectedInfo.symbol}</h2>
                 {isLoggedIn && (
                   <button
                     onClick={handleHeartClick}
@@ -494,19 +556,19 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            {/* 가격, 변동률, 날짜 */}
+            {/* s&p500 아이콘, 주가, 변동률 표시 영역 */}
             <div className="mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl md:text-3xl font-bold">
-                  ${stocks.find(stock => stock.symbol === selectedStock)?.price.replace('$', '') || "0.00"}
+                  ${Number(selectedInfo.price).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
                 </span>
-                <span className={`${stocks.find(stock => stock.symbol === selectedStock)?.change.startsWith('+') ? 'text-[#41c3a9] bg-[#e6f7f4]' : 'text-red-500 bg-red-50'} px-2 py-0.5 rounded-md text-sm`}>
-                  {stocks.find(stock => stock.symbol === selectedStock)?.change || "0.00%"}
+                <span className={`${Number(selectedInfo.change) >= 0 ? 'text-[#41c3a9] bg-[#e6f7f4]' : 'text-red-500 bg-red-50'} px-2 py-0.5 rounded-md text-sm`}>
+                  {Number(selectedInfo.change) >= 0 ? '+' : ''}{Number(selectedInfo.change).toFixed(2)}%
                 </span>
               </div>
             </div>
             <div className="text-xs text-gray-500 mb-6">
-              {new Date().toLocaleString()} · {selectedStock} · Disclaimer
+              {new Date().toLocaleString()} · {selectedInfo.symbol} · Disclaimer
             </div>
             {/* Chart Area */}
             <div className="h-[740px] flex flex-col items-center justify-center">
@@ -527,7 +589,7 @@ export default function Dashboard() {
                           d.volume != null
                       )
                     : []}
-                  symbol={selectedStock}
+                  symbol={selectedInfo.symbol}
                   period={activePeriod}
                 />
               </div>
@@ -678,9 +740,9 @@ export default function Dashboard() {
           ) : (
             // 기존 카드 내용
             <div className="bg-white rounded-xl p-4 md:p-5 shadow-sm flex-1 overflow-auto flex flex-col">
-              {selectedStock && (
+              {selectedInfo.symbol && (
                 <StockDetails
-                  symbol={selectedStock}
+                  symbol={selectedInfo.symbol}
                   activeTab={activeRightTab}
                   onTabChange={setActiveRightTab}
                   favoriteStocks={favoriteStocks}

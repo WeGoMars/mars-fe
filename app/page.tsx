@@ -12,7 +12,7 @@ import SellConfirmModal from "@/components/SellConfirmModal";
 import SearchBar from "@/components/SearchBar";
 import StockDetails from "@/components/StockDetails";
 import type { Stock } from "@/lib/types";
-import { getStockChartData, getStockList, searchStockList } from "@/lib/api";
+import { getStockChartData, getStockList, searchStockList, getStockDetails } from "@/lib/api";
 import useSWR from 'swr';
 import LogoutButton from "@/components/common/LogoutButton"
 import { useBuyStockMutation, useSellStockMutation } from "@/lib/api"; // RTK 훅 import
@@ -55,21 +55,13 @@ export default function FinanceDashboard() {
     })
   );
 
-  if (stockChartData) {
-    console.log('Stock Chart Data:', stockChartData);
-  }
-
-  if (stockListData) {
-    console.log('Stock List Data:', stockListData);
-  }
-
-  if (stockListError) {
-    console.error('Failed to fetch stock list:', stockListError);
-  }
-
-  if (error) {
-    console.error('Failed to fetch stock data:', error);
-  }
+  const { data: favoriteStocksData } = useSWR(
+    ['favoriteStocks'],
+    () => getStockList({
+      option: 'liked',
+      limit: 10
+    })
+  );
 
   useEffect(() => {
     const checkLoginStatus = () => {
@@ -120,6 +112,7 @@ export default function FinanceDashboard() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [logoError, setLogoError] = useState(false);
 
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
@@ -165,24 +158,51 @@ export default function FinanceDashboard() {
   ]);
 
   const [searchedStockInfo, setSearchedStockInfo] = useState<any | null>(null);
+  const [selectedInfo, setSelectedInfo] = useState<{
+    symbol: string;
+    name: string;
+    price: number;
+    change: number;
+  }>({
+    symbol: "GOOGL",
+    name: "Alphabet Inc.",
+    price: 0,
+    change: 0
+  });
 
-  const handleStockSelect = async (symbol: string) => {
-    setSelectedStock(symbol);
-    // 종목 검색 결과에서 선택된 경우, 해당 종목의 상세 정보 fetch
-    try {
-      const res = await searchStockList({ query: symbol, limit: 1 });
-      if (res.success && res.data.length > 0) {
-        setSearchedStockInfo(res.data[0]);
-      } else {
-        setSearchedStockInfo(null);
-      }
-    } catch {
-      setSearchedStockInfo(null);
-    }
+  const handleStockSelect = async (stock: any) => {
+    setSelectedStock(stock.symbol);
+    setLogoError(false);
+    
+    // 검색 결과에서 받은 데이터를 직접 사용
+    const newStockInfo = {
+      symbol: stock.symbol,
+      name: stock.name,
+      currentPrice: stock.currentPrice,
+      priceDelta: stock.priceDelta,
+      sector: stock.sector,
+      industry: stock.industry,
+      hourlyVolume: stock.hourlyVolume
+    };
+    
+    // 검색 결과 정보 업데이트
+    setSearchedStockInfo(newStockInfo);
+
+    // 중앙 정보 업데이트
+    setSelectedInfo({
+      symbol: newStockInfo.symbol,
+      name: newStockInfo.name,
+      price: newStockInfo.currentPrice,
+      change: newStockInfo.priceDelta
+    });
+
+    // 차트 데이터 갱신을 위한 상태 업데이트
+    setActivePeriod(activePeriod);
   };
 
-  // 중앙에 표시할 종목 정보 우선순위: 검색된 종목 > stockListData > 목데이터
+  // 중앙에 표시할 종목 정보 우선순위: 검색된 종목 > 관심종목 > stockListData > 목데이터
   const getSelectedStockInfo = () => {
+    // 1. 검색된 종목 정보 확인
     if (searchedStockInfo && searchedStockInfo.symbol === selectedStock) {
       return {
         symbol: searchedStockInfo.symbol,
@@ -191,7 +211,21 @@ export default function FinanceDashboard() {
         change: searchedStockInfo.priceDelta,
       };
     }
-    // stockListData에서 찾기 (data가 배열임을 명확히 단언)
+
+    // 2. 관심 종목에서 찾기
+    if (favoriteStocks && favoriteStocks.length > 0) {
+      const found = favoriteStocks.find((s) => s.symbol === selectedStock);
+      if (found) {
+        return {
+          symbol: found.symbol,
+          name: found.name,
+          price: parseFloat(found.price),
+          change: parseFloat(found.change),
+        };
+      }
+    }
+
+    // 3. stockListData에서 찾기
     const stockListArr = stockListData?.data as any[] | undefined;
     if (stockListArr) {
       const found = stockListArr.find((s: any) => s.symbol === selectedStock);
@@ -202,23 +236,75 @@ export default function FinanceDashboard() {
         change: found.priceDelta,
       };
     }
-    // 목데이터에서 찾기
+
+    // 4. 목데이터에서 찾기
     const fallback = stockData.find((s) => s.symbol === selectedStock);
     if (fallback) return {
       symbol: fallback.symbol,
       name: fallback.name,
-      price: fallback.price,
-      change: fallback.change,
+      price: parseFloat(fallback.price),
+      change: parseFloat(fallback.change),
     };
-    // 기본값
-    return {
-      symbol: selectedStock,
-      name: selectedStock,
-      price: 0,
-      change: 0,
-    };
+
+    // 5. 기본값
+    return selectedInfo;
   };
-  const selectedInfo = getSelectedStockInfo();
+
+  // selectedInfo가 변경될 때마다 getSelectedStockInfo()의 결과로 업데이트
+  useEffect(() => {
+    const newInfo = getSelectedStockInfo();
+    if (newInfo.symbol !== selectedInfo.symbol || 
+        newInfo.name !== selectedInfo.name || 
+        newInfo.price !== selectedInfo.price || 
+        newInfo.change !== selectedInfo.change) {
+      setSelectedInfo(newInfo);
+    }
+  }, [selectedStock, searchedStockInfo, favoriteStocks, stockListData, stockData]);
+
+  // 1시간일 때 timestamp를 YYYY-MM-DDTHH:00:00.000Z 형식(ISO 8601, 1시간 단위)으로 변환하는 함수
+  const getProcessedChartData = () => {
+    if (!Array.isArray(stockChartData?.data)) return [];
+    let data = stockChartData.data as any[];
+    if (activePeriod === "1시간") {
+      data = data.map((item: any) => {
+        let isoTimestamp = item.timestamp;
+        // 이미 ISO 8601 형식이 아니면 변환
+        if (typeof isoTimestamp === 'string' && isoTimestamp.length === 10) {
+          // 'YYYY-MM-DD' -> 'YYYY-MM-DDT00:00:00.000Z'
+          isoTimestamp = isoTimestamp + 'T00:00:00.000Z';
+        } else if (typeof isoTimestamp === 'string' && isoTimestamp.length === 13) {
+          // 'YYYY-MM-DDTHH' -> 'YYYY-MM-DDTHH:00:00.000Z'
+          isoTimestamp = isoTimestamp + ':00:00.000Z';
+        } else if (typeof isoTimestamp === 'string' && isoTimestamp.length === 16) {
+          // 'YYYY-MM-DDTHH:MM' -> 'YYYY-MM-DDTHH:00:00.000Z'
+          isoTimestamp = isoTimestamp.slice(0, 13) + ':00:00.000Z';
+        }
+        return {
+          ...item,
+          timestamp: isoTimestamp,
+        };
+      });
+    }
+    // null/undefined, timestamp 또는 open/high/low/close 값이 없는 데이터 제거 (문자열 'null', 'undefined', NaN도 제외)
+    data = data.filter(
+      (item: any) =>
+        item &&
+        item.timestamp &&
+        item.open != null && item.open !== 'null' && item.open !== 'undefined' && !isNaN(Number(item.open)) &&
+        item.high != null && item.high !== 'null' && item.high !== 'undefined' && !isNaN(Number(item.high)) &&
+        item.low != null && item.low !== 'null' && item.low !== 'undefined' && !isNaN(Number(item.low)) &&
+        item.close != null && item.close !== 'null' && item.close !== 'undefined' && !isNaN(Number(item.close)) &&
+        item.volume != null && item.volume !== 'null' && item.volume !== 'undefined' && !isNaN(Number(item.volume))
+    );
+    // timestamp 기준 정렬
+    if (activePeriod === "1시간") {
+      // 내림차순 (최신 → 과거)
+      return data.slice().sort((a: any, b: any) => b.timestamp.localeCompare(a.timestamp));
+    }
+    // 나머지는 오름차순
+    return data.slice().sort((a: any, b: any) => a.timestamp.localeCompare(b.timestamp));
+  };
+  // const selectedInfo = getSelectedStockInfo();
   const [quantity, setQuantity] = useState<number>(1);
 
 
@@ -332,7 +418,6 @@ export default function FinanceDashboard() {
                 onClick={() => {
                   setSelectedStock(stock.symbol);
                   // API 연동 시 여기에 API 호출 로직 추가
-                  console.log(`Selected stock: ${stock.symbol}`);
                 }}
               >
                 <div className="flex items-center gap-3">
@@ -379,7 +464,6 @@ export default function FinanceDashboard() {
                   className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                   onClick={() => {
                     setSelectedStock(stock.symbol);
-                    console.log(`Selected stock: ${stock.symbol}`);
                   }}
                 >
                   <div className="flex items-center gap-3">
@@ -486,22 +570,21 @@ export default function FinanceDashboard() {
             <div className="text-xs text-gray-500 mb-6">
               {currentTime} · {selectedInfo.symbol} · Disclaimer
             </div>
-            {/* Empty Chart Area (for user to add their own chart) */}
-            <div className="h-[740px] flex flex-col items-center justify-center">
-              <div
-                id="chart-container"
-                className="w-full h-full flex flex-col items-center justify-center"
-              >
-                {Array.isArray(stockChartData?.data) && stockChartData.data.length > 0 ? (
-                  <StockChart
-                    data={stockChartData.data}
-                    symbol={selectedInfo.symbol}
-                    period={activePeriod}
-                  />
-                ) : (
-                  <div className="text-gray-400">차트 데이터를 불러오는 중입니다...</div>
-                )}
-              </div>
+             {/* Empty Chart Area (for user to add their own chart) */}
+          <div className="h-[740px] flex flex-col items-center justify-center">
+            <div
+              id="chart-container"
+              className="w-full h-full flex flex-col items-center justify-center"
+            >
+              {getProcessedChartData().length > 0 ? (
+                <StockChart 
+                  data={getProcessedChartData()} 
+                  symbol={selectedInfo.symbol} 
+                  period={activePeriod} 
+                />
+              ) : (
+                <div className="text-gray-400">차트 데이터를 불러오는 중입니다...</div>
+              )}
             </div>
           </div>
         </div>
@@ -700,7 +783,6 @@ export default function FinanceDashboard() {
                   symbol={selectedInfo.symbol}
                   activeTab={activeRightTab}
                   onTabChange={(tab) => {
-                    console.log('Tab change requested:', tab);
                     setActiveRightTab(tab);
                   }}
                   favoriteStocks={favoriteStocks}
@@ -732,6 +814,7 @@ export default function FinanceDashboard() {
           setShowPanel(false);
         }}
       />
+    </div>
     </div>
   );
 }

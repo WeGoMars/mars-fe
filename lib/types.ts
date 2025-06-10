@@ -50,6 +50,10 @@ export interface StockDetails {
   lastPrice: number;
   /** 현재가 */
   currentPrice: number;
+  /** 가격 변화율 */
+  priceDelta: number;
+  /** 시간당 거래량 */
+  hourlyVolume: number;
   /** 시가총액 (예: 4.4조원) */
   marketCapText?: string;
   /** 운용사 (예: 삼성자산운용(ETF)) */

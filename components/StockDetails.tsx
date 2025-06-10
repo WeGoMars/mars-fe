@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import mockPortfolio from "@/lib/mock/mockportfolio";
 import { TrendingUp, TrendingDown } from "lucide-react"
 
+// test
 // 주식 상세 정보를 보여주는 컴포넌트(종목정보 상세, 내 계좌, AI 추천 탭)
 interface StockDetailsProps {
   symbol: string; // 주식 심볼
@@ -35,13 +36,23 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!symbol) return; // symbol이 없으면 실행하지 않음
+      
       setIsLoading(true);
       setError(null);
       try {
         const response = await getStockDetails(symbol);
         if (response.success) {
           setDetails(response.data);
-          console.log('종목 상세 정보:', response.data);
+          // 상위 컴포넌트에 데이터 업데이트 알림
+          if (response.data) {
+            const price = response.data.currentPrice;
+            const lastPrice = response.data.lastPrice;
+            const change = lastPrice !== 0 && lastPrice !== undefined && lastPrice !== null 
+              ? ((price - lastPrice) / lastPrice) * 100 
+              : 0;
+            onTabChange(activeTab); // 탭 변경을 통해 상위 컴포넌트에 데이터 업데이트 알림
+          }
         } else {
           setError(response.message);
         }
@@ -57,7 +68,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
     };
 
     fetchData();
-  }, [symbol]);
+  }, [symbol, activeTab, onTabChange]);
 
   if (isLoading) {
     return (
@@ -76,7 +87,6 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   }
 
   const handleTabClick = (tab: '종목정보 상세' | '내 계좌' | 'AI 추천') => {
-    console.log('Tab clicked:', tab);
     onTabChange(tab);
   };
 
