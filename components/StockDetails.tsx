@@ -32,25 +32,53 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   const [isHeartFilled, setIsHeartFilled] = useState(false);
   // const [portfolioData, setPortfolioData] = useState(mockPortfolio);
 
+  // RTK Query 호출
+const {
+  data: portfolioResponse,
+  isLoading: portfolioLoading,
+  isError: portfolioError,
+} = useGetOverallPortfolioQuery();
+
+const {
+  data: walletResponse,
+  isLoading: walletLoading,
+  isError: walletError,
+} = useGetWalletQuery();
+
+// 로딩 처리
+if (portfolioLoading || walletLoading) return <div>로딩 중...</div>;
+
+// 에러 처리 (응답 자체가 실패한 경우)
+if (portfolioError || walletError) {
+  console.error("에러 발생", {
+    portfolioError,
+    walletError,
+    portfolioResponse,
+    walletResponse,
+  });
+  return <div>에러 발생</div>;
+}
+
+// 안전한 기본값 처리
+const portfolioData = portfolioResponse?.data && typeof portfolioResponse.data.totalAsset === 'number'
+  ? portfolioResponse.data
+  : {
+      totalAsset: 0,
+      investedAmount: 0,
+      evalGain: 0,
+      returnRate: 0,
+      totalSeed: 100000,
+      investRatio: 0,
+      cash: 100000,
+    };
+
+const walletData = walletResponse?.data && typeof walletResponse.data.cyberDollar === 'number'
+  ? walletResponse.data
+  : {
+      cyberDollar: 100000,
+    };
+  
  
-  const { data: portfolioResponse, isLoading: portfolioLoading, isError: portfolioError } = useGetOverallPortfolioQuery();
-  const { data: walletResponse, isLoading: walletLoading, isError: walletError } = useGetWalletQuery();
-   if (portfolioLoading || walletLoading) return <div>로딩 중...</div>;
-
-
-
-if (portfolioError || walletError) return <div>에러 발생</div>;
-
-const portfolioData = portfolioResponse?.data ?? {
-  totalAsset: 0,
-  investedAmount: 0,
-  evalGain: 0,
-  returnRate: 0
-};
-
-const walletData = walletResponse?.data ?? {
-  cyberDollar: 100000
-};
   useEffect(() => {
     const fetchData = async () => {
       if (!symbol) return; // symbol이 없으면 실행하지 않음
