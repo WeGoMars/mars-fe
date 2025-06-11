@@ -37,17 +37,24 @@ const {
   data: portfolioResponse,
   isLoading: portfolioLoading,
   isError: portfolioError,
-} = useGetOverallPortfolioQuery();
+} = useGetOverallPortfolioQuery(undefined, {
+  skip: !isLoggedIn, // 로그인 안 되어 있으면 호출 안 함
+});
 
 const {
   data: walletResponse,
   isLoading: walletLoading,
   isError: walletError,
-} = useGetWalletQuery();
-
+} = useGetWalletQuery(undefined, {
+  skip: !isLoggedIn,
+});
 // 로딩 처리
-if (portfolioLoading || walletLoading) return <div>로딩 중...</div>;
+if (!isLoggedIn) {
+  return <div>로그인이 필요합니다.</div>;
+}
 
+if (portfolioLoading || walletLoading) return <div>로딩 중...</div>;
+if (portfolioError || walletError) return <div>에러 발생</div>;
 // 에러 처리 (응답 자체가 실패한 경우)
 if (portfolioError || walletError) {
   console.error("에러 발생", {
@@ -67,9 +74,6 @@ const portfolioData = portfolioResponse?.data && typeof portfolioResponse.data.t
       investedAmount: 0,
       evalGain: 0,
       returnRate: 0,
-      totalSeed: 100000,
-      investRatio: 0,
-      cash: 100000,
     };
 
 const walletData = walletResponse?.data && typeof walletResponse.data.cyberDollar === 'number'
