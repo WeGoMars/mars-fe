@@ -36,10 +36,21 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   const { data: portfolioResponse, isLoading: portfolioLoading, isError: portfolioError } = useGetOverallPortfolioQuery();
   const { data: walletResponse, isLoading: walletLoading, isError: walletError } = useGetWalletQuery();
    if (portfolioLoading || walletLoading) return <div>로딩 중...</div>;
-  const portfolioData = portfolioResponse?.data;
-  const walletData = walletResponse?.data;
-  if (portfolioError || walletError || !portfolioData || !walletData) return <div>에러 발생</div>;
 
+
+
+if (portfolioError || walletError) return <div>에러 발생</div>;
+
+const portfolioData = portfolioResponse?.data ?? {
+  totalAsset: 0,
+  investedAmount: 0,
+  evalGain: 0,
+  returnRate: 0
+};
+
+const walletData = walletResponse?.data ?? {
+  cyberDollar: 100000
+};
   useEffect(() => {
     const fetchData = async () => {
       if (!symbol) return; // symbol이 없으면 실행하지 않음
@@ -248,7 +259,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                 <span className="text-sm text-gray-500">총자산</span>
                 <div className="text-xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
                   <span className="text-[#197bbd] text-xs mr-1">$</span>
-                  {portfolioData.totalSeed.toLocaleString("en-US", {
+                  {portfolioData.totalAsset.toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
