@@ -538,7 +538,15 @@ export default function FinanceDashboard() {
                   매수
                 </button>
                 <button
-                  onClick={() => setShowPanel('sell')}
+                  onClick={() => {
+                    if (!isLoggedIn) {
+                      const url = new URL(window.location.href)
+                      url.searchParams.set("modal", "login")
+                      router.push(url.toString())
+                    } else {
+                      setShowPanel('sell')
+                    }
+                  }}
                   className="px-4 py-1.5 rounded-full font-medium text-xs transition-colors bg-[#b3c6e6]"
                 >
                   매도
