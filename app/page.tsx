@@ -520,7 +520,15 @@ export default function FinanceDashboard() {
               <div className="flex flex-wrap gap-2">
                 {/* Buy/Sell Tabs */}
                 <button
-                  onClick={() => setShowPanel('buy')}
+                  onClick={() => {
+                    if (!isLoggedIn) {
+                      const url = new URL(window.location.href)
+                      url.searchParams.set("modal", "login")
+                      router.push(url.toString())
+                    } else {
+                      setShowPanel('buy')
+                    }
+                  }}
                   className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
                     activeTab === "매수"
                       ? "bg-[#fce7e7]"
