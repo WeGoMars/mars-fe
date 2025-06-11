@@ -112,7 +112,8 @@ export default function Dashboard() {
       symbol: stock.symbol,
       name: stock.name,
       price: stock.currentPrice,
-      change: stock.priceDelta
+      change: stock.priceDelta,
+      
     });
   };
 
