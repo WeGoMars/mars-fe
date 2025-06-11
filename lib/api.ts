@@ -6,6 +6,7 @@ import type {
   TradeRequest,
   GetTradeHistoryResponse,
   OverallPortfolioResponse,
+  GetStockPortfolioResponse,
 } from "./types";
 import type {
   StockDetails,
@@ -365,5 +366,22 @@ export async function sellStock(params: TradeRequest): Promise<TradeResponse> {
     credentials: "include",
   });
   if (!response.ok) throw new Error("매도 실패");
+  return response.json();
+}
+
+// 보유종목/상품현황(주식 종목별 포트폴리오 조회 api)
+export async function getStockPortfolio(): Promise<GetStockPortfolioResponse> {
+  const response = await fetch("/api/portfolios/stock", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include", // 로그인 필수
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch stock portfolio");
+  }
+
   return response.json();
 }

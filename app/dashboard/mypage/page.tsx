@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import ProfileModal from "@/components/common/ProfileModal"
 
-import { useGetProfileQuery,useGetWalletQuery  } from "@/lib/api"
+import { useGetProfileQuery,useGetWalletQuery, getStockPortfolio } from "@/lib/api"
 import { useGetOverallPortfolioQuery } from "@/lib/api"; 
 import ProfileHandler from "@/components/common/ProfileHandler";
 import LogoutButton from "@/components/common/LogoutButton"
@@ -31,6 +31,25 @@ export default function MyPage() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
   const { data: walletData, isLoading, isError,refetch: refetchWallet } = useGetWalletQuery();
   const { data, isLoading: Loading, isError:error,refetch: refetchPortfolio } = useGetOverallPortfolioQuery();
+  const [stockPortfolio, setStockPortfolio] = useState<any[]>([]);
+  const [isLoadingPortfolio, setIsLoadingPortfolio] = useState(true);
+
+  useEffect(() => {
+    const fetchStockPortfolio = async () => {
+      try {
+        const response = await getStockPortfolio();
+        console.log('주식 포트폴리오 데이터:', response);
+        setStockPortfolio(response.data);
+      } catch (error) {
+        console.error('주식 포트폴리오 조회 실패:', error);
+      } finally {
+        setIsLoadingPortfolio(false);
+      }
+    };
+
+    fetchStockPortfolio();
+  }, []);
+
   if (isLoading) return <div>로딩 중...</div>;
   if (error || !data?.data) return <div>에러 발생</div>;
   
@@ -438,26 +457,53 @@ export default function MyPage() {
                 </tr>
               </thead>
               <tbody>
-                {holdings.map((holding, index) => (
-                  <tr key={index} className="border-b border-[#f5f7f9] hover:bg-[#f5f7f9] transition-colors">
-                    <td className="py-4">
-                      <Link
-                        href={`/holdings/${holding.name}`}
-                        className="flex items-center gap-3 hover:text-[#197bbd] transition-colors"
-                      >
-                        <div className="w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold">
-                          
-                        </div>
-                        <span className="font-medium text-[#1c2730]">{holding.name}</span>
-                      </Link>
-                    </td>
-                    <td className="text-right py-4 text-[#1c2730]">${holding.purchasePrice}</td>
-                    <td className="text-right py-4 text-[#63c89b]">{holding.Quantity}</td>
-                    <td className="text-right py-4 text-[#1c2730]">${holding.currentPrice}</td>
-                    <td className="text-right py-4 text-[#63c89b]">+${holding.gain}</td>
-                    <td className="text-right py-4 text-[#63c89b]">+{holding.returnRate}%</td>
+                {isLoadingPortfolio ? (
+                  <tr>
+                    <td colSpan={6} className="text-center py-4">로딩 중...</td>
                   </tr>
-                ))}
+                ) : stockPortfolio.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="text-center py-4">보유 중인 종목이 없습니다.</td>
+                  </tr>
+                ) : (
+                  stockPortfolio.map((stock, index) => (
+                    <tr key={index} className="border-b border-[#f5f7f9] hover:bg-[#f5f7f9] transition-colors">
+                      <td className="py-4">
+                        <Link
+                          href={`/holdings/${stock.symbol}`}
+                          className="flex items-center gap-3 hover:text-[#197bbd] transition-colors"
+                        >
+                          <div className="w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold">
+                            {stock.symbol.charAt(0)}
+                          </div>
+                          <span className="font-medium text-[#1c2730]">{stock.name}</span>
+                        </Link>
+                      </td>
+                      <td className="text-right py-4 text-[#1c2730]">
+                        ${stock.avgBuyPrice.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </td>
+                      <td className="text-right py-4 text-[#63c89b]">{stock.quantity}</td>
+                      <td className="text-right py-4 text-[#1c2730]">
+                        ${stock.evalAmount.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </td>
+                      <td className={`text-right py-4 ${stock.evalGain >= 0 ? 'text-[#63c89b]' : 'text-[#e74c3c]'}`}>
+                        {stock.evalGain >= 0 ? '+' : ''}${stock.evalGain.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </td>
+                      <td className={`text-right py-4 ${stock.returnRate >= 0 ? 'text-[#63c89b]' : 'text-[#e74c3c]'}`}>
+                        {stock.returnRate >= 0 ? '+' : ''}{(stock.returnRate * 100).toFixed(2)}%
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
