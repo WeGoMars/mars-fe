@@ -535,63 +535,77 @@ export default function MyPage() {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-[#e8e8e8]">
-                  <th className="text-left py-3 text-sm font-medium text-[#8f9098]">일자</th>
-                  <th className="text-left py-3 text-sm font-medium text-[#8f9098]">상품/종목명</th>
-                  <th className="text-right py-3 text-sm font-medium text-[#8f9098]">거래단가</th>
-                  <th className="text-right py-3 text-sm font-medium text-[#8f9098]">체결수량</th>
-                  <th className="text-right py-3 text-sm font-medium text-[#8f9098]">수익률</th>
-                </tr>
-              </thead>
-              <tbody>
-                {isLoadingHistory ? (
-                  <tr>
-                    <td colSpan={5} className="text-center py-4">로딩 중...</td>
+            <div className="max-h-[400px] overflow-y-auto">
+              <table className="w-full">
+                <thead className="sticky top-0 bg-white z-10">
+                  <tr className="border-b border-[#e8e8e8]">
+                    <th className="text-left py-3 text-sm font-medium text-[#8f9098]">일자</th>
+                    <th className="text-left py-3 text-sm font-medium text-[#8f9098]">상품/종목명</th>
+                    <th className="text-right py-3 text-sm font-medium text-[#8f9098]">거래단가</th>
+                    <th className="text-right py-3 text-sm font-medium text-[#8f9098]">체결수량</th>
+                    <th className="text-right py-3 text-sm font-medium text-[#8f9098]">수익률</th>
                   </tr>
-                ) : tradeHistory.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="text-center py-4">거래 내역이 없습니다.</td>
-                  </tr>
-                ) : (
-                  tradeHistory.map((trade, index) => (
-                    <tr key={index} className="border-b border-[#f5f7f9] hover:bg-[#f5f7f9] transition-colors">
-                      <td className="py-4 text-[#1c2730]">
-                        {new Date(trade.date).toLocaleDateString('ko-KR', {
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </td>
-                      <td className="py-4">
-                        <Link
-                          href={`/holdings/${trade.symbol}`}
-                          className="flex items-center gap-3 hover:text-[#197bbd] transition-colors"
-                        >
-                          <div className="w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold">
-                            {trade.symbol.charAt(0)}
-                          </div>
-                          <span className="font-medium text-[#1c2730]">{trade.name}</span>
-                        </Link>
-                      </td>
-                      <td className="text-right py-4 text-[#1c2730]">
-                        ${trade.currentPrice.toLocaleString("en-US", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </td>
-                      <td className="text-right py-4 text-[#63c89b]">{trade.quantity}</td>
-                      <td className={`text-right py-4 ${trade.returnRate >= 0 ? 'text-[#63c89b]' : 'text-[#e74c3c]'}`}>
-                        {trade.returnRate >= 0 ? '+' : ''}{(trade.returnRate * 100).toFixed(2)}%
-                      </td>
+                </thead>
+                <tbody>
+                  {isLoadingHistory ? (
+                    <tr>
+                      <td colSpan={5} className="text-center py-4">로딩 중...</td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : tradeHistory.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="text-center py-4">거래 내역이 없습니다.</td>
+                    </tr>
+                  ) : (
+                    tradeHistory.map((trade, index) => (
+                      <tr key={index} className="border-b border-[#f5f7f9] hover:bg-[#f5f7f9] transition-colors">
+                        <td className="py-4 text-[#1c2730]">
+                          {(() => {
+                            try {
+                              const date = new Date(trade.date);
+                              if (isNaN(date.getTime())) {
+                                console.error('Invalid date:', trade.date);
+                                return '날짜 정보 없음';
+                              }
+                              return date.toLocaleDateString('ko-KR', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              });
+                            } catch (error) {
+                              console.error('Date parsing error:', error);
+                              return '날짜 정보 없음';
+                            }
+                          })()}
+                        </td>
+                        <td className="py-4">
+                          <Link
+                            href={`/holdings/${trade.symbol}`}
+                            className="flex items-center gap-3 hover:text-[#197bbd] transition-colors"
+                          >
+                            <div className="w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold">
+                              {trade.symbol.charAt(0)}
+                            </div>
+                            <span className="font-medium text-[#1c2730]">{trade.name}</span>
+                          </Link>
+                        </td>
+                        <td className="text-right py-4 text-[#1c2730]">
+                          ${trade.currentPrice.toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </td>
+                        <td className="text-right py-4 text-[#63c89b]">{trade.quantity}</td>
+                        <td className={`text-right py-4 ${trade.returnRate >= 0 ? 'text-[#63c89b]' : 'text-[#e74c3c]'}`}>
+                          {trade.returnRate >= 0 ? '+' : ''}{(trade.returnRate * 100).toFixed(2)}%
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </CardContent>
       </Card>
