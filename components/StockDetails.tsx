@@ -7,9 +7,8 @@ import type { StockDetails, NewsItem, Stock } from '@/lib/types';
 import { Check, ChevronDown, ChevronLeft, Heart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-// import mockPortfolio from "@/lib/mock/mockportfolio";
 import { TrendingUp, TrendingDown } from "lucide-react"
-import { useGetOverallPortfolioQuery,useGetWalletQuery } from "@/lib/api"; 
+import { useGetOverallPortfolioQuery, useGetWalletQuery } from "@/lib/api"; 
 // 주식 상세 정보를 보여주는 컴포넌트(종목정보 상세, 내 계좌, AI 추천 탭)   
 interface StockDetailsProps {
   symbol: string; // 주식 심볼
@@ -30,59 +29,10 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   const [showReasonDetail, setShowReasonDetail] = useState(false);
   const [aiSubmitted, setAiSubmitted] = useState(false);
   const [isHeartFilled, setIsHeartFilled] = useState(false);
-  // const [portfolioData, setPortfolioData] = useState(mockPortfolio);
 
-  // RTK Query 호출
-const {
-  data: portfolioResponse,
-  isLoading: portfolioLoading,
-  isError: portfolioError,
-} = useGetOverallPortfolioQuery(undefined, {
-  skip: !isLoggedIn, // 로그인 안 되어 있으면 호출 안 함
-});
+  const { data: portfolioData, isLoading: isPortfolioLoading } = useGetOverallPortfolioQuery();
+  const { data: walletData, isLoading: isWalletLoading } = useGetWalletQuery();
 
-const {
-  data: walletResponse,
-  isLoading: walletLoading,
-  isError: walletError,
-} = useGetWalletQuery(undefined, {
-  skip: !isLoggedIn,
-});
-// 로딩 처리
-if (!isLoggedIn) {
-  return <div>로그인이 필요합니다.</div>;
-}
-
-if (portfolioLoading || walletLoading) return <div>로딩 중...</div>;
-if (portfolioError || walletError) return <div>에러 발생</div>;
-// 에러 처리 (응답 자체가 실패한 경우)
-if (portfolioError || walletError) {
-  console.error("에러 발생", {
-    portfolioError,
-    walletError,
-    portfolioResponse,
-    walletResponse,
-  });
-  return <div>에러 발생</div>;
-}
-
-// 안전한 기본값 처리
-const portfolioData = portfolioResponse?.data && typeof portfolioResponse.data.totalAsset === 'number'
-  ? portfolioResponse.data
-  : {
-      totalAsset: 0,
-      investedAmount: 0,
-      evalGain: 0,
-      returnRate: 0,
-    };
-
-const walletData = walletResponse?.data && typeof walletResponse.data.cyberDollar === 'number'
-  ? walletResponse.data
-  : {
-      cyberDollar: 100000,
-    };
-  
- 
   useEffect(() => {
     const fetchData = async () => {
       if (!symbol) return; // symbol이 없으면 실행하지 않음
@@ -284,85 +234,90 @@ const walletData = walletResponse?.data && typeof walletResponse.data.cyberDolla
       {activeTab === '내 계좌' ? (
         isLoggedIn ? (
           <div className="flex-1 flex flex-col mt-12">
-            {/* Financial Information */}
-            <div className="space-y-8">
-              {/* Total Assets */}
-              <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">총자산</span>
-                <div className="text-xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
-                  <span className="text-[#197bbd] text-xs mr-1">$</span>
-                  {portfolioData.totalAsset.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </div>
+            {isPortfolioLoading || isWalletLoading ? (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-gray-400">데이터 로딩 중...</div>
               </div>
-              {/* 시드머니 */}
-              <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">시드머니</span>
-                <div className="text-xl font-bold group-hover:text-[#1565a0] transition-colors">
-                  <span className="text-xs mr-1">$</span>
-                  {walletData.cyberDollar.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+            ) : (
+              <div className="space-y-8">
+                {/* Total Assets */}
+                <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
+                  <span className="text-sm text-gray-500">총자산</span>
+                  <div className="text-xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
+                    <span className="text-[#197bbd] text-xs mr-1">$</span>
+                    {portfolioData?.data?.totalAsset?.toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }) ?? '-'}
+                  </div>
                 </div>
-              </div>
-              {/* Investment Amount */}
-              <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">투자금액</span>
-                <div>
-                <span className="text-[#439a86] text-xs mr-1">$</span>
-                <span className="text-xl font-bold text-[#439a86] ">
-                  {portfolioData.investedAmount.toLocaleString("en-US", {
+                {/* 시드머니 */}
+                <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
+                  <span className="text-sm text-gray-500">시드머니</span>
+                  <div className="text-xl font-bold group-hover:text-[#1565a0] transition-colors">
+                    <span className="text-xs mr-1">$</span>
+                    {walletData?.data?.cyberDollar?.toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }) ?? '-'}
+                  </div>
+                </div>
+                {/* Investment Amount */}
+                <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
+                  <span className="text-sm text-gray-500">투자금액</span>
+                  <div>
+                  <span className="text-[#439a86] text-xs mr-1">$</span>
+                  <span className="text-xl font-bold text-[#439a86] ">
+                    {portfolioData?.data?.investedAmount?.toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }) ?? '-'}
+                  </span>
+                </div>
+                </div>
+                {/* Unrealized P&L */}
+                <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
+                  <span className="text-sm text-gray-500">평가손익</span>
+                    <div
+                      className={`flex items-center text-xl font-bold transition-colors 
+                        ${(portfolioData?.data?.evalGain ?? 0) >= 0 
+                          ? "text-[#e74c3c] group-hover:text-[#c0392b]" 
+                          : "text-[#3498db] group-hover:text-[#2c80b4]"}
+                      `}
+                    >
+                <span className="text-xs mr-1">$</span>
+                <span>
+                  {(portfolioData?.data?.evalGain ?? 0) >= 0 ? "+" : "-"}
+                  {Math.abs(portfolioData?.data?.evalGain ?? 0).toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
                 </span>
               </div>
-              </div>
-              {/* Unrealized P&L */}
-              <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">평가손익</span>
-                  <div
-                    className={`flex items-center text-xl font-bold transition-colors 
-                      ${portfolioData.evalGain >= 0 
-                        ? "text-[#e74c3c] group-hover:text-[#c0392b]" 
-                        : "text-[#3498db] group-hover:text-[#2c80b4]"}
+                </div>
+                {/* Return Rate */}
+                <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
+                  <span className="text-sm text-gray-500">수익률</span>
+                  <span className="text-sm font-medium">
+                    <div
+                    className={`text-xl font-bold transition-colors flex items-center gap-1 
+                      ${(portfolioData?.data?.returnRate ?? 0) >= 0 
+                        ? "text-[#e74c3c] group-hover:text-[#4caf50]" 
+                        : "text-[#3498db] group-hover:text-[#a73d2a]"}
                     `}
-                  >
-              <span className="text-xs mr-1">$</span>
-              <span>
-                {portfolioData.evalGain >= 0 ? "+" : "-"}
-                {Math.abs(portfolioData.evalGain).toLocaleString("en-US", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </span>
-            </div>
-              </div>
-              {/* Return Rate */}
-              <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">수익률</span>
-                <span className="text-sm font-medium">
-                  <div
-                  className={`text-xl font-bold transition-colors flex items-center gap-1 
-                    ${portfolioData.returnRate >= 0 
-                      ? "text-[#e74c3c] group-hover:text-[#4caf50]" 
-                      : "text-[#3498db] group-hover:text-[#a73d2a]"}
-                  `}
-                  >
-                    {portfolioData.returnRate >= 0 ? (
-                    <TrendingUp className="h-5 w-5" />
-                  ) : (
-                    <TrendingDown className="h-5 w-5" />
-                  )}
-                  {portfolioData.returnRate >= 0 ? "+" : "-"}
-                  {Math.abs(portfolioData.returnRate).toFixed(2)}%
+                    >
+                      {(portfolioData?.data?.returnRate ?? 0) >= 0 ? (
+                      <TrendingUp className="h-5 w-5" />
+                    ) : (
+                      <TrendingDown className="h-5 w-5" />
+                    )}
+                    {(portfolioData?.data?.returnRate ?? 0) >= 0 ? "+" : "-"}
+                    {Math.abs(portfolioData?.data?.returnRate ?? 0).toFixed(2)}%
+                  </div>
+                  </span>
                 </div>
-                </span>
               </div>
-            </div>
+            )}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-full">
