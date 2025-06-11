@@ -50,6 +50,10 @@ export interface StockDetails {
   lastPrice: number;
   /** 현재가 */
   currentPrice: number;
+  /** 가격 변화율 */
+  priceDelta: number;
+  /** 시간당 거래량 */
+  hourlyVolume: number;
   /** 시가총액 (예: 4.4조원) */
   marketCapText?: string;
   /** 운용사 (예: 삼성자산운용(ETF)) */
@@ -252,4 +256,32 @@ export interface GetLikedStocksResponse {
     priceDelta: number;
   }[];
 }
+
+
+export interface OverallPortfolioResponse {
+  success: boolean;
+  message: string;
+  data: {
+    totalAsset: number;
+    investedAmount: number;
+    evalGain: number;
+    returnRate: number;
+    totalSeed: number;
+    investRatio: number;
+    cash: number;
+  };
+}
+// 내 종목 목록 조회(내가 구매한 종목)
+export interface GetMyStocksResponse {
+  success: boolean;
+  message: string;
+  data: {
+    symbol: string;
+    name: string;
+    currentPrice: number;
+    priceDelta: number;
+  }[];
+
+}
+
 

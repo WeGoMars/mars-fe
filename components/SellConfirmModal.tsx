@@ -6,22 +6,43 @@ interface SellConfirmModalProps {
   open: boolean; // 모달 표시 여부
   onClose: () => void; // 모달 닫기 함수
   onConfirm: () => void; // 매도 확인 함수
+  symbol: string;
+  name: string;
+  price: number;
+  quantity: number;
+  fee: number;
+  total: number;
 }
 
-export default function SellConfirmModal({ open, onClose, onConfirm }: SellConfirmModalProps) {
+export default function SellConfirmModal({ open, onClose, onConfirm, symbol, name, price, quantity, fee, total }: SellConfirmModalProps) {
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="w-[343px] h-[400px] bg-gray-100 p-4 mx-auto rounded-3xl">
+      <div className="w-[500px] h-[500px] bg-gray-100 p-4 mx-auto rounded-3xl">
         {/* Header - 분리된 회색 박스 */}
         <div className="bg-[#eeeeee] rounded-3xl px-6 py-6 text-center mb-4">
           <div className="flex items-center justify-center gap-3">
             <div className="bg-white rounded-lg px-3 py-2">
-              <div className="text-xs text-[#8f9098] font-medium">S&P</div>
-              <div className="text-xs text-[#8f9098] font-medium">500</div>
+              {/* 로고 */}
+              <img
+                src={`/logos/${symbol}.png`}
+                alt={symbol}
+                className="w-8 h-8 object-contain mx-auto"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const parent = target.parentElement;
+                  if (parent) {
+                    const fallback = document.createElement('div');
+                    fallback.className = 'w-8 h-8 flex items-center justify-center';
+                    fallback.innerHTML = `<span class='text-xs font-bold'>${symbol}</span>`;
+                    parent.appendChild(fallback);
+                  }
+                }}
+              />
             </div>
-            <h1 className="text-2xl font-bold text-[#2f3036]">S&P 500</h1>
+            <h1 className="text-2xl font-bold text-[#2f3036]">{name}</h1>
           </div>
         </div>
 
@@ -33,7 +54,7 @@ export default function SellConfirmModal({ open, onClose, onConfirm }: SellConfi
             <Card className="bg-white border border-gray-200 rounded-2xl px-4 py-3">
               <div className="flex justify-between items-center">
                 <span className="text-[#8f9098] font-medium text-sm">1주당 판매 가격</span>
-                <span className="text-[#2f3036] font-semibold">$38.02</span>
+                <span className="text-[#2f3036] font-semibold">${price.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
               </div>
             </Card>
 
@@ -41,7 +62,7 @@ export default function SellConfirmModal({ open, onClose, onConfirm }: SellConfi
             <Card className="bg-white border border-gray-200 rounded-2xl px-4 py-3">
               <div className="flex justify-between items-center">
                 <span className="text-[#8f9098] font-medium text-sm">예상 수수료</span>
-                <span className="text-[#2f3036] font-semibold">$8.01</span>
+                <span className="text-[#2f3036] font-semibold">${fee.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
               </div>
             </Card>
 
@@ -49,7 +70,7 @@ export default function SellConfirmModal({ open, onClose, onConfirm }: SellConfi
             <Card className="bg-white border border-gray-200 rounded-2xl px-4 py-3">
               <div className="flex justify-between items-center">
                 <span className="text-[#8f9098] font-medium text-sm">총 판매 금액</span>
-                <span className="text-[#2f3036] font-semibold">$92.01</span>
+                <span className="text-[#2f3036] font-semibold">${total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
               </div>
             </Card>
           </div>

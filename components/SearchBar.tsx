@@ -7,7 +7,7 @@ import type { GetStockSearchResponse } from "@/lib/types"
 
 // 주식 종목 검색바 컴포넌트
 interface SearchBarProps {
-  onSelectStock: (symbol: string) => void
+  onSelectStock: (stock: GetStockSearchResponse) => void
 }
 
 export default function SearchBar({ onSelectStock }: SearchBarProps) {
@@ -61,14 +61,11 @@ export default function SearchBar({ onSelectStock }: SearchBarProps) {
   }, [searchQuery])
 
   // 종목 선택 시
-  const handleSelectStock = (symbol: string) => {
-    onSelectStock(symbol)
+  const handleSelectStock = (stock: GetStockSearchResponse) => {
+    onSelectStock(stock)
     setSearchQuery("")
     setShowResults(false)
-    const selectedStock = searchResults.find(stock => stock.symbol === symbol)
-    if (selectedStock) {
-      setRecentSearches(prev => [selectedStock, ...prev.filter(s => s.symbol !== symbol)].slice(0, 4))
-    }
+    setRecentSearches(prev => [stock, ...prev.filter(s => s.symbol !== stock.symbol)].slice(0, 4))
   }
 
   return (
@@ -118,7 +115,7 @@ export default function SearchBar({ onSelectStock }: SearchBarProps) {
                   <div
                     key={`${item.symbol}-${index}`}
                     className="flex items-center cursor-pointer"
-                    onClick={() => handleSelectStock(item.symbol)}
+                    onClick={() => handleSelectStock(item)}
                   >
                     {/* Left side - Number */}
                     <div className="flex items-center space-x-3 w-12">

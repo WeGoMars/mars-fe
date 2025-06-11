@@ -1,34 +1,32 @@
 import { X, Minus, Plus } from "lucide-react";
-import { useEffect, useState } from "react"; 
-import { useGetOverallPortfolioQuery,useGetWalletQuery } from "@/lib/api"; 
-// 매수, 매도 슬라이드 컴포넌트
-interface BuyPanelProps {
-  open: boolean; // 패널 표시 여부
-  onClose: () => void; // 패널 닫기 함수
+import { useEffect, useState } from "react";
+
+interface SellPanelProps {
+  open: boolean;
+  onClose: () => void;
   symbol: string;
   name: string;
-  price: number; // 종목 가격
+  price: number;
    // 포트폴리오 데이터들
   totalAssets: number;
   investmentAmount: number;
   profitLoss: number;
   returnRate: number;
   cyberDollar: number;
-  onBuyClick: (params: { symbol: string; name: string; price: number; quantity: number; fee: number; total: number }) => void;
+  onSellClick: (params: { symbol: string; name: string; price: number; quantity: number; fee: number; total: number }) => void;
 }
 
-export default function BuyPanel({ open, onClose, symbol, name, totalAssets, price , cyberDollar, returnRate, investmentAmount, profitLoss, onBuyClick }: BuyPanelProps) {
+export default function SellPanel({ open, onClose, symbol, name, price, totalAssets, cyberDollar, returnRate, investmentAmount, profitLoss, onSellClick }: SellPanelProps) {
   const [quantity, setQuantity] = useState(1);
   useEffect(() => {
     if (open) {
-      console.log('[매수 패널 진입] 선택된 종목:', { symbol, name, price });
+      console.log('[매도 패널 진입] 선택된 종목:', { symbol, name, price });
     }
   }, [open, symbol, name, price]);
 
   // 수수료 예시: 0.5% (원하는 비율로 조정)
   const fee = Math.round(price * quantity * 0.005 * 100) / 100;
-  const total = Math.round((price * quantity + fee) * 100) / 100;
-
+  const total = Math.round((price * quantity - fee) * 100) / 100;
 
   return (
     <div
@@ -37,10 +35,10 @@ export default function BuyPanel({ open, onClose, symbol, name, totalAssets, pri
         ${open ? "translate-x-0" : "translate-x-full"}
       `}
     >
-      {/* 매수/매도 영역 */}
+      {/* 매도 영역 */}
       <div className="flex items-center justify-center mb-8 relative">
         <span className="px-8 py-2 rounded-full bg-[#f4f5f9] text-base font-semibold text-center">
-          매수
+          매도
         </span>
         <button onClick={onClose} className="absolute right-0 top-1/2 -translate-y-1/2">
           <X className="w-5 h-5 text-gray-500" />
@@ -82,10 +80,10 @@ export default function BuyPanel({ open, onClose, symbol, name, totalAssets, pri
           <div className="text-lg font-extrabold">${price.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
         </div>
         <button
-          className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
-          onClick={() => onBuyClick({ symbol, name, price, quantity, fee, total })}
+          className="w-full py-4 bg-[#b3c6e6] rounded-2xl text-center font-bold text-base text-black mt-6"
+          onClick={() => onSellClick({ symbol, name, price, quantity, fee, total })}
         >
-          매수
+          매도
         </button>
       </div>
       {/* 내 계좌 영역 */}

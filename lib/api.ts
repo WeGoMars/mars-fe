@@ -1,5 +1,5 @@
-import type { SignUpRequest, SignUpResponse, WalletResponse,TradeResponse, TradeRequest } from "./types"
-import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest, GetStockSearchRequest, GetStockSearchResponse, GetStockDetailsResponse, LikeStockRequest, LikeStockResponse, UnlikeStockResponse, GetLikedStocksResponse } from "./types"
+import type { SignUpRequest, SignUpResponse, WalletResponse,TradeResponse, TradeRequest,OverallPortfolioResponse } from "./types"
+import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest, GetStockSearchRequest, GetStockSearchResponse, GetStockDetailsResponse, LikeStockRequest, LikeStockResponse, UnlikeStockResponse, GetLikedStocksResponse,GetMyStocksResponse } from "./types"
 import { fetchBaseQuery, createApi } from '@reduxjs/toolkit/query/react';
 import type { LoginRequest, LoginResponse, UserProfile } from "./types"
 
@@ -18,34 +18,6 @@ export async function getStockDetails(symbol: string): Promise<GetStockDetailsRe
   }
 
   return response.json();
-}
-
-// 뉴스 가져오기(사용 안함)
-export async function getStockNews(symbol?: string): Promise<NewsItem[]> {
-  // 실제 API 호출 대신 더미 데이터 반환
-  return [
-    {
-      id: 1,
-      title: "홍콩그룹과 경영권 분쟁 가능성에...한진칼 상한가",
-      source: "한국경제",
-      time: "1시간 전",
-      imageUrl: "/placeholder.svg?height=56&width=56&query=financial news",
-    },
-    {
-      id: 2,
-      title: "미 연준, 금리 인하 시기 놓고 의견 분분...시장 혼란",
-      source: "매일경제",
-      time: "3시간 전",
-      imageUrl: "/placeholder.svg?height=56&width=56&query=financial news",
-    },
-    {
-      id: 3,
-      title: "테슬라, 전기차 판매량 예상치 하회...주가 급락",
-      source: "조선비즈",
-      time: "5시간 전",
-      imageUrl: "/placeholder.svg?height=56&width=56&query=financial news",
-    },
-  ]
 }
 
 // 차트 데이터 조회
@@ -156,6 +128,24 @@ export async function getFavoriteStocks(): Promise<GetLikedStocksResponse> {
   return response.json();
 }
 
+// 내 종목 목록 조회(내가 구매한 종목)
+export async function getMyStocks(): Promise<GetMyStocksResponse> {
+  const response = await fetch('/api/portfolios/list', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include', // 로그인 필수
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch my stocks');
+  }
+
+  return response.json();
+}
+
+//회원가입,로그인, 프로필 수정, 프로필 조회, 로그아웃 API
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/api", credentials: "include" }),
@@ -198,6 +188,13 @@ export const userApi = createApi({
         credentials: "include",
       }),
     }),
+    logout: builder.mutation<{ success: string; message: string }, void>({
+      query: () => ({
+        url: "/users/logout",
+        method: "GET",
+        credentials: "include", // 세션 쿠키 사용 시 필수
+  }),
+}),
   }),
 });
 export const {
@@ -205,8 +202,9 @@ export const {
   useLogInMutation,
   useEditProfileMutation,
   useGetProfileQuery,
+  useLogoutMutation,
 } = userApi;
-
+//지갑 관련 API
 export const walletApi = createApi({
   reducerPath: "walletApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/api", credentials: "include" }),
@@ -272,3 +270,44 @@ export const tradesApi = createApi({
 });
 
 export const { useBuyStockMutation, useSellStockMutation } = tradesApi;
+
+export const portfolioApi = createApi({
+  reducerPath: 'portfolioApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: '/api/portfolios',
+    credentials: 'include', // 로그인 세션 유지
+  }),
+  endpoints: (builder) => ({
+    getOverallPortfolio: builder.query<OverallPortfolioResponse, void>({
+      query: () => ({
+        url: 'overall',
+        method: 'GET',
+      }),
+    }),
+  }),
+});
+
+export const { useGetOverallPortfolioQuery } = portfolioApi;
+// 주식 매수 (직접 호출용)
+export async function buyStock(params: TradeRequest): Promise<TradeResponse> {
+  const response = await fetch('/api/trades/buy', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+    credentials: 'include',
+  });
+  if (!response.ok) throw new Error('매수 실패');
+  return response.json();
+}
+
+// 주식 매도 (직접 호출용)
+export async function sellStock(params: TradeRequest): Promise<TradeResponse> {
+  const response = await fetch('/api/trades/sell', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+    credentials: 'include',
+  });
+  if (!response.ok) throw new Error('매도 실패');
+  return response.json();
+}

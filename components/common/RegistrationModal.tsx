@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image";
 import { useSignUpMutation } from "@/lib/api";
-
+import { useCreateWalletMutation } from "@/lib/api"; 
 interface RegistrationModalProps {
   isOpen: boolean
   onClose: () => void
@@ -23,7 +23,8 @@ type FormErrors = {
 
 export default function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
   const router = useRouter()
-  const [signUpMutation] = useSignUpMutation(); // ✅ 훅으로부터 mutation 함수 가져오기
+  const [signUpMutation] = useSignUpMutation(); //  훅으로부터 mutation 함수 가져오기
+  const [createWallet] = useCreateWalletMutation(); //  지갑 생성 mutation
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -47,7 +48,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
       })
     }
   }
-
+  //유효성 검사 함수 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
 
@@ -80,7 +81,6 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("회원가입 버튼 클릭")
 
     if (!validateForm())
       return
@@ -89,7 +89,14 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
       const response = await signUpMutation(formData).unwrap(); // ✅ 이렇게 호출해야 됨
       console.log("회원가입 성공:", response);
       // ✅ 예: router.push("/login") 등 추가 가능
+      //회원가입 성공시 지갑 자동생성
+      await createWallet({ amount: 100000 });
+       console.log("시드머니 지갑 생성 완료");
+      //폼데이터 초기화
+      setFormData({ email: "", password: "", nickname: "" });
+      setErrors({});
       onClose();
+
     } catch (err) {
       console.error("회원가입 실패:", err);
     }
@@ -199,7 +206,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
               회원가입
             </button>
           </form>
-
+          {/* test */}
 
           <div className="text-center text-sm">
             <span className="text-[#747480] dark:text-gray-400">이미 계정이 있으신가요?</span>{" "}

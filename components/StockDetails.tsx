@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { getStockDetails, getStockNews } from '@/lib/api';
+import { getStockDetails } from '@/lib/api';
 import type { StockDetails, NewsItem, Stock } from '@/lib/types';
 import { Check, ChevronDown, ChevronLeft, Heart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,6 @@ interface StockDetailsProps {
 
 export default function StockDetails({ symbol, activeTab, onTabChange, favoriteStocks, setFavoriteStocks, isLoggedIn }: StockDetailsProps) {
   const [details, setDetails] = useState<StockDetails | null>(null);
-  const [news, setNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [showResult, setShowResult] = useState<boolean>(false);
@@ -35,19 +34,26 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!symbol) return; // symbol이 없으면 실행하지 않음
+      
       setIsLoading(true);
       setError(null);
       try {
         const response = await getStockDetails(symbol);
         if (response.success) {
           setDetails(response.data);
-          console.log('종목 상세 정보:', response.data);
+          // 상위 컴포넌트에 데이터 업데이트 알림
+          if (response.data) {
+            const price = response.data.currentPrice;
+            const lastPrice = response.data.lastPrice;
+            const change = lastPrice !== 0 && lastPrice !== undefined && lastPrice !== null 
+              ? ((price - lastPrice) / lastPrice) * 100 
+              : 0;
+            onTabChange(activeTab); // 탭 변경을 통해 상위 컴포넌트에 데이터 업데이트 알림
+          }
         } else {
           setError(response.message);
         }
-
-        const newsData = await getStockNews(symbol);
-        setNews(newsData);
       } catch (err) {
         setError('데이터를 불러오는 중 오류가 발생했습니다.');
         console.error('Failed to fetch stock details:', err);
@@ -57,7 +63,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
     };
 
     fetchData();
-  }, [symbol]);
+  }, [symbol, activeTab, onTabChange]);
 
   if (isLoading) {
     return (
@@ -76,7 +82,6 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   }
 
   const handleTabClick = (tab: '종목정보 상세' | '내 계좌' | 'AI 추천') => {
-    console.log('Tab clicked:', tab);
     onTabChange(tab);
   };
 
@@ -255,8 +260,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               {/* Investment Amount */}
               <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">투자금액</span>
-                
-               <div>
+                <div>
                 <span className="text-[#439a86] text-xs mr-1">$</span>
                 <span className="text-xl font-bold text-[#439a86] ">
                   {portfolioData.investmentAmount.toLocaleString("en-US", {
@@ -537,4 +541,3 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
     </div>
   );
 }
-
