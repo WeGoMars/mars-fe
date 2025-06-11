@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import ProfileModal from "@/components/common/ProfileModal"
 
-import { useGetProfileQuery,useGetWalletQuery, getStockPortfolio } from "@/lib/api"
+import { useGetProfileQuery,useGetWalletQuery, getStockPortfolio, getTradeHistory } from "@/lib/api"
 import { useGetOverallPortfolioQuery } from "@/lib/api"; 
 import ProfileHandler from "@/components/common/ProfileHandler";
 import LogoutButton from "@/components/common/LogoutButton"
@@ -33,6 +33,8 @@ export default function MyPage() {
   const { data, isLoading: Loading, isError:error,refetch: refetchPortfolio } = useGetOverallPortfolioQuery();
   const [stockPortfolio, setStockPortfolio] = useState<any[]>([]);
   const [isLoadingPortfolio, setIsLoadingPortfolio] = useState(true);
+  const [tradeHistory, setTradeHistory] = useState<any[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
 
   useEffect(() => {
     const fetchStockPortfolio = async () => {
@@ -48,6 +50,22 @@ export default function MyPage() {
     };
 
     fetchStockPortfolio();
+  }, []);
+
+  useEffect(() => {
+    const fetchTradeHistory = async () => {
+      try {
+        const response = await getTradeHistory();
+        console.log('주식 거래내역 데이터:', response);
+        setTradeHistory(response.data);
+      } catch (error) {
+        console.error('주식 거래내역 조회 실패:', error);
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    };
+
+    fetchTradeHistory();
   }, []);
 
   if (isLoading) return <div>로딩 중...</div>;
@@ -528,11 +546,50 @@ export default function MyPage() {
                 </tr>
               </thead>
               <tbody>
-                <tr className="text-center py-8">
-                  <td colSpan={5} className="py-8 text-[#8f9098]">
-                    거래 내역이 없습니다.
-                  </td>
-                </tr>
+                {isLoadingHistory ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-4">로딩 중...</td>
+                  </tr>
+                ) : tradeHistory.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-4">거래 내역이 없습니다.</td>
+                  </tr>
+                ) : (
+                  tradeHistory.map((trade, index) => (
+                    <tr key={index} className="border-b border-[#f5f7f9] hover:bg-[#f5f7f9] transition-colors">
+                      <td className="py-4 text-[#1c2730]">
+                        {new Date(trade.date).toLocaleDateString('ko-KR', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </td>
+                      <td className="py-4">
+                        <Link
+                          href={`/holdings/${trade.symbol}`}
+                          className="flex items-center gap-3 hover:text-[#197bbd] transition-colors"
+                        >
+                          <div className="w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold">
+                            {trade.symbol.charAt(0)}
+                          </div>
+                          <span className="font-medium text-[#1c2730]">{trade.name}</span>
+                        </Link>
+                      </td>
+                      <td className="text-right py-4 text-[#1c2730]">
+                        ${trade.currentPrice.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </td>
+                      <td className="text-right py-4 text-[#63c89b]">{trade.quantity}</td>
+                      <td className={`text-right py-4 ${trade.returnRate >= 0 ? 'text-[#63c89b]' : 'text-[#e74c3c]'}`}>
+                        {trade.returnRate >= 0 ? '+' : ''}{(trade.returnRate * 100).toFixed(2)}%
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
