@@ -301,3 +301,15 @@ export async function buyStock(params: TradeRequest): Promise<TradeResponse> {
   if (!response.ok) throw new Error('매수 실패');
   return response.json();
 }
+
+// 주식 매도 (직접 호출용)
+export async function sellStock(params: TradeRequest): Promise<TradeResponse> {
+  const response = await fetch('/api/trades/sell', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+    credentials: 'include',
+  });
+  if (!response.ok) throw new Error('매도 실패');
+  return response.json();
+}

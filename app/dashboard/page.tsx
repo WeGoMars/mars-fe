@@ -20,7 +20,7 @@ import mockPortfolio from "@/lib/mock/mockportfolio";
 
 import ProfileHandler from "@/components/common/ProfileHandler"
 import useSWR from 'swr';
-import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, getStockDetails, getMyStocks, buyStock } from "@/lib/api";
+import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, getStockDetails, getMyStocks, buyStock, sellStock } from "@/lib/api";
 import BuyPanel from "@/components/BuyPanel";
 import SellPanel from "@/components/SellPanel";
 import { mutate } from 'swr';
@@ -81,6 +81,14 @@ export default function Dashboard() {
   });
   const [logoError, setLogoError] = useState(false);
   const [buyParams, setBuyParams] = useState<{
+    symbol: string;
+    name: string;
+    price: number;
+    quantity: number;
+    fee: number;
+    total: number;
+  } | null>(null);
+  const [sellParams, setSellParams] = useState<{
     symbol: string;
     name: string;
     price: number;
@@ -624,6 +632,10 @@ export default function Dashboard() {
                   seedMoney={portfolioData.seedMoney}
                   investmentAmount={portfolioData.investmentAmount}
                   profitLoss={portfolioData.profitLoss}
+                  onSellClick={(params) => {
+                    setSellParams(params);
+                    setShowSellConfirmModal(true);
+                  }}
                 />
               )}
               {/* 내 계좌 영역
@@ -727,11 +739,27 @@ export default function Dashboard() {
       <SellConfirmModal
         open={showSellConfirmModal}
         onClose={() => setShowSellConfirmModal(false)}
-        onConfirm={() => {
-          // TODO: 매도 로직 구현
-          setShowSellConfirmModal(false);
-          setShowPanel(false);
+        onConfirm={async () => {
+          if (!sellParams) return;
+          try {
+            await sellStock({
+              symbol: sellParams.symbol,
+              price: sellParams.price,
+              quantity: sellParams.quantity,
+            });
+            mutate('/api/portfolios/list'); // 내가 구매한 종목 새로고침
+            setShowSellConfirmModal(false);
+            setShowPanel(false);
+          } catch (e) {
+            alert('매도에 실패했습니다.');
+          }
         }}
+        symbol={sellParams?.symbol || ''}
+        name={sellParams?.name || ''}
+        price={sellParams?.price || 0}
+        quantity={sellParams?.quantity || 1}
+        fee={sellParams?.fee || 0}
+        total={sellParams?.total || 0}
       />
     </div>
   );

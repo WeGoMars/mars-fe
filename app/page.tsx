@@ -752,13 +752,15 @@ export default function FinanceDashboard() {
         total={0}
       />
       <SellConfirmModal 
-        open={showSellConfirmModal}
-        onClose={() => setShowSellConfirmModal(false)}
-        onConfirm={() => {
-          // TODO: 매도 로직 구현
-          setShowSellConfirmModal(false);
-          setShowPanel(false);
-        }}
+        open={false}
+        onClose={() => {}}
+        onConfirm={() => {}}
+        symbol={''}
+        name={''}
+        price={0}
+        quantity={1}
+        fee={0}
+        total={0}
       />
     </div>
   );
