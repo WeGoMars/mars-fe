@@ -19,7 +19,7 @@ export default function BuyConfirmModal({ open, onClose, onConfirm, symbol, name
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="w-[343px] h-[400px] bg-gray-100 p-4 mx-auto rounded-3xl">
+      <div className="w-[500px] h-[500px] bg-gray-100 p-4 mx-auto rounded-3xl">
 
         {/* 매수 클릭 시 "1주당 희망 가격..." 모달 창 */}
         {/* Header - 분리된 회색 박스 */}

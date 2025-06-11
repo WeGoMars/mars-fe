@@ -281,4 +281,7 @@ export interface GetMyStocksResponse {
     currentPrice: number;
     priceDelta: number;
   }[];
+
 }
+
+

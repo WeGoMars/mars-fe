@@ -92,6 +92,9 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
       //회원가입 성공시 지갑 자동생성
       await createWallet({ amount: 100000 });
        console.log("시드머니 지갑 생성 완료");
+      //폼데이터 초기화
+      setFormData({ email: "", password: "", nickname: "" });
+      setErrors({});
       onClose();
 
     } catch (err) {

@@ -127,6 +127,7 @@ export async function getFavoriteStocks(): Promise<GetLikedStocksResponse> {
 
   return response.json();
 }
+
 // 내 종목 목록 조회(내가 구매한 종목)
 export async function getMyStocks(): Promise<GetMyStocksResponse> {
   const response = await fetch('/api/portfolios/list', {

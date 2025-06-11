@@ -23,7 +23,6 @@ import useSWR from 'swr';
 import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, useGetProfileQuery, getStockDetails,getMyStocks, buyStock, sellStock } from "@/lib/api";
 import BuyPanel from "@/components/BuyPanel"
 import LogoutButton from "@/components/common/LogoutButton"
-import { useBuyStockMutation } from "@/lib/api";
 import SellPanel from "@/components/SellPanel";
 import { mutate } from 'swr';
 

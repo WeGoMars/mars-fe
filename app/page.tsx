@@ -154,18 +154,22 @@ export default function FinanceDashboard() {
         }
     ]);
 
-    const [searchedStockInfo, setSearchedStockInfo] = useState<any | null>(null);
-    const [selectedInfo, setSelectedInfo] = useState<{
-        symbol: string;
-        name: string;
-        price: number;
-        change: number;
-    }>({
-        symbol: "GOOGL",
-        name: "Alphabet Inc.",
-        price: 0,
-        change: 0
-    });
+ 
+
+  const [searchedStockInfo, setSearchedStockInfo] = useState<any | null>(null);
+  const [selectedInfo, setSelectedInfo] = useState<{
+    symbol: string;
+    name: string;
+    price: number;
+    change: number;
+  }>({
+    symbol: "GOOGL",
+    name: "Alphabet Inc.",
+    price: 142.65,
+    change: 1.1
+  });
+
+  
 
     const handleStockSelect = async (stock: any) => {
         setSelectedStock(stock.symbol);
@@ -197,110 +201,125 @@ export default function FinanceDashboard() {
         setActivePeriod(activePeriod);
     };
 
-    // 중앙에 표시할 종목 정보 우선순위: 검색된 종목 > 관심종목 > stockListData > 목데이터
-    const getSelectedStockInfo = () => {
-        // 1. 검색된 종목 정보 확인
-        if (searchedStockInfo && searchedStockInfo.symbol === selectedStock) {
-            return {
-                symbol: searchedStockInfo.symbol,
-                name: searchedStockInfo.name,
-                price: searchedStockInfo.currentPrice,
-                change: searchedStockInfo.priceDelta,
-            };
-        }
+     // 중앙에 표시할 종목 정보 우선순위: 검색된 종목 > 관심종목 > stockListData > 목데이터
+  const getSelectedStockInfo = () => {
+    // 1. 검색된 종목 정보 확인
+    if (searchedStockInfo && searchedStockInfo.symbol === selectedStock) {
+      return {
+        symbol: searchedStockInfo.symbol,
+        name: searchedStockInfo.name,
+        price: searchedStockInfo.currentPrice,
+        change: searchedStockInfo.priceDelta,
+      };
+    }
 
-        // 2. 관심 종목에서 찾기
-        if (favoriteStocks && favoriteStocks.length > 0) {
-            const found = favoriteStocks.find((s) => s.symbol === selectedStock);
-            if (found) {
-                return {
-                    symbol: found.symbol,
-                    name: found.name,
-                    price: parseFloat(found.price),
-                    change: parseFloat(found.change),
-                };
-            }
-        }
-
-        // 3. stockListData에서 찾기
-        const stockListArr = stockListData?.data as any[] | undefined;
-        if (stockListArr) {
-            const found = stockListArr.find((s: any) => s.symbol === selectedStock);
-            if (found) return {
-                symbol: found.symbol,
-                name: found.name,
-                price: found.currentPrice,
-                change: found.priceDelta,
-            };
-        }
-
-        // 4. 목데이터에서 찾기
-        const fallback = stockData.find((s) => s.symbol === selectedStock);
-        if (fallback) return {
-            symbol: fallback.symbol,
-            name: fallback.name,
-            price: parseFloat(fallback.price),
-            change: parseFloat(fallback.change),
+    // 2. 관심 종목에서 찾기
+    if (favoriteStocks && favoriteStocks.length > 0) {
+      const found = favoriteStocks.find((s) => s.symbol === selectedStock);
+      if (found) {
+        return {
+          symbol: found.symbol,
+          name: found.name,
+          price: parseFloat(found.price),
+          change: parseFloat(found.change),
         };
+      }
+    }
 
-        // 5. 기본값
-        return selectedInfo;
+    // 3. stockListData에서 찾기
+    const stockListArr = stockListData?.data as any[] | undefined;
+    if (stockListArr) {
+      const found = stockListArr.find((s: any) => s.symbol === selectedStock);
+      if (found) return {
+        symbol: found.symbol,
+        name: found.name,
+        price: found.currentPrice,
+        change: found.priceDelta,
+      };
+    }
+
+    // 4. 목데이터에서 찾기
+    const fallback = stockData.find((s) => s.symbol === selectedStock);
+    if (fallback) return {
+      symbol: fallback.symbol,
+      name: fallback.name,
+      price: parseFloat(fallback.price),
+      change: parseFloat(fallback.change),
     };
 
-    // selectedInfo가 변경될 때마다 getSelectedStockInfo()의 결과로 업데이트
-    useEffect(() => {
-        const newInfo = getSelectedStockInfo();
-        if (newInfo.symbol !== selectedInfo.symbol ||
-            newInfo.name !== selectedInfo.name ||
-            newInfo.price !== selectedInfo.price ||
-            newInfo.change !== selectedInfo.change) {
-            setSelectedInfo(newInfo);
-        }
-    }, [selectedStock, searchedStockInfo, favoriteStocks, stockListData, stockData]);
+    // 5. 기본값
+    return selectedInfo;
+  };
 
-    // 1시간일 때 timestamp를 YYYY-MM-DDTHH:00:00.000Z 형식(ISO 8601, 1시간 단위)으로 변환하는 함수
-    const getProcessedChartData = () => {
-        if (!Array.isArray(stockChartData?.data)) return [];
-        let data = stockChartData.data as any[];
-        if (activePeriod === "1시간") {
-            data = data.map((item: any) => {
-                let isoTimestamp = item.timestamp;
-                // 이미 ISO 8601 형식이 아니면 변환
-                if (typeof isoTimestamp === 'string' && isoTimestamp.length === 10) {
-                    // 'YYYY-MM-DD' -> 'YYYY-MM-DDT00:00:00.000Z'
-                    isoTimestamp = isoTimestamp + 'T00:00:00.000Z';
-                } else if (typeof isoTimestamp === 'string' && isoTimestamp.length === 13) {
-                    // 'YYYY-MM-DDTHH' -> 'YYYY-MM-DDTHH:00:00.000Z'
-                    isoTimestamp = isoTimestamp + ':00:00.000Z';
-                } else if (typeof isoTimestamp === 'string' && isoTimestamp.length === 16) {
-                    // 'YYYY-MM-DDTHH:MM' -> 'YYYY-MM-DDTHH:00:00.000Z'
-                    isoTimestamp = isoTimestamp.slice(0, 13) + ':00:00.000Z';
-                }
-                return {
-                    ...item,
-                    timestamp: isoTimestamp,
-                };
-            });
+  // selectedInfo가 변경될 때마다 getSelectedStockInfo()의 결과로 업데이트
+  useEffect(() => {
+    const newInfo = getSelectedStockInfo();
+    if (newInfo.symbol !== selectedInfo.symbol || 
+        newInfo.name !== selectedInfo.name || 
+        newInfo.price !== selectedInfo.price || 
+        newInfo.change !== selectedInfo.change) {
+      setSelectedInfo(newInfo);
+    }
+  }, [selectedStock, searchedStockInfo, favoriteStocks, stockListData, stockData]);
+
+  // stockListData가 로드되면 첫 번째 종목을 선택하도록 수정
+  useEffect(() => {
+    const stockListArr = stockListData?.data as any[] | undefined;
+    if (stockListArr && stockListArr.length > 0) {
+      const firstStock = stockListArr[0];
+      setSelectedStock(firstStock.symbol);
+      setSelectedInfo({
+        symbol: firstStock.symbol,
+        name: firstStock.name,
+        price: firstStock.currentPrice,
+        change: firstStock.priceDelta
+      });
+    }
+  }, [stockListData]);
+
+  // 1시간일 때 timestamp를 YYYY-MM-DDTHH:00:00.000Z 형식(ISO 8601, 1시간 단위)으로 변환하는 함수
+  const getProcessedChartData = () => {
+    if (!Array.isArray(stockChartData?.data)) return [];
+    let data = stockChartData.data as any[];
+    if (activePeriod === "1시간") {
+      data = data.map((item: any) => {
+        let isoTimestamp = item.timestamp;
+        // 이미 ISO 8601 형식이 아니면 변환
+        if (typeof isoTimestamp === 'string' && isoTimestamp.length === 10) {
+          // 'YYYY-MM-DD' -> 'YYYY-MM-DDT00:00:00.000Z'
+          isoTimestamp = isoTimestamp + 'T00:00:00.000Z';
+        } else if (typeof isoTimestamp === 'string' && isoTimestamp.length === 13) {
+          // 'YYYY-MM-DDTHH' -> 'YYYY-MM-DDTHH:00:00.000Z'
+          isoTimestamp = isoTimestamp + ':00:00.000Z';
+        } else if (typeof isoTimestamp === 'string' && isoTimestamp.length === 16) {
+          // 'YYYY-MM-DDTHH:MM' -> 'YYYY-MM-DDTHH:00:00.000Z'
+          isoTimestamp = isoTimestamp.slice(0, 13) + ':00:00.000Z';
         }
-        // null/undefined, timestamp 또는 open/high/low/close 값이 없는 데이터 제거 (문자열 'null', 'undefined', NaN도 제외)
-        data = data.filter(
-            (item: any) =>
-                item &&
-                item.timestamp &&
-                item.open != null && item.open !== 'null' && item.open !== 'undefined' && !isNaN(Number(item.open)) &&
-                item.high != null && item.high !== 'null' && item.high !== 'undefined' && !isNaN(Number(item.high)) &&
-                item.low != null && item.low !== 'null' && item.low !== 'undefined' && !isNaN(Number(item.low)) &&
-                item.close != null && item.close !== 'null' && item.close !== 'undefined' && !isNaN(Number(item.close)) &&
-                item.volume != null && item.volume !== 'null' && item.volume !== 'undefined' && !isNaN(Number(item.volume))
-        );
-        // timestamp 기준 정렬
-        if (activePeriod === "1시간") {
-            // 내림차순 (최신 → 과거)
-            return data.slice().sort((a: any, b: any) => b.timestamp.localeCompare(a.timestamp));
-        }
-        // 나머지는 오름차순
-        return data.slice().sort((a: any, b: any) => a.timestamp.localeCompare(b.timestamp));
-    };
+        return {
+          ...item,
+          timestamp: isoTimestamp,
+        };
+      });
+    }
+    // null/undefined, timestamp 또는 open/high/low/close 값이 없는 데이터 제거 (문자열 'null', 'undefined', NaN도 제외)
+    data = data.filter(
+      (item: any) =>
+        item &&
+        item.timestamp &&
+        item.open != null && item.open !== 'null' && item.open !== 'undefined' && !isNaN(Number(item.open)) &&
+        item.high != null && item.high !== 'null' && item.high !== 'undefined' && !isNaN(Number(item.high)) &&
+        item.low != null && item.low !== 'null' && item.low !== 'undefined' && !isNaN(Number(item.low)) &&
+        item.close != null && item.close !== 'null' && item.close !== 'undefined' && !isNaN(Number(item.close)) &&
+        item.volume != null && item.volume !== 'null' && item.volume !== 'undefined' && !isNaN(Number(item.volume))
+    );
+    // timestamp 기준 정렬
+    if (activePeriod === "1시간") {
+      // 내림차순 (최신 → 과거)
+      return data.slice().sort((a: any, b: any) => b.timestamp.localeCompare(a.timestamp));
+    }
+    // 나머지는 오름차순
+    return data.slice().sort((a: any, b: any) => a.timestamp.localeCompare(b.timestamp));
+  };
 
     return (
         <div className="min-h-screen bg-[#f5f7f9]">
