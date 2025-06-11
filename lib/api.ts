@@ -20,34 +20,6 @@ export async function getStockDetails(symbol: string): Promise<GetStockDetailsRe
   return response.json();
 }
 
-// 뉴스 가져오기(사용 안함)
-export async function getStockNews(symbol?: string): Promise<NewsItem[]> {
-  // 실제 API 호출 대신 더미 데이터 반환
-  return [
-    {
-      id: 1,
-      title: "홍콩그룹과 경영권 분쟁 가능성에...한진칼 상한가",
-      source: "한국경제",
-      time: "1시간 전",
-      imageUrl: "/placeholder.svg?height=56&width=56&query=financial news",
-    },
-    {
-      id: 2,
-      title: "미 연준, 금리 인하 시기 놓고 의견 분분...시장 혼란",
-      source: "매일경제",
-      time: "3시간 전",
-      imageUrl: "/placeholder.svg?height=56&width=56&query=financial news",
-    },
-    {
-      id: 3,
-      title: "테슬라, 전기차 판매량 예상치 하회...주가 급락",
-      source: "조선비즈",
-      time: "5시간 전",
-      imageUrl: "/placeholder.svg?height=56&width=56&query=financial news",
-    },
-  ]
-}
-
 // 차트 데이터 조회
 export async function getStockChartData(params: GetStockChartDataRequest): Promise<ApiResponse<GetStockChartDataResponse>> {
   const { symbol, interval, limit } = params

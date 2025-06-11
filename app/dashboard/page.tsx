@@ -439,7 +439,13 @@ export default function Dashboard() {
                     className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                     onClick={() => {
                       setSelectedStock(stock.symbol);
-                      // 필요시 상세정보 API 연동
+                      setSelectedInfo({
+                        symbol: stock.symbol,
+                        name: stock.name,
+                        price: stock.currentPrice,
+                        change: stock.priceDelta,
+                      });
+                      setLogoError(false);
                     }}
                   >
                     <div className="flex items-center gap-3">

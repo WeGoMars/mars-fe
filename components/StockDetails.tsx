@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { getStockDetails, getStockNews } from '@/lib/api';
+import { getStockDetails } from '@/lib/api';
 import type { StockDetails, NewsItem, Stock } from '@/lib/types';
 import { Check, ChevronDown, ChevronLeft, Heart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import mockPortfolio from "@/lib/mock/mockportfolio";
 import { TrendingUp, TrendingDown } from "lucide-react"
 
-// test
 // 주식 상세 정보를 보여주는 컴포넌트(종목정보 상세, 내 계좌, AI 추천 탭)
 interface StockDetailsProps {
   symbol: string; // 주식 심볼
@@ -23,7 +22,6 @@ interface StockDetailsProps {
 
 export default function StockDetails({ symbol, activeTab, onTabChange, favoriteStocks, setFavoriteStocks, isLoggedIn }: StockDetailsProps) {
   const [details, setDetails] = useState<StockDetails | null>(null);
-  const [news, setNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [showResult, setShowResult] = useState<boolean>(false);
@@ -56,9 +54,6 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
         } else {
           setError(response.message);
         }
-
-        const newsData = await getStockNews(symbol);
-        setNews(newsData);
       } catch (err) {
         setError('데이터를 불러오는 중 오류가 발생했습니다.');
         console.error('Failed to fetch stock details:', err);
