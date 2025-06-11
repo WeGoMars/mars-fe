@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import ProfileModal from "@/components/common/ProfileModal"
 
-import { useGetProfileQuery,useGetWalletQuery, getStockPortfolio, getTradeHistory } from "@/lib/api"
+import { useGetProfileQuery,useGetWalletQuery, getStockPortfolio, getTradeHistory, getFavoriteStocks, getMyStocks } from "@/lib/api"
 import { useGetOverallPortfolioQuery } from "@/lib/api"; 
 import ProfileHandler from "@/components/common/ProfileHandler";
 import LogoutButton from "@/components/common/LogoutButton"
@@ -35,6 +35,10 @@ export default function MyPage() {
   const [isLoadingPortfolio, setIsLoadingPortfolio] = useState(true);
   const [tradeHistory, setTradeHistory] = useState<any[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+  const [favoriteStocks, setFavoriteStocks] = useState<any[]>([]);
+  const [myStocks, setMyStocks] = useState<any[]>([]);
+  const [isLoadingFavorites, setIsLoadingFavorites] = useState(true);
+  const [isLoadingMyStocks, setIsLoadingMyStocks] = useState(true);
 
   useEffect(() => {
     const fetchStockPortfolio = async () => {
@@ -66,6 +70,38 @@ export default function MyPage() {
     };
 
     fetchTradeHistory();
+  }, []);
+
+  useEffect(() => {
+    const fetchFavoriteStocks = async () => {
+      try {
+        const response = await getFavoriteStocks();
+        console.log('관심 종목 데이터:', response);
+        setFavoriteStocks(response.data);
+      } catch (error) {
+        console.error('관심 종목 조회 실패:', error);
+      } finally {
+        setIsLoadingFavorites(false);
+      }
+    };
+
+    fetchFavoriteStocks();
+  }, []);
+
+  useEffect(() => {
+    const fetchMyStocks = async () => {
+      try {
+        const response = await getMyStocks();
+        console.log('내가 구매한 종목 데이터:', response);
+        setMyStocks(response.data);
+      } catch (error) {
+        console.error('내가 구매한 종목 조회 실패:', error);
+      } finally {
+        setIsLoadingMyStocks(false);
+      }
+    };
+
+    fetchMyStocks();
   }, []);
 
   if (isLoading) return <div>로딩 중...</div>;
@@ -126,83 +162,48 @@ export default function MyPage() {
   
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
-              {[
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                },
-                {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                },
-                {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-              ].map((stock, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8">
-                      {stock.symbol === "MSFT" && (
-                        <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
-                          <div className="bg-[#f25022]"></div>
-                          <div className="bg-[#7fba00]"></div>
-                          <div className="bg-[#00a4ef]"></div>
-                          <div className="bg-[#ffb900]"></div>
-                        </div>
-                      )}
-                      {stock.symbol === "GOOGL" && (
+              {isLoadingFavorites ? (
+                <div className="text-center py-4">로딩 중...</div>
+              ) : favoriteStocks.length === 0 ? (
+                <div className="text-center text-gray-500 py-4">관심 종목이 없습니다.</div>
+              ) : (
+                favoriteStocks.map((stock, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8">
                         <Image
-                          src="/google-logo.png"
-                          alt="Google"
+                          src={`/logos/${stock.symbol}.png`}
+                          alt={stock.symbol}
                           width={32}
                           height={32}
+                          className="rounded-full"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = "none";
+                            const parent = target.parentElement;
+                            if (parent) {
+                              const fallback = document.createElement("div");
+                              fallback.className = "w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center";
+                              fallback.innerHTML = `<span class='text-xs font-bold'>${stock.symbol.slice(0, 2)}</span>`;
+                              parent.appendChild(fallback);
+                            }
+                          }}
                         />
-                      )}
-                      {stock.symbol === "SPOT" && (
-                        <Image
-                          src="/spotify-logo.png"
-                          alt="Spotify"
-                          width={32}
-                          height={32}
-                        />
-                      )}
+                      </div>
+                      <div>
+                        <div className="font-bold text-base">{stock.symbol}</div>
+                        <div className="text-xs text-gray-500">{stock.name}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-bold text-base">{stock.symbol}</div>
-                      <div className="text-xs text-gray-500">{stock.name}</div>
+                    <div className="text-right">
+                      <div className="font-bold text-base">${stock.currentPrice.toFixed(2)}</div>
+                      <div className={`text-xs ${stock.priceDelta >= 0 ? "text-[#41c3a9]" : "text-red-500"}`}>
+                        {stock.priceDelta >= 0 ? "+" : ""}{stock.priceDelta.toFixed(2)}%
+                      </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="font-bold text-base">{stock.price}</div>
-                    <div className="text-xs text-[#41c3a9]">{stock.change}</div>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
       
@@ -214,83 +215,48 @@ export default function MyPage() {
 
       <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
         <div className="space-y-6">
-          {[
-            {
-              symbol: "MSFT",
-              name: "Microsoft Corp.",
-              price: "$213.10",
-              change: "+2.5%",
-            },
-            {
-              symbol: "GOOGL",
-              name: "Alphabet Inc.",
-              price: "$213.10",
-              change: "+1.1%",
-            },
-            {
-              symbol: "SPOT",
-              name: "Microsoft Corp.",
-              price: "$213.10",
-              change: "+2.5%",
-            },
-            {
-              symbol: "MSFT",
-              name: "Microsoft Corp.",
-              price: "$213.10",
-              change: "+2.5%",
-            },
-            {
-              symbol: "GOOGL",
-              name: "Alphabet Inc.",
-              price: "$213.10",
-              change: "+1.1%",
-            },
-            {
-              symbol: "SPOT",
-              name: "Microsoft Corp.",
-              price: "$213.10",
-              change: "+2.5%",
-            },
-          ].map((stock, index) => (
-            <div key={index} className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8">
-                  {stock.symbol === "MSFT" && (
-                    <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
-                      <div className="bg-[#f25022]"></div>
-                      <div className="bg-[#7fba00]"></div>
-                      <div className="bg-[#00a4ef]"></div>
-                      <div className="bg-[#ffb900]"></div>
-                    </div>
-                  )}
-                  {stock.symbol === "GOOGL" && (
+          {isLoadingMyStocks ? (
+            <div className="text-center py-4">로딩 중...</div>
+          ) : myStocks.length === 0 ? (
+            <div className="text-center text-gray-500 py-4">내가 구매한 종목이 없습니다.</div>
+          ) : (
+            myStocks.map((stock, index) => (
+              <div key={index} className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8">
                     <Image
-                      src="/google-logo.png"
-                      alt="Google"
+                      src={`/logos/${stock.symbol}.png`}
+                      alt={stock.symbol}
                       width={32}
                       height={32}
+                      className="rounded-full"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = "none";
+                        const parent = target.parentElement;
+                        if (parent) {
+                          const fallback = document.createElement("div");
+                          fallback.className = "w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center";
+                          fallback.innerHTML = `<span class='text-xs font-bold'>${stock.symbol.slice(0, 2)}</span>`;
+                          parent.appendChild(fallback);
+                        }
+                      }}
                     />
-                  )}
-                  {stock.symbol === "SPOT" && (
-                    <Image
-                      src="/spotify-logo.png"
-                      alt="Spotify"
-                      width={32}
-                      height={32}
-                    />
-                  )}
+                  </div>
+                  <div>
+                    <div className="font-bold text-base">{stock.symbol}</div>
+                    <div className="text-xs text-gray-500">{stock.name}</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="font-bold text-base">{stock.symbol}</div>
-                  <div className="text-xs text-gray-500">{stock.name}</div>
+                <div className="text-right">
+                  <div className="font-bold text-base">${stock.currentPrice.toFixed(2)}</div>
+                  <div className={`text-xs ${stock.priceDelta >= 0 ? "text-[#41c3a9]" : "text-red-500"}`}>
+                    {stock.priceDelta >= 0 ? "+" : ""}{stock.priceDelta.toFixed(2)}%
+                  </div>
                 </div>
               </div>
-              <div className="text-right">
-                <div className="font-bold text-base">{stock.price}</div>
-                <div className="text-xs text-[#41c3a9]">{stock.change}</div>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>
