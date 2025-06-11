@@ -321,7 +321,7 @@ export default function MyPage() {
                       : "text-[#e74c3c] group-hover:text-[#2c80b4]"}
                   `}
                 >
-                  {portfolioData.profitLoss >= 0 ? "+" : "-"}
+                  {portfolioData.profitLoss >= 0 ? "+$" : "-$"}
                   {Math.abs(portfolioData.profitLoss).toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
@@ -398,7 +398,7 @@ export default function MyPage() {
                 <div className="text-center">
                   <div className="text-xs text-[#8f9098] mb-1">총 투자 비율</div>
                   <div className="text-lg font-semibold text-[#1c2730]">
-                    {((portfolioData.investRatio) * 100).toFixed(1)}%
+                    {(portfolioData.investRatio).toFixed(1)}%
                   </div>
                 </div>
                

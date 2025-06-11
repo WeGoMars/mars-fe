@@ -7,15 +7,16 @@ interface SellPanelProps {
   symbol: string;
   name: string;
   price: number;
+   // 포트폴리오 데이터들
   totalAssets: number;
-  cashAsset: number;
-  seedMoney: number;
   investmentAmount: number;
   profitLoss: number;
+  returnRate: number;
+  cyberDollar: number;
   onSellClick: (params: { symbol: string; name: string; price: number; quantity: number; fee: number; total: number }) => void;
 }
 
-export default function SellPanel({ open, onClose, symbol, name, price, totalAssets, cashAsset, seedMoney, investmentAmount, profitLoss, onSellClick }: SellPanelProps) {
+export default function SellPanel({ open, onClose, symbol, name, price, totalAssets, cyberDollar, returnRate, investmentAmount, profitLoss, onSellClick }: SellPanelProps) {
   const [quantity, setQuantity] = useState(1);
   useEffect(() => {
     if (open) {
@@ -99,17 +100,17 @@ export default function SellPanel({ open, onClose, symbol, name, price, totalAss
             </div>
           </div>
           <div className="flex justify-between items-center">
-            <div className="font-bold text-base">현금자산</div>
+            <div className="font-bold text-base">수익률</div>
             <div>
               <span className="text-xs mr-1">$</span>
-              <span className="text-xl font-bold">{cashAsset.toFixed(2)}</span>
+              <span className="text-xl font-bold">{returnRate.toFixed(2)}%</span>
             </div>
           </div>
           <div className="flex justify-between items-center">
             <div className="font-bold text-base">시드머니</div>
             <div>
               <span className="text-[#006ffd] text-xs mr-1">$</span>
-              <span className="text-[#006ffd] text-xl font-bold">{seedMoney.toFixed(2)}</span>
+              <span className="text-[#006ffd] text-xl font-bold">{cyberDollar.toFixed(2)}</span>
             </div>
           </div>
           <div className="flex justify-between items-center">

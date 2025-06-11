@@ -52,8 +52,9 @@ export default function Dashboard() {
     }
   ]);
   
- const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  
   // 첫 화면 종목 선택 GOOGL로 설정함.
   const [selectedStock, setSelectedStock] = useState<string>("GOOGL");
   const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
@@ -115,8 +116,8 @@ export default function Dashboard() {
     });
   };
 
-  const portfolioData = mockPortfolio;
-  const cashAsset = portfolioData.seedMoney - portfolioData.investmentAmount;
+  // const portfolioData = mockPortfolio;
+  // const cashAsset = portfolioData.seedMoney - portfolioData.investmentAmount;
 
   // 관심 종목 목록을 가져오는 SWR 훅
   const { data: favoriteStocksData, mutate: mutateFavoriteStocks } = useSWR(
@@ -256,8 +257,16 @@ export default function Dashboard() {
       setNickname(savedNick);
     }
   }, []);
-
-
+   
+  const { data: walletData, isLoading: isWalletLoading, isError: isWalletError } = useGetWalletQuery();
+  const { data: overallData, isLoading: isPortfolioLoading, isError: isPortfolioError } = useGetOverallPortfolioQuery();
+  const cyberDollars = walletData?.data?.cyberDollar ?? 0;
+  const portfolioData = {
+  totalAssets: overallData?.data?.totalAsset ?? 0,
+  investmentAmount: overallData?.data?.investedAmount ?? 0,
+  profitLoss: overallData?.data?.evalGain ?? 0,
+  returnRate: (overallData?.data?.returnRate ?? 0) * 100,
+};
 
 
   return (
@@ -639,10 +648,10 @@ export default function Dashboard() {
                   name={selectedInfo.name}
                   price={selectedInfo.price}
                   totalAssets={portfolioData.totalAssets}
-                  cashAsset={cashAsset}
-                  seedMoney={portfolioData.seedMoney}
+                  cyberDollar={cyberDollars}
                   investmentAmount={portfolioData.investmentAmount}
                   profitLoss={portfolioData.profitLoss}
+                  returnRate={portfolioData.returnRate}
                   onBuyClick={(params) => {
                     setBuyParams(params);
                     setShowConfirmModal(true);
@@ -658,10 +667,10 @@ export default function Dashboard() {
                   name={selectedInfo.name}
                   price={selectedInfo.price}
                   totalAssets={portfolioData.totalAssets}
-                  cashAsset={cashAsset}
-                  seedMoney={portfolioData.seedMoney}
+                  cyberDollar={cyberDollars}
                   investmentAmount={portfolioData.investmentAmount}
                   profitLoss={portfolioData.profitLoss}
+                  returnRate={portfolioData.returnRate}
                   onSellClick={(params) => {
                     setSellParams(params);
                     setShowSellConfirmModal(true);
