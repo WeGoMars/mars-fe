@@ -33,7 +33,7 @@ export default function MyPage() {
   const { data, isLoading: Loading, isError:error,refetch: refetchPortfolio } = useGetOverallPortfolioQuery();
   if (isLoading) return <div>로딩 중...</div>;
   if (error || !data?.data) return <div>에러 발생</div>;
-
+ //포트폴리오 데이터
   const portfolioData = {
     totalAssets: data.data.totalAsset,
     investmentAmount: data.data.investedAmount,

@@ -23,9 +23,8 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
   const [password, setPassword] = useState("")
 
   const router = useRouter()
-  const [logIn, { isLoading }] = useLogInMutation();
-  const { refetch } = useGetProfileQuery(); // 상단에서 호출해둬야 함
-  
+  const [logIn, { isLoading }] = useLogInMutation();  // 로그인 요청 mutation
+  const { refetch } = useGetProfileQuery(); // 로그인 후 유저 정보 강제 갱신용
   // 백엔드 로그인 테스트 !!
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +39,7 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
     setPassword("");
     onOpenChange(false);
     router.push("/dashboard");
-    // window.location.reload()
+    
   } catch (err) {
     console.error("로그인 실패:", err);
     alert("로그인 실패: 이메일 또는 비밀번호를 확인해주세요.");
@@ -52,7 +51,7 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
       router.back()
     }, 100)
   }
-
+   // 모달이 열려 있지 않다면 아무것도 렌더링하지 않음
   if (!open) return null
 
   return (

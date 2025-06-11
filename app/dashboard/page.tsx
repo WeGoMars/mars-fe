@@ -20,10 +20,12 @@ import mockPortfolio from "@/lib/mock/mockportfolio";
 
 import ProfileHandler from "@/components/common/ProfileHandler"
 import useSWR from 'swr';
-import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, useGetProfileQuery, getStockDetails } from "@/lib/api";
+import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, useGetProfileQuery, getStockDetails,getMyStocks, buyStock, sellStock } from "@/lib/api";
 import BuyPanel from "@/components/BuyPanel"
 import LogoutButton from "@/components/common/LogoutButton"
 import { useBuyStockMutation } from "@/lib/api";
+import SellPanel from "@/components/SellPanel";
+import { mutate } from 'swr';
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -49,7 +51,8 @@ export default function Dashboard() {
       changePercent: "-2.32%"
     }
   ]);
-
+  
+ const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   // 첫 화면 종목 선택 GOOGL로 설정함.
   const [selectedStock, setSelectedStock] = useState<string>("GOOGL");
@@ -80,11 +83,27 @@ export default function Dashboard() {
     change: 0
   });
   const [logoError, setLogoError] = useState(false);
+  const [buyParams, setBuyParams] = useState<{
+    symbol: string;
+    name: string;
+    price: number;
+    quantity: number;
+    fee: number;
+    total: number;
+  } | null>(null);
+  const [sellParams, setSellParams] = useState<{
+    symbol: string;
+    name: string;
+    price: number;
+    quantity: number;
+    fee: number;
+    total: number;
+  } | null>(null);
 
   const selectStock = (stock: GetStockSearchResponse) => {
     setSelectedStock(stock.symbol);
     setLogoError(false);
-
+    
     // 중앙 정보 직접 업데이트
     setSelectedInfo({
       symbol: stock.symbol,
@@ -182,7 +201,7 @@ export default function Dashboard() {
     }
   };
 
-  // 하트 버튼 클릭 핸들러
+   // 하트 버튼 클릭 핸들러
   const handleHeartClick = async () => {
     if (!isLoggedIn) {
       alert('로그인이 필요한 기능입니다.');
@@ -191,13 +210,13 @@ export default function Dashboard() {
 
     try {
       const isFavorite = favoriteStocks.some(stock => stock.symbol === selectedStock);
-
+      
       if (isFavorite) {
         await removeFromFavorites({ symbol: selectedStock });
       } else {
         await addToFavorites({ symbol: selectedStock });
       }
-
+      
       // 관심 종목 목록 새로고침
       await mutateFavoriteStocks();
     } catch (error) {
@@ -205,27 +224,39 @@ export default function Dashboard() {
       alert('관심 종목 업데이트에 실패했습니다.');
     }
   };
+
+  // 내 종목 목록을 가져오는 SWR 훅
+  const { data: myStocksData } = useSWR(
+    isLoggedIn ? '/api/portfolios/list' : null,
+    () => getMyStocks()
+  );
+
+  // 내 종목 목록 데이터가 변경될 때마다 콘솔에 출력
+  useEffect(() => {
+    if (myStocksData) {
+      console.log('내 종목 목록:', myStocksData);
+    }
+  }, [myStocksData]);
+
+  // 1. RTK Query를 사용해 프로필 정보 가져오기 (로그인된 유저 정보 포함)
   const { data } = useGetProfileQuery();
+  // 2. data가 갱신될 때마다 실행됨
   useEffect(() => {
     if (data?.nick) {
       setNickname(data.nick);
       localStorage.setItem("nickname", data.nick);
     }
   }, [data]);
+  // 3. 페이지가 처음 마운트될 때(localStorage에 저장된 닉네임이 있으면) 꺼내오기
   useEffect(() => {
     const savedNick = localStorage.getItem("nickname");
     if (savedNick) {
       setNickname(savedNick);
     }
   }, []);
-  const [quantity, setQuantity] = useState(1);
-  const [buyStock, { isLoading }] = useBuyStockMutation();
 
-  // 예시로 종목 정보를 props로 받는다고 가정
-  const stock = stocks.find((s) => s.symbol === selectedStock);
-  const symbol = stock?.symbol || "SPY";
-  const name = stock?.name || "S&P 500";
-  const price = parseFloat(stock?.price.replace("$", "") || "0");
+
+
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -404,86 +435,74 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Purchased Stocks Section */}
+       {/* Purchased Stocks Section */}
           <div className="bg-[#f0f0f0] rounded-xl p-3 my-4 text-center">
             <span className="text-sm">내가 구매한 종목</span>
           </div>
 
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
-              {[
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                  changePercent: "+2.5%"
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                  changePercent: "+1.1%"
-                },
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                  changePercent: "+2.5%"
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                  changePercent: "+1.1%"
-                },
-              ].map((stock, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
-                  onClick={() => {
-                    setSelectedStock(stock.symbol);
-                    // API 연동 시 여기에 API 호출 로직 추가
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8">
-                      <Image
-                        src={`/logos/${stock.symbol}.png`}
-                        alt={stock.symbol}
-                        width={32}
-                        height={32}
-                        className="rounded-full"
-                        onError={(e) => {
-                          // 이미지 로드 실패 시 기본 텍스트 표시
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const parent = target.parentElement;
-                          if (parent) {
-                            const fallback = document.createElement('div');
-                            fallback.className = 'w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center';
-                            fallback.innerHTML = `<span class="text-xs font-bold">${stock.symbol.slice(0, 2)}</span>`;
-                            parent.appendChild(fallback);
-                          }
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <div className="font-bold text-base">{stock.symbol}</div>
-                      <div className="text-xs text-gray-500">{stock.name}</div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-bold text-base">{stock.price}</div>
-                    <div className={`text-xs ${stock.change.startsWith('+') ? 'text-[#41c3a9]' : 'text-red-500'}`}>
-                      {stock.change}
-                    </div>
-                  </div>
+              {myStocksData === undefined ? (
+                <div className="text-center py-4">로딩 중...</div>
+              ) : myStocksData.success === false ? (
+                <div className="text-center text-red-500 py-4">
+                  내가 구매한 종목을 불러오는데 실패했습니다.
                 </div>
-              ))}
+              ) : myStocksData.data.length === 0 ? (
+                <div className="text-center text-gray-500 py-4">
+                  내가 구매한 종목이 없습니다.
+                </div>
+              ) : (
+                myStocksData.data.map((stock, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                    onClick={() => {
+                      setSelectedStock(stock.symbol);
+                      setSelectedInfo({
+                        symbol: stock.symbol,
+                        name: stock.name,
+                        price: stock.currentPrice,
+                        change: stock.priceDelta,
+                      });
+                      setLogoError(false);
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8">
+                        <Image
+                          src={`/logos/${stock.symbol}.png`}
+                          alt={stock.symbol}
+                          width={32}
+                          height={32}
+                          className="rounded-full"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const parent = target.parentElement;
+                            if (parent) {
+                              const fallback = document.createElement('div');
+                              fallback.className = 'w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center';
+                              fallback.innerHTML = `<span class='text-xs font-bold'>${stock.symbol.slice(0, 2)}</span>`;
+                              parent.appendChild(fallback);
+                            }
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <div className="font-bold text-base">{stock.symbol}</div>
+                        <div className="text-xs text-gray-500">{stock.name}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold text-base">${stock.currentPrice.toFixed(2)}</div>
+                      <div className={`text-xs ${stock.priceDelta >= 0 ? 'text-[#41c3a9]' : 'text-red-500'}`}> 
+                        {stock.priceDelta >= 0 ? '+' : ''}{stock.priceDelta.toFixed(2)}%
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -508,7 +527,7 @@ export default function Dashboard() {
                       alt={selectedInfo.symbol}
                       width={28}
                       height={28}
-                      style={{ objectFit: 'contain' }}
+                      style={{objectFit:'contain'}}
                       onError={() => setLogoError(true)}
                     />
                   ) : (
@@ -546,8 +565,9 @@ export default function Dashboard() {
                     <button
                       key={period}
                       onClick={() => setActivePeriod(period)}
-                      className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activePeriod === period ? "bg-white shadow-sm" : "hover:bg-gray-100"
-                        }`}
+                      className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
+                        activePeriod === period ? "bg-white shadow-sm" : "hover:bg-gray-100"
+                      }`}
                     >
                       {period}
                     </button>
@@ -559,7 +579,7 @@ export default function Dashboard() {
             <div className="mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl md:text-3xl font-bold">
-                  ${Number(selectedInfo.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  ${Number(selectedInfo.price).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
                 </span>
                 <span className={`${Number(selectedInfo.change) >= 0 ? 'text-[#41c3a9] bg-[#e6f7f4]' : 'text-red-500 bg-red-50'} px-2 py-0.5 rounded-md text-sm`}>
                   {Number(selectedInfo.change) >= 0 ? '+' : ''}{Number(selectedInfo.change).toFixed(2)}%
@@ -578,15 +598,15 @@ export default function Dashboard() {
                 <StockChart
                   data={Array.isArray(stockChartData?.data)
                     ? stockChartData.data.filter(
-                      d =>
-                        d &&
-                        d.timestamp &&
-                        d.open != null &&
-                        d.close != null &&
-                        d.high != null &&
-                        d.low != null &&
-                        d.volume != null
-                    )
+                        d =>
+                          d &&
+                          d.timestamp &&
+                          d.open != null &&
+                          d.close != null &&
+                          d.high != null &&
+                          d.low != null &&
+                          d.volume != null
+                      )
                     : []}
                   symbol={selectedInfo.symbol}
                   period={activePeriod}
@@ -605,97 +625,46 @@ export default function Dashboard() {
 
           {/* showPanel이 true일 때 매수/매도 화면을 위아래로 동시에 보여줌 */}
           {showPanel ? (
-            <div className="bg-white rounded-3xl border border-gray-200 p-6 w-full max-w-md md:max-w-md lg:max-w-md xl:max-w-lg flex flex-col fixed top-0 right-0 h-full z-50 shadow-lg transform transition-transform duration-500 animate-slide-in-right">
-              {/* 매수/매도 영역 */}
-              <div className="flex items-center justify-center mb-8 relative">
-                <span className="px-8 py-2 rounded-full bg-[#f4f5f9] text-base font-semibold text-center">
-                  {showPanel === 'buy' ? '매수' : '매도'}
-                </span>
-                <button onClick={() => setShowPanel(false)} className="absolute right-0 top-1/2 -translate-y-1/2">
-                  <X className="w-5 h-5 text-gray-500" />
-                </button>
-              </div>
+            <>
+              {/* 매수 패널 */}
               {showPanel === 'buy' && (
-                <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
-                      <div className="text-center">
-                        <div className="text-xs font-bold">{selectedInfo.symbol.slice(0, 3)}</div>
-                        <div className="text-xs">{selectedInfo.symbol.slice(3)}</div>
-                      </div>
-                    </div>
-                    <h2 className="text-xl font-extrabold">{selectedInfo.name}</h2>
-                  </div>
-
-                  <p className="text-gray-400 text-center text-base font-semibold">
-                    {selectedInfo.name}에 투자하여 수익을 기대해보세요.
-                  </p>
-
-                  {/* 수량 선택 */}
-                  <div className="flex items-center justify-between mt-6">
-                    <div className="font-bold text-base">수량</div>
-                    <div className="flex items-center gap-4">
-                      <button
-                        className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold"
-                        onClick={() => setQuantity((prev) => Math.max(prev - 1, 1))}
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="text-lg font-bold">{quantity}</span>
-                      <button
-                        className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold"
-                        onClick={() => setQuantity((prev) => prev + 1)}
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div className="text-lg font-extrabold">
-                      ${(selectedInfo.price * quantity).toFixed(2)}
-                    </div>
-                  </div>
-
-                  <button
-                    className="w-full py-4 bg-[#f9e0de] rounded-2xl text-center font-bold text-base text-black mt-6"
-                    onClick={() => setShowConfirmModal(true)}
-                  >
-                    매수
-                  </button>
-                </div>
+                <BuyPanel
+                  open={showPanel === 'buy'}
+                  onClose={() => setShowPanel(false)}
+                  symbol={selectedInfo.symbol}
+                  name={selectedInfo.name}
+                  price={selectedInfo.price}
+                  totalAssets={portfolioData.totalAssets}
+                  cashAsset={cashAsset}
+                  seedMoney={portfolioData.seedMoney}
+                  investmentAmount={portfolioData.investmentAmount}
+                  profitLoss={portfolioData.profitLoss}
+                  onBuyClick={(params) => {
+                    setBuyParams(params);
+                    setShowConfirmModal(true);
+                  }}
+                />
               )}
+              {/* 매도 패널 */}
               {showPanel === 'sell' && (
-                <div className="bg-white rounded-3xl border border-gray-200 p-6 space-y-6 mb-8">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-gray-200">
-                      <div className="text-center">
-                        <div className="text-xs font-bold">S&P</div>
-                        <div className="text-xs">500</div>
-                      </div>
-                    </div>
-                    <h2 className="text-xl font-extrabold">S&P 500</h2>
-                  </div>
-                  <p className="text-gray-400 text-center text-base font-semibold">S&P 500에 투자하여 배당금을 재투자하는 ETF</p>
-                  <div className="flex items-center justify-between mt-6">
-                    <div className="font-bold text-base">수량</div>
-                    <div className="flex items-center gap-4">
-                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="text-lg font-bold">1</span>
-                      <button className="w-8 h-8 rounded-full bg-[#f4f7fd] flex items-center justify-center text-[#b3c6e6] text-lg font-bold">
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div className="text-lg font-extrabold">€ 12.00</div>
-                  </div>
-                  <button
-                    className="w-full py-4 bg-[#b3c6e6] rounded-2xl text-center font-bold text-base text-black mt-6"
-                    onClick={() => setShowSellConfirmModal(true)}
-                  >
-                    매도
-                  </button>
-                </div>
+                <SellPanel
+                  open={showPanel === 'sell'}
+                  onClose={() => setShowPanel(false)}
+                  symbol={selectedInfo.symbol}
+                  name={selectedInfo.name}
+                  price={selectedInfo.price}
+                  totalAssets={portfolioData.totalAssets}
+                  cashAsset={cashAsset}
+                  seedMoney={portfolioData.seedMoney}
+                  investmentAmount={portfolioData.investmentAmount}
+                  profitLoss={portfolioData.profitLoss}
+                  onSellClick={(params) => {
+                    setSellParams(params);
+                    setShowSellConfirmModal(true);
+                  }}
+                />
               )}
-              {/* 내 계좌 영역 */}
+              {/* 내 계좌 영역
               <div>
                 <div className="flex justify-center mb-6">
                   <span className="px-8 py-2 rounded-full bg-[#f4f5f9] text-base font-semibold text-center">내 계좌</span>
@@ -748,8 +717,8 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </div> */}
+            </>
           ) : (
             // 기존 카드 내용
             <div className="bg-white rounded-xl p-4 md:p-5 shadow-sm flex-1 overflow-auto flex flex-col">
@@ -770,24 +739,53 @@ export default function Dashboard() {
       <ProfileModal />
       <BuyConfirmModal
         open={showConfirmModal}
-        onClose={() => {
-          setShowConfirmModal(false);
-          setShowPanel(false);
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={async () => {
+          if (!buyParams) return;
+          try {
+            await buyStock({
+              symbol: buyParams.symbol,
+              price: buyParams.price,
+              quantity: buyParams.quantity,
+            });
+            mutate('/api/portfolios/list'); // 내가 구매한 종목 새로고침
+            setShowConfirmModal(false);
+            setShowPanel(false);
+          } catch (e) {
+            alert('매수에 실패했습니다.');
+          }
         }}
-        symbol={selectedInfo.symbol}
-        name={selectedInfo.name}
-        price={selectedInfo.price}
-        quantity={quantity}
-        fee={selectedInfo.price * quantity * 0.0025}
+        symbol={buyParams?.symbol || ''}
+        name={buyParams?.name || ''}
+        price={buyParams?.price || 0}
+        quantity={buyParams?.quantity || 1}
+        fee={buyParams?.fee || 0}
+        total={buyParams?.total || 0}
       />
       <SellConfirmModal
         open={showSellConfirmModal}
         onClose={() => setShowSellConfirmModal(false)}
-        onConfirm={() => {
-          // TODO: 매도 로직 구현
-          setShowSellConfirmModal(false);
-          setShowPanel(false);
+        onConfirm={async () => {
+          if (!sellParams) return;
+          try {
+            await sellStock({
+              symbol: sellParams.symbol,
+              price: sellParams.price,
+              quantity: sellParams.quantity,
+            });
+            mutate('/api/portfolios/list'); // 내가 구매한 종목 새로고침
+            setShowSellConfirmModal(false);
+            setShowPanel(false);
+          } catch (e) {
+            alert('매도에 실패했습니다.');
+          }
         }}
+        symbol={sellParams?.symbol || ''}
+        name={sellParams?.name || ''}
+        price={sellParams?.price || 0}
+        quantity={sellParams?.quantity || 1}
+        fee={sellParams?.fee || 0}
+        total={sellParams?.total || 0}
       />
     </div>
   );

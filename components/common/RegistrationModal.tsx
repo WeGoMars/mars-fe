@@ -23,8 +23,8 @@ type FormErrors = {
 
 export default function RegistrationModal({ isOpen, onClose }: RegistrationModalProps) {
   const router = useRouter()
-  const [signUpMutation] = useSignUpMutation(); // ✅ 훅으로부터 mutation 함수 가져오기
-  const [createWallet] = useCreateWalletMutation(); // ✅ 지갑 생성 mutation
+  const [signUpMutation] = useSignUpMutation(); //  훅으로부터 mutation 함수 가져오기
+  const [createWallet] = useCreateWalletMutation(); //  지갑 생성 mutation
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -48,7 +48,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
       })
     }
   }
-
+  //유효성 검사 함수 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
 
@@ -89,11 +89,11 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
       const response = await signUpMutation(formData).unwrap(); // ✅ 이렇게 호출해야 됨
       console.log("회원가입 성공:", response);
       // ✅ 예: router.push("/login") 등 추가 가능
-
+      //회원가입 성공시 지갑 자동생성
       await createWallet({ amount: 100000 });
        console.log("시드머니 지갑 생성 완료");
       onClose();
-      
+
     } catch (err) {
       console.error("회원가입 실패:", err);
     }
