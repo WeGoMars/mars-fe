@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { X } from "lucide-react"
-import { useGetProfileQuery, useLogInMutation } from "@/lib/api";
+import { useGetProfileQuery, useLogInMutation,useGetWalletQuery,useGetOverallPortfolioQuery } from "@/lib/api";
 
 
 interface LoginModalProps {
@@ -24,7 +24,9 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
 
   const router = useRouter()
   const [logIn, { isLoading }] = useLogInMutation();  // 로그인 요청 mutation
-  const { refetch } = useGetProfileQuery(); // 로그인 후 유저 정보 강제 갱신용
+  const { refetch: refetchProfile } = useGetProfileQuery();
+  const { refetch: refetchWallet } = useGetWalletQuery();
+  const { refetch: refetchPortfolio } = useGetOverallPortfolioQuery();
   // 백엔드 로그인 테스트 !!
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +34,11 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
      try {
     const data = await logIn({ email, password }).unwrap();
 
-    await refetch(); // 👈 로그인 성공 직후 프로필 강제 갱신
+    await Promise.all([
+      refetchProfile(),
+      refetchWallet(),
+      refetchPortfolio()
+    ]);
     
 
     setEmail("");

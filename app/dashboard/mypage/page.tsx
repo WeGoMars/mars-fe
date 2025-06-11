@@ -48,7 +48,7 @@ export default function MyPage() {
       <header className="bg-white border-b">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-2">
-            <Link href="/dashboard">
+            <a href="/dashboard">
             <Image
               src="/marslogo.png"
               alt="Mars 로고"
@@ -56,7 +56,7 @@ export default function MyPage() {
               height={30}
               className="rounded-full cursor-pointer"
             />
-            </Link>
+            </a>
             <span className="text-lg font-medium">Mars</span>
           </div>
 

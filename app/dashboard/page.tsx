@@ -271,7 +271,7 @@ export default function Dashboard() {
           >
             <Menu className="w-6 h-6 text-gray-700" />
           </button>
-          <Link href="/dashboard">
+          <a href="/dashboard">
           <Image
             src="/marslogo.png"
             alt="Mars 로고"
@@ -279,7 +279,7 @@ export default function Dashboard() {
             height={40}
             className="rounded-full"
           />
-          </Link>
+          </a>
           <span className="text-lg font-medium">mars</span>
         </div>
 
