@@ -145,7 +145,7 @@ export async function getMyStocks(): Promise<GetMyStocksResponse> {
   return response.json();
 }
 
-// 주식 거래내역 조회
+// 주식 거래내역 조회 api test 2번 째
 export async function getTradeHistory(): Promise<GetTradeHistoryResponse> {
   const response = await fetch('/api/portfolios/history', {
     method: 'GET',
