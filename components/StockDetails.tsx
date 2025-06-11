@@ -7,10 +7,10 @@ import type { StockDetails, NewsItem, Stock } from '@/lib/types';
 import { Check, ChevronDown, ChevronLeft, Heart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import mockPortfolio from "@/lib/mock/mockportfolio";
+// import mockPortfolio from "@/lib/mock/mockportfolio";
 import { TrendingUp, TrendingDown } from "lucide-react"
-
-// 주식 상세 정보를 보여주는 컴포넌트(종목정보 상세, 내 계좌, AI 추천 탭)
+import { useGetOverallPortfolioQuery,useGetWalletQuery } from "@/lib/api"; 
+// 주식 상세 정보를 보여주는 컴포넌트(종목정보 상세, 내 계좌, AI 추천 탭)   
 interface StockDetailsProps {
   symbol: string; // 주식 심볼
   activeTab: '종목정보 상세' | '내 계좌' | 'AI 추천'; // 현재 활성화된 탭
@@ -30,7 +30,13 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   const [showReasonDetail, setShowReasonDetail] = useState(false);
   const [aiSubmitted, setAiSubmitted] = useState(false);
   const [isHeartFilled, setIsHeartFilled] = useState(false);
-  const [portfolioData, setPortfolioData] = useState(mockPortfolio);
+  // const [portfolioData, setPortfolioData] = useState(mockPortfolio);
+  const { data: portfolioResponse, isLoading: portfolioLoading, isError: portfolioError } = useGetOverallPortfolioQuery();
+  const { data: walletResponse, isLoading: walletLoading, isError: walletError } = useGetWalletQuery();
+  const portfolioData = portfolioResponse?.data;
+  const walletData = walletResponse?.data;
+  if (portfolioLoading || walletLoading) return <div>로딩 중...</div>;
+  if (portfolioError || walletError || !portfolioData || !walletData) return <div>에러 발생</div>;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -240,7 +246,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                 <span className="text-sm text-gray-500">총자산</span>
                 <div className="text-xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
                   <span className="text-[#197bbd] text-xs mr-1">$</span>
-                  {portfolioData.totalAssets.toLocaleString("en-US", {
+                  {portfolioData.totalSeed.toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -251,7 +257,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                 <span className="text-sm text-gray-500">시드머니</span>
                 <div className="text-xl font-bold group-hover:text-[#1565a0] transition-colors">
                   <span className="text-xs mr-1">$</span>
-                  {portfolioData.seedMoney.toLocaleString("en-US", {
+                  {walletData.cyberDollar.toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -263,7 +269,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                 <div>
                 <span className="text-[#439a86] text-xs mr-1">$</span>
                 <span className="text-xl font-bold text-[#439a86] ">
-                  {portfolioData.investmentAmount.toLocaleString("en-US", {
+                  {portfolioData.investedAmount.toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -275,15 +281,15 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                 <span className="text-sm text-gray-500">평가손익</span>
                   <div
                     className={`flex items-center text-xl font-bold transition-colors 
-                      ${portfolioData.profitLoss >= 0 
+                      ${portfolioData.evalGain >= 0 
                         ? "text-[#e74c3c] group-hover:text-[#c0392b]" 
                         : "text-[#3498db] group-hover:text-[#2c80b4]"}
                     `}
                   >
               <span className="text-xs mr-1">$</span>
               <span>
-                {portfolioData.profitLoss >= 0 ? "+" : "-"}
-                {Math.abs(portfolioData.profitLoss).toLocaleString("en-US", {
+                {portfolioData.evalGain >= 0 ? "+" : "-"}
+                {Math.abs(portfolioData.evalGain).toLocaleString("en-US", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}

@@ -261,7 +261,7 @@ export default function Dashboard() {
    
   const { data: walletData, isLoading: isWalletLoading, isError: isWalletError } = useGetWalletQuery();
   const { data: overallData, isLoading: isPortfolioLoading, isError: isPortfolioError } = useGetOverallPortfolioQuery();
-  const cyberDollars = walletData?.data?.cyberDollar ?? 0;
+  const cyberDollar = walletData?.data?.cyberDollar ?? 0;
   const portfolioData = {
   totalAssets: overallData?.data?.totalAsset ?? 0,
   investmentAmount: overallData?.data?.investedAmount ?? 0,
@@ -650,7 +650,7 @@ export default function Dashboard() {
                   name={selectedInfo.name}
                   price={selectedInfo.price}
                   totalAssets={portfolioData.totalAssets}
-                  cyberDollar={cyberDollars}
+                  cyberDollar={cyberDollar}
                   investmentAmount={portfolioData.investmentAmount}
                   profitLoss={portfolioData.profitLoss}
                   returnRate={portfolioData.returnRate}
@@ -669,7 +669,7 @@ export default function Dashboard() {
                   name={selectedInfo.name}
                   price={selectedInfo.price}
                   totalAssets={portfolioData.totalAssets}
-                  cyberDollar={cyberDollars}
+                  cyberDollar={cyberDollar}
                   investmentAmount={portfolioData.investmentAmount}
                   profitLoss={portfolioData.profitLoss}
                   returnRate={portfolioData.returnRate}
