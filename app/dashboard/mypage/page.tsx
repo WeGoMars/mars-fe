@@ -29,8 +29,21 @@ export default function MyPage() {
   
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
-  const { data: walletData, isLoading, isError,refetch: refetchWallet } = useGetWalletQuery();
-  const { data, isLoading: Loading, isError:error,refetch: refetchPortfolio } = useGetOverallPortfolioQuery();
+  const { data: walletData, isLoading, isError, refetch: refetchWallet } = useGetWalletQuery(undefined, {
+    skip: !isLoggedIn, // 로그인하지 않은 경우 쿼리 실행하지 않음
+  });
+  const { data, isLoading: Loading, isError:error, refetch: refetchPortfolio } = useGetOverallPortfolioQuery(undefined, {
+    skip: !isLoggedIn, // 로그인하지 않은 경우 쿼리 실행하지 않음
+  });
+
+  // 로그인 상태가 변경될 때마다 데이터 새로고침
+  useEffect(() => {
+    if (isLoggedIn) {
+      refetchPortfolio();
+      refetchWallet();
+    }
+  }, [isLoggedIn, refetchPortfolio, refetchWallet]);
+
   if (isLoading) return <div>로딩 중...</div>;
   if (error || !data?.data) return <div>에러 발생</div>;
   
