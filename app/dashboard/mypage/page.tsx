@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import ProfileModal from "@/components/common/ProfileModal"
 
-import { useGetProfileQuery,useGetWalletQuery  } from "@/lib/api"
+import { useGetProfileQuery,useGetWalletQuery, getStockPortfolio, getTradeHistory, getFavoriteStocks, getMyStocks } from "@/lib/api"
 import { useGetOverallPortfolioQuery } from "@/lib/api"; 
 import ProfileHandler from "@/components/common/ProfileHandler";
 import LogoutButton from "@/components/common/LogoutButton"
@@ -31,6 +31,79 @@ export default function MyPage() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
   const { data: walletData, isLoading, isError,refetch: refetchWallet } = useGetWalletQuery();
   const { data, isLoading: Loading, isError:error,refetch: refetchPortfolio } = useGetOverallPortfolioQuery();
+  const [stockPortfolio, setStockPortfolio] = useState<any[]>([]);
+  const [isLoadingPortfolio, setIsLoadingPortfolio] = useState(true);
+  const [tradeHistory, setTradeHistory] = useState<any[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+  const [favoriteStocks, setFavoriteStocks] = useState<any[]>([]);
+  const [myStocks, setMyStocks] = useState<any[]>([]);
+  const [isLoadingFavorites, setIsLoadingFavorites] = useState(true);
+  const [isLoadingMyStocks, setIsLoadingMyStocks] = useState(true);
+
+  useEffect(() => {
+    const fetchStockPortfolio = async () => {
+      try {
+        const response = await getStockPortfolio();
+        console.log('주식 포트폴리오 데이터:', response);
+        setStockPortfolio(response.data);
+      } catch (error) {
+        console.error('주식 포트폴리오 조회 실패:', error);
+      } finally {
+        setIsLoadingPortfolio(false);
+      }
+    };
+
+    fetchStockPortfolio();
+  }, []);
+
+  useEffect(() => {
+    const fetchTradeHistory = async () => {
+      try {
+        const response = await getTradeHistory();
+        console.log('주식 거래내역 데이터:', response);
+        setTradeHistory(response.data);
+      } catch (error) {
+        console.error('주식 거래내역 조회 실패:', error);
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    };
+
+    fetchTradeHistory();
+  }, []);
+
+  useEffect(() => {
+    const fetchFavoriteStocks = async () => {
+      try {
+        const response = await getFavoriteStocks();
+        console.log('관심 종목 데이터:', response);
+        setFavoriteStocks(response.data);
+      } catch (error) {
+        console.error('관심 종목 조회 실패:', error);
+      } finally {
+        setIsLoadingFavorites(false);
+      }
+    };
+
+    fetchFavoriteStocks();
+  }, []);
+
+  useEffect(() => {
+    const fetchMyStocks = async () => {
+      try {
+        const response = await getMyStocks();
+        console.log('내가 구매한 종목 데이터:', response);
+        setMyStocks(response.data);
+      } catch (error) {
+        console.error('내가 구매한 종목 조회 실패:', error);
+      } finally {
+        setIsLoadingMyStocks(false);
+      }
+    };
+
+    fetchMyStocks();
+  }, []);
+
   if (isLoading) return <div>로딩 중...</div>;
   if (error || !data?.data) return <div>에러 발생</div>;
   
@@ -89,83 +162,48 @@ export default function MyPage() {
   
           <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
             <div className="space-y-6">
-              {[
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                },
-                {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "MSFT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-                {
-                  symbol: "GOOGL",
-                  name: "Alphabet Inc.",
-                  price: "$213.10",
-                  change: "+1.1%",
-                },
-                {
-                  symbol: "SPOT",
-                  name: "Microsoft Corp.",
-                  price: "$213.10",
-                  change: "+2.5%",
-                },
-              ].map((stock, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8">
-                      {stock.symbol === "MSFT" && (
-                        <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
-                          <div className="bg-[#f25022]"></div>
-                          <div className="bg-[#7fba00]"></div>
-                          <div className="bg-[#00a4ef]"></div>
-                          <div className="bg-[#ffb900]"></div>
-                        </div>
-                      )}
-                      {stock.symbol === "GOOGL" && (
+              {isLoadingFavorites ? (
+                <div className="text-center py-4">로딩 중...</div>
+              ) : favoriteStocks.length === 0 ? (
+                <div className="text-center text-gray-500 py-4">관심 종목이 없습니다.</div>
+              ) : (
+                favoriteStocks.map((stock, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8">
                         <Image
-                          src="/google-logo.png"
-                          alt="Google"
+                          src={`/logos/${stock.symbol}.png`}
+                          alt={stock.symbol}
                           width={32}
                           height={32}
+                          className="rounded-full"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = "none";
+                            const parent = target.parentElement;
+                            if (parent) {
+                              const fallback = document.createElement("div");
+                              fallback.className = "w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center";
+                              fallback.innerHTML = `<span class='text-xs font-bold'>${stock.symbol.slice(0, 2)}</span>`;
+                              parent.appendChild(fallback);
+                            }
+                          }}
                         />
-                      )}
-                      {stock.symbol === "SPOT" && (
-                        <Image
-                          src="/spotify-logo.png"
-                          alt="Spotify"
-                          width={32}
-                          height={32}
-                        />
-                      )}
+                      </div>
+                      <div>
+                        <div className="font-bold text-base">{stock.symbol}</div>
+                        <div className="text-xs text-gray-500">{stock.name}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-bold text-base">{stock.symbol}</div>
-                      <div className="text-xs text-gray-500">{stock.name}</div>
+                    <div className="text-right">
+                      <div className="font-bold text-base">${stock.currentPrice.toFixed(2)}</div>
+                      <div className={`text-xs ${stock.priceDelta >= 0 ? "text-[#41c3a9]" : "text-red-500"}`}>
+                        {stock.priceDelta >= 0 ? "+" : ""}{stock.priceDelta.toFixed(2)}%
+                      </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="font-bold text-base">{stock.price}</div>
-                    <div className="text-xs text-[#41c3a9]">{stock.change}</div>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
       
@@ -177,83 +215,48 @@ export default function MyPage() {
 
       <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
         <div className="space-y-6">
-          {[
-            {
-              symbol: "MSFT",
-              name: "Microsoft Corp.",
-              price: "$213.10",
-              change: "+2.5%",
-            },
-            {
-              symbol: "GOOGL",
-              name: "Alphabet Inc.",
-              price: "$213.10",
-              change: "+1.1%",
-            },
-            {
-              symbol: "SPOT",
-              name: "Microsoft Corp.",
-              price: "$213.10",
-              change: "+2.5%",
-            },
-            {
-              symbol: "MSFT",
-              name: "Microsoft Corp.",
-              price: "$213.10",
-              change: "+2.5%",
-            },
-            {
-              symbol: "GOOGL",
-              name: "Alphabet Inc.",
-              price: "$213.10",
-              change: "+1.1%",
-            },
-            {
-              symbol: "SPOT",
-              name: "Microsoft Corp.",
-              price: "$213.10",
-              change: "+2.5%",
-            },
-          ].map((stock, index) => (
-            <div key={index} className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8">
-                  {stock.symbol === "MSFT" && (
-                    <div className="w-8 h-8 bg-[#f25022] grid grid-cols-2 grid-rows-2">
-                      <div className="bg-[#f25022]"></div>
-                      <div className="bg-[#7fba00]"></div>
-                      <div className="bg-[#00a4ef]"></div>
-                      <div className="bg-[#ffb900]"></div>
-                    </div>
-                  )}
-                  {stock.symbol === "GOOGL" && (
+          {isLoadingMyStocks ? (
+            <div className="text-center py-4">로딩 중...</div>
+          ) : myStocks.length === 0 ? (
+            <div className="text-center text-gray-500 py-4">내가 구매한 종목이 없습니다.</div>
+          ) : (
+            myStocks.map((stock, index) => (
+              <div key={index} className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8">
                     <Image
-                      src="/google-logo.png"
-                      alt="Google"
+                      src={`/logos/${stock.symbol}.png`}
+                      alt={stock.symbol}
                       width={32}
                       height={32}
+                      className="rounded-full"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = "none";
+                        const parent = target.parentElement;
+                        if (parent) {
+                          const fallback = document.createElement("div");
+                          fallback.className = "w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center";
+                          fallback.innerHTML = `<span class='text-xs font-bold'>${stock.symbol.slice(0, 2)}</span>`;
+                          parent.appendChild(fallback);
+                        }
+                      }}
                     />
-                  )}
-                  {stock.symbol === "SPOT" && (
-                    <Image
-                      src="/spotify-logo.png"
-                      alt="Spotify"
-                      width={32}
-                      height={32}
-                    />
-                  )}
+                  </div>
+                  <div>
+                    <div className="font-bold text-base">{stock.symbol}</div>
+                    <div className="text-xs text-gray-500">{stock.name}</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="font-bold text-base">{stock.symbol}</div>
-                  <div className="text-xs text-gray-500">{stock.name}</div>
+                <div className="text-right">
+                  <div className="font-bold text-base">${stock.currentPrice.toFixed(2)}</div>
+                  <div className={`text-xs ${stock.priceDelta >= 0 ? "text-[#41c3a9]" : "text-red-500"}`}>
+                    {stock.priceDelta >= 0 ? "+" : ""}{stock.priceDelta.toFixed(2)}%
+                  </div>
                 </div>
               </div>
-              <div className="text-right">
-                <div className="font-bold text-base">{stock.price}</div>
-                <div className="text-xs text-[#41c3a9]">{stock.change}</div>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>
@@ -438,26 +441,53 @@ export default function MyPage() {
                 </tr>
               </thead>
               <tbody>
-                {holdings.map((holding, index) => (
-                  <tr key={index} className="border-b border-[#f5f7f9] hover:bg-[#f5f7f9] transition-colors">
-                    <td className="py-4">
-                      <Link
-                        href={`/holdings/${holding.name}`}
-                        className="flex items-center gap-3 hover:text-[#197bbd] transition-colors"
-                      >
-                        <div className="w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold">
-                          
-                        </div>
-                        <span className="font-medium text-[#1c2730]">{holding.name}</span>
-                      </Link>
-                    </td>
-                    <td className="text-right py-4 text-[#1c2730]">${holding.purchasePrice}</td>
-                    <td className="text-right py-4 text-[#63c89b]">{holding.Quantity}</td>
-                    <td className="text-right py-4 text-[#1c2730]">${holding.currentPrice}</td>
-                    <td className="text-right py-4 text-[#63c89b]">+${holding.gain}</td>
-                    <td className="text-right py-4 text-[#63c89b]">+{holding.returnRate}%</td>
+                {isLoadingPortfolio ? (
+                  <tr>
+                    <td colSpan={6} className="text-center py-4">로딩 중...</td>
                   </tr>
-                ))}
+                ) : stockPortfolio.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="text-center py-4">보유 중인 종목이 없습니다.</td>
+                  </tr>
+                ) : (
+                  stockPortfolio.map((stock, index) => (
+                    <tr key={index} className="border-b border-[#f5f7f9] hover:bg-[#f5f7f9] transition-colors">
+                      <td className="py-4">
+                        <Link
+                          href={`/holdings/${stock.symbol}`}
+                          className="flex items-center gap-3 hover:text-[#197bbd] transition-colors"
+                        >
+                          <div className="w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold">
+                            {stock.symbol.charAt(0)}
+                          </div>
+                          <span className="font-medium text-[#1c2730]">{stock.name}</span>
+                        </Link>
+                      </td>
+                      <td className="text-right py-4 text-[#1c2730]">
+                        ${stock.avgBuyPrice.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </td>
+                      <td className="text-right py-4 text-[#63c89b]">{stock.quantity}</td>
+                      <td className="text-right py-4 text-[#1c2730]">
+                        ${stock.evalAmount.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </td>
+                      <td className={`text-right py-4 ${stock.evalGain >= 0 ? 'text-[#63c89b]' : 'text-[#e74c3c]'}`}>
+                        {stock.evalGain >= 0 ? '+' : ''}${stock.evalGain.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </td>
+                      <td className={`text-right py-4 ${stock.returnRate >= 0 ? 'text-[#63c89b]' : 'text-[#e74c3c]'}`}>
+                        {stock.returnRate >= 0 ? '+' : ''}{(stock.returnRate * 100).toFixed(2)}%
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -471,24 +501,77 @@ export default function MyPage() {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-[#e8e8e8]">
-                  <th className="text-left py-3 text-sm font-medium text-[#8f9098]">일자</th>
-                  <th className="text-left py-3 text-sm font-medium text-[#8f9098]">상품/종목명</th>
-                  <th className="text-right py-3 text-sm font-medium text-[#8f9098]">거래단가</th>
-                  <th className="text-right py-3 text-sm font-medium text-[#8f9098]">체결수량</th>
-                  <th className="text-right py-3 text-sm font-medium text-[#8f9098]">수익률</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="text-center py-8">
-                  <td colSpan={5} className="py-8 text-[#8f9098]">
-                    거래 내역이 없습니다.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div className="max-h-[400px] overflow-y-auto">
+              <table className="w-full">
+                <thead className="sticky top-0 bg-white z-10">
+                  <tr className="border-b border-[#e8e8e8]">
+                    <th className="text-left py-3 text-sm font-medium text-[#8f9098]">일자</th>
+                    <th className="text-left py-3 text-sm font-medium text-[#8f9098]">상품/종목명</th>
+                    <th className="text-right py-3 text-sm font-medium text-[#8f9098]">거래단가</th>
+                    <th className="text-right py-3 text-sm font-medium text-[#8f9098]">체결수량</th>
+                    <th className="text-right py-3 text-sm font-medium text-[#8f9098]">수익률</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {isLoadingHistory ? (
+                    <tr>
+                      <td colSpan={5} className="text-center py-4">로딩 중...</td>
+                    </tr>
+                  ) : tradeHistory.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="text-center py-4">거래 내역이 없습니다.</td>
+                    </tr>
+                  ) : (
+                    tradeHistory.map((trade, index) => (
+                      <tr key={index} className="border-b border-[#f5f7f9] hover:bg-[#f5f7f9] transition-colors">
+                        <td className="py-4 text-[#1c2730]">
+                          {(() => {
+                            try {
+                              const date = new Date(trade.date);
+                              if (isNaN(date.getTime())) {
+                                console.error('Invalid date:', trade.date);
+                                return '날짜 정보 없음';
+                              }
+                              return date.toLocaleDateString('ko-KR', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              });
+                            } catch (error) {
+                              console.error('Date parsing error:', error);
+                              return '날짜 정보 없음';
+                            }
+                          })()}
+                        </td>
+                        <td className="py-4">
+                          <Link
+                            href={`/holdings/${trade.symbol}`}
+                            className="flex items-center gap-3 hover:text-[#197bbd] transition-colors"
+                          >
+                            <div className="w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold">
+                              {trade.symbol.charAt(0)}
+                            </div>
+                            <span className="font-medium text-[#1c2730]">{trade.name}</span>
+                          </Link>
+                        </td>
+                        <td className="text-right py-4 text-[#1c2730]">
+                          ${trade.currentPrice.toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </td>
+                        <td className="text-right py-4 text-[#63c89b]">{trade.quantity}</td>
+                        <td className={`text-right py-4 ${trade.returnRate >= 0 ? 'text-[#63c89b]' : 'text-[#e74c3c]'}`}>
+                          {trade.returnRate >= 0 ? '+' : ''}{(trade.returnRate * 100).toFixed(2)}%
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </CardContent>
       </Card>

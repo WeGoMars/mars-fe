@@ -293,3 +293,18 @@ export interface GetTradeHistoryResponse {
     returnRate: number;
   }[];
 }
+
+// 보유종목/상품현황 type 정의(주식 종목별 포트폴리오 조회 응답)
+export interface GetStockPortfolioResponse {
+  success: boolean;
+  message: string;
+  data: {
+    symbol: string;
+    name: string;
+    quantity: number;
+    avgBuyPrice: number;
+    evalAmount: number;
+    evalGain: number;
+    returnRate: number;
+  }[];
+}
