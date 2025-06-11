@@ -39,6 +39,8 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
       refetchWallet(),
       refetchPortfolio()
     ]);
+    // refetch 후 짧게 기다리기 (세션 적용 시간 확보)
+    await new Promise(resolve => setTimeout(resolve, 200));
     
 
     setEmail("");
