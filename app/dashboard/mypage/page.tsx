@@ -31,15 +31,9 @@ export default function MyPage() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
   const { data: walletData, isLoading, isError,refetch: refetchWallet } = useGetWalletQuery();
   const { data, isLoading: Loading, isError:error,refetch: refetchPortfolio } = useGetOverallPortfolioQuery();
-  // if (isLoading) return <div>로딩 중...</div>;
-  // if (error || !data?.data) return <div>에러 발생</div>;
-  if (Loading || isLoading || !data?.data || !walletData?.data) {
-  return <div>로딩 중입니다...</div>;
-}
-
-if (error || isError) {
-  return <div>API 에러가 발생했습니다</div>;
-}
+  if (isLoading) return <div>로딩 중...</div>;
+  if (error || !data?.data) return <div>에러 발생</div>;
+  
  //포트폴리오 데이터
   const portfolioData = {
     totalAssets: data.data.totalAsset,

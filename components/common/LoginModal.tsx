@@ -24,9 +24,10 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
 
   const router = useRouter()
   const [logIn, { isLoading }] = useLogInMutation();  // 로그인 요청 mutation
+  // const { refetch: refetchProfile } = useGetProfileQuery();
+  // const { refetch: refetchWallet } = useGetWalletQuery();
+  // const { refetch: refetchPortfolio } = useGetOverallPortfolioQuery();
   const { refetch: refetchProfile } = useGetProfileQuery();
-  const { refetch: refetchWallet } = useGetWalletQuery();
-  const { refetch: refetchPortfolio } = useGetOverallPortfolioQuery();
   // 백엔드 로그인 테스트 !!
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,11 +35,7 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
      try {
     const data = await logIn({ email, password }).unwrap();
 
-    await Promise.all([
-      refetchProfile(),
-      refetchWallet(),
-      refetchPortfolio()
-    ]);
+    await refetchProfile(); // 👈 로그인 성공 직후 프로필 강제 갱신
     // refetch 후 짧게 기다리기 (세션 적용 시간 확보)
     await new Promise(resolve => setTimeout(resolve, 200));
     
