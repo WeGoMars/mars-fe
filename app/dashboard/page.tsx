@@ -642,6 +642,7 @@ export default function Dashboard() {
               {/* 매수 패널 */}
               {showPanel === 'buy' && (
                 <BuyPanel
+                  key={selectedInfo.symbol} // ✅ 매번 새로 렌더링되
                   open={showPanel === 'buy'}
                   onClose={() => setShowPanel(false)}
                   symbol={selectedInfo.symbol}
