@@ -25,6 +25,7 @@ import BuyPanel from "@/components/BuyPanel"
 import LogoutButton from "@/components/common/LogoutButton"
 import SellPanel from "@/components/SellPanel";
 import { mutate } from 'swr';
+import { useGetWalletQuery, useGetOverallPortfolioQuery } from "@/lib/api";
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -69,6 +70,8 @@ export default function Dashboard() {
   const [favoriteStocks, setFavoriteStocks] = useState<Stock[]>([]);
   const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
   const router = useRouter();
+  const { refetch: refetchWallet } = useGetWalletQuery();
+  const { refetch: refetchPortfolio } = useGetOverallPortfolioQuery();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
   const [selectedInfo, setSelectedInfo] = useState<{
     symbol: string;
@@ -268,6 +271,7 @@ export default function Dashboard() {
           >
             <Menu className="w-6 h-6 text-gray-700" />
           </button>
+          <Link href="/dashboard">
           <Image
             src="/marslogo.png"
             alt="Mars 로고"
@@ -275,6 +279,7 @@ export default function Dashboard() {
             height={40}
             className="rounded-full"
           />
+          </Link>
           <span className="text-lg font-medium">mars</span>
         </div>
 
@@ -748,6 +753,11 @@ export default function Dashboard() {
               quantity: buyParams.quantity,
             });
             mutate('/api/portfolios/list'); // 내가 구매한 종목 새로고침
+
+            // 추가: 지갑, 포트폴리오 새로고침
+            refetchWallet();
+            refetchPortfolio();
+
             setShowConfirmModal(false);
             setShowPanel(false);
           } catch (e) {
