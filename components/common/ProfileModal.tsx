@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { X, User, ArrowRight, Camera } from "lucide-react"
 import { useEditProfileMutation } from "@/lib/api";
+import { useGetProfileQuery } from "@/lib/api";
 
 export default function ProfileModal() {
   const router = useRouter()
@@ -28,7 +29,7 @@ export default function ProfileModal() {
     url.searchParams.delete("modal")
     router.push(url.pathname)
   }
-
+ const { refetch } = useGetProfileQuery();  // 프로필정보 재조회
  const handleSubmit = async () => {
   try {
     const body = {
@@ -36,11 +37,11 @@ export default function ProfileModal() {
       profileImageUrl: profileImage, // 이건 setProfileImage로 저장한 이미지 URL 경로라고 가정
     };
 
-    await editProfile(body).unwrap();
+    await editProfile(body).unwrap();   //프로필 수정요청
+    await refetch();  //프로필수정후 재조회
 
     alert("닉네임이 성공적으로 변경되었습니다!");
     handleCloseModal();
-    // window.location.reload();
   } catch (error) {
     console.error("프로필 수정 오류:", error);
     alert("서버 오류가 발생했습니다.");
@@ -48,10 +49,11 @@ export default function ProfileModal() {
 };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0]      // 첫 번째 파일만 처리
     if (file) {
       const reader = new FileReader()
       reader.onload = (e) => {
+        // 파일을 base64 형식으로 변환해서 상태로 저장
         setProfileImage(e.target?.result as string)
       }
       reader.readAsDataURL(file)

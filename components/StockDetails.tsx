@@ -541,4 +541,3 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
     </div>
   );
 }
-

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { X } from "lucide-react"
-import { useLogInMutation } from "@/lib/api";
+import { useGetProfileQuery, useLogInMutation,useGetWalletQuery,useGetOverallPortfolioQuery } from "@/lib/api";
 
 
 interface LoginModalProps {
@@ -23,21 +23,28 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
   const [password, setPassword] = useState("")
 
   const router = useRouter()
-  const [logIn, { isLoading }] = useLogInMutation();
-  
+  const [logIn, { isLoading }] = useLogInMutation();  // 로그인 요청 mutation
+  // const { refetch: refetchProfile } = useGetProfileQuery();
+  // const { refetch: refetchWallet } = useGetWalletQuery();
+  // const { refetch: refetchPortfolio } = useGetOverallPortfolioQuery();
+  const { refetch: refetchProfile } = useGetProfileQuery();
   // 백엔드 로그인 테스트 !!
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
      try {
     const data = await logIn({ email, password }).unwrap();
+
+    await refetchProfile(); // 👈 로그인 성공 직후 프로필 강제 갱신
+    // refetch 후 짧게 기다리기 (세션 적용 시간 확보)
+    await new Promise(resolve => setTimeout(resolve, 200));
     
 
     setEmail("");
     setPassword("");
     onOpenChange(false);
     router.push("/dashboard");
-    // window.location.reload()
+    
   } catch (err) {
     console.error("로그인 실패:", err);
     alert("로그인 실패: 이메일 또는 비밀번호를 확인해주세요.");
@@ -49,7 +56,7 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
       router.back()
     }, 100)
   }
-
+   // 모달이 열려 있지 않다면 아무것도 렌더링하지 않음
   if (!open) return null
 
   return (

@@ -8,10 +8,11 @@ import Image from "next/image";
 import { useRouter } from "next/navigation" 
 import { useEffect, useState } from "react"
 import ProfileModal from "@/components/common/ProfileModal"
-import mockPortfolio from "@/lib/mock/mockportfolio";
-import { useCreateWalletMutation,useGetWalletQuery  } from "@/lib/api"
 
+import { useGetProfileQuery,useGetWalletQuery  } from "@/lib/api"
+import { useGetOverallPortfolioQuery } from "@/lib/api"; 
 import ProfileHandler from "@/components/common/ProfileHandler";
+import LogoutButton from "@/components/common/LogoutButton"
 
 export default function MyPage() {
 
@@ -19,23 +20,29 @@ export default function MyPage() {
   const holdings = [{ name: "테슬라", purchasePrice: 300, currentPrice: 344, Quantity: 2 , gain: 44, returnRate: 14.67 }]
   const router = useRouter()
   const [nickname, setNickname] = useState<string | null>(null)
-  const [portfolioData, setPortfolioData] = useState(mockPortfolio);
+  
   const handleAvatarClick = () => {
   const url = new URL(window.location.href)
   url.searchParams.set("modal", "edit")
   router.push(url.toString())
   }
+  
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
-  // const { data: walletData, isLoading, isError, error } = useGetWalletQuery();
-  // const [createWallet, { data: walletData, isLoading, isError, error }] = useCreateWalletMutation();
-  const { data: walletData, isLoading, isError } = useGetWalletQuery();
-  const [createWallet] = useCreateWalletMutation();
-
-  useEffect(() => {
-    if (!isLoading && isError)    // getWallet 에서 에러났을 때만 지갑 생성 시도
-  createWallet({ amount: 100000 }); // ✅ 여기에서 API 요청을 실제로 보냄
-}, []);
+  const { data: walletData, isLoading, isError,refetch: refetchWallet } = useGetWalletQuery();
+  const { data, isLoading: Loading, isError:error,refetch: refetchPortfolio } = useGetOverallPortfolioQuery();
+  if (isLoading) return <div>로딩 중...</div>;
+  if (error || !data?.data) return <div>에러 발생</div>;
+  
+ //포트폴리오 데이터
+  const portfolioData = {
+    totalAssets: data.data.totalAsset, //총자산
+    investmentAmount: data.data.investedAmount, //투자금액
+    profitLoss: data.data.evalGain,   //평가손익
+    returnRate: data.data.returnRate * 100, // %로 보기 좋게
+    investRatio: data.data.investRatio * 100, // 총 투자비율
+    cash: data.data.cash,// 현금자산
+  };
 
   return (
     
@@ -43,7 +50,7 @@ export default function MyPage() {
       <header className="bg-white border-b">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-2">
-            <Link href="/dashboard">
+            <a href="/dashboard">
             <Image
               src="/marslogo.png"
               alt="Mars 로고"
@@ -51,7 +58,7 @@ export default function MyPage() {
               height={30}
               className="rounded-full cursor-pointer"
             />
-            </Link>
+            </a>
             <span className="text-lg font-medium">Mars</span>
           </div>
 
@@ -63,15 +70,11 @@ export default function MyPage() {
                 onNicknameUpdate={setNickname}
                 onLoginStatusUpdate={setIsLoggedIn}
               />
-            <Button variant="default" size="sm" className="bg-[#5f80f8] hover:bg-[#4c6ef5] text-white"
-            onClick={() => {
-                localStorage.removeItem("logInUser")
-                alert("로그아웃 되었습니다.")
-                router.push("/")
-              }}
-            >
-              로그아웃
-            </Button>
+            <LogoutButton redirectTo="/" >
+              <span className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full block text-center">
+                로그아웃
+              </span>
+            </LogoutButton>
           </div>
         </div>
       </header>
@@ -314,11 +317,11 @@ export default function MyPage() {
                 <div
                   className={`text-2xl font-bold transition-colors 
                     ${portfolioData.profitLoss >= 0 
-                      ? "text-[#e74c3c] group-hover:text-[#c0392b]" 
-                      : "text-[#3498db] group-hover:text-[#2c80b4]"}
+                      ? "text-[#41c3a9] group-hover:text-[#c0392b]" 
+                      : "text-[#e74c3c] group-hover:text-[#2c80b4]"}
                   `}
                 >
-                  {portfolioData.profitLoss >= 0 ? "+" : "-"}
+                  {portfolioData.profitLoss >= 0 ? "+$" : "-$"}
                   {Math.abs(portfolioData.profitLoss).toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
@@ -337,9 +340,9 @@ export default function MyPage() {
                 <div
                   className={`text-2xl font-bold transition-colors flex items-center gap-1 
                     ${portfolioData.returnRate >= 0 
-                      ? "text-[#e74c3c] group-hover:text-[#4caf50]" 
-                      : "text-[#3498db] group-hover:text-[#a73d2a]"}
-                  `}
+                      ? "text-[#41c3a9] group-hover:text-[#4caf50]" 
+                      : "text-[#e74c3c] group-hover:text-[#a73d2a]"}
+                  `}//#41c3a9
                   >
                     {portfolioData.returnRate >= 0 ? (
                     <TrendingUp className="h-5 w-5" />
@@ -395,7 +398,7 @@ export default function MyPage() {
                 <div className="text-center">
                   <div className="text-xs text-[#8f9098] mb-1">총 투자 비율</div>
                   <div className="text-lg font-semibold text-[#1c2730]">
-                    {/* {((portfolioData.investmentAmount / 4000) * 100).toFixed(1)}% */}
+                    {(portfolioData.investRatio).toFixed(1)}%
                   </div>
                 </div>
                
@@ -403,10 +406,10 @@ export default function MyPage() {
                     <div className="text-xs text-[#8f9098] mb-1">현금 자산</div>
                     <div className="text-lg font-semibold">
                       ${" "}
-                      {/* {(portfolioData.seedMoney - portfolioData.investmentAmount).toLocaleString("en-US", {
+                      {portfolioData.cash.toLocaleString("en-US", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
-                      })} */}
+                      })}
                     </div>
                   </div>
               </div>

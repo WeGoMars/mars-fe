@@ -10,20 +10,33 @@ import StockList from "@/components/StockList";
 import BuyConfirmModal from "@/components/BuyConfirmModal";
 import SellConfirmModal from "@/components/SellConfirmModal";
 import type { Stock, GetStockSearchResponse } from "@/lib/types";
-import { useRouter } from "next/navigation"
-import Link from "next/link"
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import ProfileModal from "@/components/common/ProfileModal"
-import { Heart } from 'lucide-react';
+import ProfileModal from "@/components/common/ProfileModal";
+import { Heart } from "lucide-react";
 import mockPortfolio from "@/lib/mock/mockportfolio";
 
-import ProfileHandler from "@/components/common/ProfileHandler"
-import useSWR from 'swr';
-import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, getStockDetails, getMyStocks, buyStock, sellStock, getTradeHistory } from "@/lib/api";
+import ProfileHandler from "@/components/common/ProfileHandler";
+import useSWR from "swr";
+import {
+  getStockChartData,
+  addToFavorites,
+  removeFromFavorites,
+  getFavoriteStocks,
+  useGetProfileQuery,
+  getStockDetails,
+  getMyStocks,
+  buyStock,
+  sellStock,
+  getTradeHistory,
+} from "@/lib/api";
 import BuyPanel from "@/components/BuyPanel";
+import LogoutButton from "@/components/common/LogoutButton";
 import SellPanel from "@/components/SellPanel";
-import { mutate } from 'swr';
+import { mutate } from "swr";
+import { useGetWalletQuery, useGetOverallPortfolioQuery } from "@/lib/api";
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState<Stock[]>([
@@ -32,41 +45,51 @@ export default function Dashboard() {
       name: "S&P 500 ETF",
       price: "$456.48",
       change: "+1.66%",
-      changePercent: "+1.66%"
+      changePercent: "+1.66%",
     },
     {
       symbol: "AAPL",
       name: "Apple Inc.",
       price: "$175.04",
       change: "+0.86%",
-      changePercent: "+0.86%"
+      changePercent: "+0.86%",
     },
     {
       symbol: "TSLA",
       name: "Tesla Inc.",
       price: "$238.45",
       change: "-2.32%",
-      changePercent: "-2.32%"
-    }
+      changePercent: "-2.32%",
+    },
   ]);
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
   // 첫 화면 종목 선택 GOOGL로 설정함.
   const [selectedStock, setSelectedStock] = useState<string>("GOOGL");
   const [activeTab, setActiveTab] = useState<"매수" | "매도">("매수");
-  const [activePeriod, setActivePeriod] = useState<"일" | "주" | "월" | "1시간">("일");
-  const [activeRightTab, setActiveRightTab] = useState<"종목정보 상세" | "내 계좌" | "AI 추천">("종목정보 상세");
+  const [activePeriod, setActivePeriod] = useState<
+    "일" | "주" | "월" | "1시간"
+  >("일");
+  const [activeRightTab, setActiveRightTab] = useState<
+    "종목정보 상세" | "내 계좌" | "AI 추천"
+  >("종목정보 상세");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [nickname, setNickname] = useState<string | null>(null);
-  const [showPanel, setShowPanel] = useState<false | 'buy' | 'sell'>(false);
+  const [showPanel, setShowPanel] = useState<false | "buy" | "sell">(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSellConfirmModal, setShowSellConfirmModal] = useState(false);
   const [isHeartFilled, setIsHeartFilled] = useState(false);
   const [favoriteStocks, setFavoriteStocks] = useState<Stock[]>([]);
-  const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">("15분");
+  const [selectedMinute, setSelectedMinute] = useState<"15분" | "1시간">(
+    "15분"
+  );
   const router = useRouter();
+  const { refetch: refetchWallet } = useGetWalletQuery();
+  const { refetch: refetchPortfolio } = useGetOverallPortfolioQuery();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
   const [selectedInfo, setSelectedInfo] = useState<{
     symbol: string;
@@ -77,7 +100,7 @@ export default function Dashboard() {
     symbol: "GOOGL",
     name: "Alphabet Inc.",
     price: 0,
-    change: 0
+    change: 0,
   });
   const [logoError, setLogoError] = useState(false);
   const [buyParams, setBuyParams] = useState<{
@@ -100,48 +123,55 @@ export default function Dashboard() {
   const selectStock = (stock: GetStockSearchResponse) => {
     setSelectedStock(stock.symbol);
     setLogoError(false);
-    
+
     // 중앙 정보 직접 업데이트
     setSelectedInfo({
       symbol: stock.symbol,
       name: stock.name,
       price: stock.currentPrice,
-      change: stock.priceDelta
+      change: stock.priceDelta,
     });
   };
 
-  const portfolioData = mockPortfolio;
-  const cashAsset = portfolioData.seedMoney - portfolioData.investmentAmount;
+  // const portfolioData = mockPortfolio;
+  // const cashAsset = portfolioData.seedMoney - portfolioData.investmentAmount;
 
   // 관심 종목 목록을 가져오는 SWR 훅
   const { data: favoriteStocksData, mutate: mutateFavoriteStocks } = useSWR(
-    isLoggedIn ? '/api/portfolios/like' : null,
+    isLoggedIn ? "/api/portfolios/like" : null,
     () => getFavoriteStocks()
   );
 
   // 관심 종목 상태 업데이트
   useEffect(() => {
     if (favoriteStocksData?.data) {
-      setFavoriteStocks(favoriteStocksData.data.map(stock => ({
-        symbol: stock.symbol,
-        name: stock.name,
-        price: `$${stock.currentPrice.toFixed(2)}`,
-        change: `${stock.priceDelta >= 0 ? '+' : ''}${stock.priceDelta.toFixed(2)}%`,
-        changePercent: `${stock.priceDelta >= 0 ? '+' : ''}${((stock.priceDelta / (stock.currentPrice - stock.priceDelta)) * 100).toFixed(2)}%`
-      })));
+      setFavoriteStocks(
+        favoriteStocksData.data.map((stock) => ({
+          symbol: stock.symbol,
+          name: stock.name,
+          price: `$${stock.currentPrice.toFixed(2)}`,
+          change: `${stock.priceDelta >= 0 ? "+" : ""}${stock.priceDelta.toFixed(2)}%`,
+          changePercent: `${stock.priceDelta >= 0 ? "+" : ""}${((stock.priceDelta / (stock.currentPrice - stock.priceDelta)) * 100).toFixed(2)}%`,
+        }))
+      );
     }
   }, [favoriteStocksData]);
 
   // 관심 종목 상태가 변경될 때마다 하트 상태 업데이트
   useEffect(() => {
-    const isFavorite = favoriteStocksData?.data?.some(stock => stock.symbol === selectedStock) ?? false;
+    const isFavorite =
+      favoriteStocksData?.data?.some(
+        (stock) => stock.symbol === selectedStock
+      ) ?? false;
     setIsHeartFilled(isFavorite);
   }, [selectedStock, favoriteStocksData]);
 
   // 관심종목 데이터가 로드되면 selectedStock에 해당하는 종목 정보로 selectedInfo를 자동 업데이트 (API만 사용)
   useEffect(() => {
     if (selectedStock && favoriteStocksData?.data) {
-      const found = favoriteStocksData.data.find((s: any) => s.symbol === selectedStock);
+      const found = favoriteStocksData.data.find(
+        (s: any) => s.symbol === selectedStock
+      );
       if (found) {
         handleFavoriteStockClick(found);
       }
@@ -150,18 +180,22 @@ export default function Dashboard() {
   }, [favoriteStocksData, selectedStock]);
 
   const { data: stockChartData, error: stockChartError } = useSWR(
-    selectedStock ? ['stockChart', selectedStock, activePeriod, selectedMinute] : null,
-    () => getStockChartData({
-      symbol: selectedStock,
-      interval: activePeriod === "1시간"
-        ? "1h"
-        : activePeriod === "일"
-          ? "1day"
-          : activePeriod === "주"
-            ? "1week"
-            : "1month",
-      limit: activePeriod === "1시간" ? 100 : 30
-    })
+    selectedStock
+      ? ["stockChart", selectedStock, activePeriod, selectedMinute]
+      : null,
+    () =>
+      getStockChartData({
+        symbol: selectedStock,
+        interval:
+          activePeriod === "1시간"
+            ? "1h"
+            : activePeriod === "일"
+              ? "1day"
+              : activePeriod === "주"
+                ? "1week"
+                : "1month",
+        limit: activePeriod === "1시간" ? 100 : 30,
+      })
   );
 
   // 종목 클릭 시 상세정보 API로 받아와서 상단 정보도 즉시 바인딩
@@ -173,19 +207,22 @@ export default function Dashboard() {
       if (res.success && res.data) {
         const price = res.data.currentPrice;
         const lastPrice = res.data.lastPrice;
-        const change = lastPrice !== 0 && lastPrice !== undefined && lastPrice !== null ? ((price - lastPrice) / lastPrice) * 100 : 0;
+        const change =
+          lastPrice !== 0 && lastPrice !== undefined && lastPrice !== null
+            ? ((price - lastPrice) / lastPrice) * 100
+            : 0;
         setSelectedInfo({
           symbol: res.data.symbol,
           name: res.data.name,
           price: price,
-          change: change
+          change: change,
         });
       } else {
         setSelectedInfo({
           symbol: stock.symbol,
           name: stock.name,
           price: 0,
-          change: 0
+          change: 0,
         });
       }
     } catch {
@@ -193,7 +230,7 @@ export default function Dashboard() {
         symbol: stock.symbol,
         name: stock.name,
         price: 0,
-        change: 0
+        change: 0,
       });
     }
   };
@@ -201,37 +238,39 @@ export default function Dashboard() {
   // 하트 버튼 클릭 핸들러
   const handleHeartClick = async () => {
     if (!isLoggedIn) {
-      alert('로그인이 필요한 기능입니다.');
+      alert("로그인이 필요한 기능입니다.");
       return;
     }
 
     try {
-      const isFavorite = favoriteStocks.some(stock => stock.symbol === selectedStock);
-      
+      const isFavorite = favoriteStocks.some(
+        (stock) => stock.symbol === selectedStock
+      );
+
       if (isFavorite) {
         await removeFromFavorites({ symbol: selectedStock });
       } else {
         await addToFavorites({ symbol: selectedStock });
       }
-      
+
       // 관심 종목 목록 새로고침
       await mutateFavoriteStocks();
     } catch (error) {
-      console.error('Failed to update favorite status:', error);
-      alert('관심 종목 업데이트에 실패했습니다.');
+      console.error("Failed to update favorite status:", error);
+      alert("관심 종목 업데이트에 실패했습니다.");
     }
   };
 
   // 내 종목 목록을 가져오는 SWR 훅
   const { data: myStocksData } = useSWR(
-    isLoggedIn ? '/api/portfolios/list' : null,
+    isLoggedIn ? "/api/portfolios/list" : null,
     () => getMyStocks()
   );
 
   // 내 종목 목록 데이터가 변경될 때마다 콘솔에 출력
   useEffect(() => {
     if (myStocksData) {
-      console.log('내 종목 목록:', myStocksData);
+      console.log("내 종목 목록:", myStocksData);
     }
   }, [myStocksData]);
 
@@ -239,9 +278,9 @@ export default function Dashboard() {
   const testTradeHistory = async () => {
     try {
       const result = await getTradeHistory();
-      console.log('거래내역:', result);
+      console.log("거래내역:", result);
     } catch (error) {
-      console.error('거래내역 조회 실패:', error);
+      console.error("거래내역 조회 실패:", error);
     }
   };
 
@@ -249,6 +288,41 @@ export default function Dashboard() {
   useEffect(() => {
     testTradeHistory();
   }, []);
+
+  // 1. RTK Query를 사용해 프로필 정보 가져오기 (로그인된 유저 정보 포함)
+  const { data } = useGetProfileQuery();
+  // 2. data가 갱신될 때마다 실행됨
+  useEffect(() => {
+    if (data?.nick) {
+      setNickname(data.nick);
+      localStorage.setItem("nickname", data.nick);
+    }
+  }, [data]);
+  // 3. 페이지가 처음 마운트될 때(localStorage에 저장된 닉네임이 있으면) 꺼내오기
+  useEffect(() => {
+    const savedNick = localStorage.getItem("nickname");
+    if (savedNick) {
+      setNickname(savedNick);
+    }
+  }, []);
+
+  const {
+    data: walletData,
+    isLoading: isWalletLoading,
+    isError: isWalletError,
+  } = useGetWalletQuery();
+  const {
+    data: overallData,
+    isLoading: isPortfolioLoading,
+    isError: isPortfolioError,
+  } = useGetOverallPortfolioQuery();
+  const cyberDollars = walletData?.data?.cyberDollar ?? 0;
+  const portfolioData = {
+    totalAssets: overallData?.data?.totalAsset ?? 0,
+    investmentAmount: overallData?.data?.investedAmount ?? 0,
+    profitLoss: overallData?.data?.evalGain ?? 0,
+    returnRate: (overallData?.data?.returnRate ?? 0) * 100,
+  };
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
@@ -261,13 +335,15 @@ export default function Dashboard() {
           >
             <Menu className="w-6 h-6 text-gray-700" />
           </button>
-          <Image
-            src="/marslogo.png"
-            alt="Mars 로고"
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
+          <a href="/dashboard">
+            <Image
+              src="/marslogo.png"
+              alt="Mars 로고"
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
+          </a>
           <span className="text-lg font-medium">mars</span>
         </div>
 
@@ -275,8 +351,13 @@ export default function Dashboard() {
         <div className="hidden md:flex items-center gap-4">
           <Link
             href="dashboard/mypage"
-            className="flex items-center gap-2 text-sm text-gray-600 hover:opacity-80 transition-opacity">
-            <span>{nickname ? `${nickname}님 환영합니다` : "mars 모투에 오신걸 환영합니다"}</span>
+            className="flex items-center gap-2 text-sm text-gray-600 hover:opacity-80 transition-opacity"
+          >
+            <span>
+              {nickname
+                ? `${nickname}님 환영합니다`
+                : "mars 모투에 오신걸 환영합니다"}
+            </span>
           </Link>
 
           <ProfileHandler
@@ -286,18 +367,15 @@ export default function Dashboard() {
           <Link
             href="dashboard/mypage"
             className="flex items-center gap-2 text-sm text-gray-600 hover:opacity-80 transition-opacity"
-            onClick={() => setActiveRightTab('내 계좌')}
+            onClick={() => setActiveRightTab("내 계좌")}
           >
             내계좌
           </Link>
-          <Button variant="default" size="sm" className="bg-[#5f80f8] hover:bg-[#4c6ef5] text-white"
-            onClick={() => {
-              localStorage.removeItem("logInUser")
-              alert("로그아웃 되었습니다.")
-              router.push("/")
-            }}>
-            로그아웃
-          </Button>
+          <LogoutButton redirectTo="/">
+            <span className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full block text-center">
+              로그아웃
+            </span>
+          </LogoutButton>
         </div>
 
         <div className="md:hidden">
@@ -356,7 +434,7 @@ export default function Dashboard() {
                   industry: "",
                   currentPrice: parseFloat(stock.price.replace("$", "")),
                   priceDelta: parseFloat(stock.change.replace("%", "")),
-                  hourlyVolume: 0
+                  hourlyVolume: 0,
                 });
                 setMobileSidebarOpen(false);
               }}
@@ -406,22 +484,33 @@ export default function Dashboard() {
                             alt={stock.symbol}
                             width={28}
                             height={28}
-                            style={{objectFit:'contain'}}
+                            style={{ objectFit: "contain" }}
                             onError={() => setLogoError(true)}
                           />
                         ) : (
-                          <span className="text-xs font-bold">{stock.symbol}</span>
+                          <span className="text-xs font-bold">
+                            {stock.symbol}
+                          </span>
                         )}
                       </div>
                       <div>
-                        <div className="font-bold text-base">{stock.symbol}</div>
-                        <div className="text-xs text-gray-500">{stock.name}</div>
+                        <div className="font-bold text-base">
+                          {stock.symbol}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {stock.name}
+                        </div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-bold text-base">${stock.currentPrice.toFixed(2)}</div>
-                      <div className={`text-xs ${stock.priceDelta >= 0 ? 'text-[#41c3a9]' : 'text-red-500'}`}>
-                        {stock.priceDelta >= 0 ? '+' : ''}{stock.priceDelta.toFixed(2)}%
+                      <div className="font-bold text-base">
+                        ${stock.currentPrice.toFixed(2)}
+                      </div>
+                      <div
+                        className={`text-xs ${stock.priceDelta >= 0 ? "text-[#41c3a9]" : "text-red-500"}`}
+                      >
+                        {stock.priceDelta >= 0 ? "+" : ""}
+                        {stock.priceDelta.toFixed(2)}%
                       </div>
                     </div>
                   </div>
@@ -473,11 +562,12 @@ export default function Dashboard() {
                           className="rounded-full"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
+                            target.style.display = "none";
                             const parent = target.parentElement;
                             if (parent) {
-                              const fallback = document.createElement('div');
-                              fallback.className = 'w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center';
+                              const fallback = document.createElement("div");
+                              fallback.className =
+                                "w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center";
                               fallback.innerHTML = `<span class='text-xs font-bold'>${stock.symbol.slice(0, 2)}</span>`;
                               parent.appendChild(fallback);
                             }
@@ -485,14 +575,23 @@ export default function Dashboard() {
                         />
                       </div>
                       <div>
-                        <div className="font-bold text-base">{stock.symbol}</div>
-                        <div className="text-xs text-gray-500">{stock.name}</div>
+                        <div className="font-bold text-base">
+                          {stock.symbol}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {stock.name}
+                        </div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-bold text-base">${stock.currentPrice.toFixed(2)}</div>
-                      <div className={`text-xs ${stock.priceDelta >= 0 ? 'text-[#41c3a9]' : 'text-red-500'}`}> 
-                        {stock.priceDelta >= 0 ? '+' : ''}{stock.priceDelta.toFixed(2)}%
+                      <div className="font-bold text-base">
+                        ${stock.currentPrice.toFixed(2)}
+                      </div>
+                      <div
+                        className={`text-xs ${stock.priceDelta >= 0 ? "text-[#41c3a9]" : "text-red-500"}`}
+                      >
+                        {stock.priceDelta >= 0 ? "+" : ""}
+                        {stock.priceDelta.toFixed(2)}%
                       </div>
                     </div>
                   </div>
@@ -522,11 +621,13 @@ export default function Dashboard() {
                       alt={selectedInfo.symbol}
                       width={28}
                       height={28}
-                      style={{objectFit:'contain'}}
+                      style={{ objectFit: "contain" }}
                       onError={() => setLogoError(true)}
                     />
                   ) : (
-                    <span className="text-xs font-bold">{selectedInfo.symbol}</span>
+                    <span className="text-xs font-bold">
+                      {selectedInfo.symbol}
+                    </span>
                   )}
                 </div>
                 <h2 className="text-xl font-bold">{selectedInfo.symbol}</h2>
@@ -536,7 +637,7 @@ export default function Dashboard() {
                     className="flex items-center justify-center"
                   >
                     <Heart
-                      className={`w-4 h-4 cursor-pointer transition-colors ${isHeartFilled ? 'text-red-500 fill-red-500' : 'text-[#1f2024]'}`}
+                      className={`w-4 h-4 cursor-pointer transition-colors ${isHeartFilled ? "text-red-500 fill-red-500" : "text-[#1f2024]"}`}
                     />
                   </button>
                 )}
@@ -544,13 +645,13 @@ export default function Dashboard() {
               {/* Buy/Sell and Time Period Tabs */}
               <div className="flex flex-wrap gap-2">
                 <button
-                  onClick={() => setShowPanel('buy')}
+                  onClick={() => setShowPanel("buy")}
                   className={`px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${activeTab === "매수" ? "bg-[#fce7e7]" : "bg-white hover:bg-gray-50"}`}
                 >
                   매수
                 </button>
                 <button
-                  onClick={() => setShowPanel('sell')}
+                  onClick={() => setShowPanel("sell")}
                   className="px-4 py-1.5 rounded-full font-medium text-xs transition-colors bg-[#b3c6e6]"
                 >
                   매도
@@ -561,7 +662,9 @@ export default function Dashboard() {
                       key={period}
                       onClick={() => setActivePeriod(period)}
                       className={`px-3 md:px-4 py-1.5 rounded-full font-medium text-xs transition-colors ${
-                        activePeriod === period ? "bg-white shadow-sm" : "hover:bg-gray-100"
+                        activePeriod === period
+                          ? "bg-white shadow-sm"
+                          : "hover:bg-gray-100"
                       }`}
                     >
                       {period}
@@ -574,10 +677,17 @@ export default function Dashboard() {
             <div className="mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl md:text-3xl font-bold">
-                  ${Number(selectedInfo.price).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
+                  $
+                  {Number(selectedInfo.price).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </span>
-                <span className={`${Number(selectedInfo.change) >= 0 ? 'text-[#41c3a9] bg-[#e6f7f4]' : 'text-red-500 bg-red-50'} px-2 py-0.5 rounded-md text-sm`}>
-                  {Number(selectedInfo.change) >= 0 ? '+' : ''}{Number(selectedInfo.change).toFixed(2)}%
+                <span
+                  className={`${Number(selectedInfo.change) >= 0 ? "text-[#41c3a9] bg-[#e6f7f4]" : "text-red-500 bg-red-50"} px-2 py-0.5 rounded-md text-sm`}
+                >
+                  {Number(selectedInfo.change) >= 0 ? "+" : ""}
+                  {Number(selectedInfo.change).toFixed(2)}%
                 </span>
               </div>
             </div>
@@ -591,18 +701,20 @@ export default function Dashboard() {
                 className="w-full h-full flex flex-col items-center justify-center"
               >
                 <StockChart
-                  data={Array.isArray(stockChartData?.data)
-                    ? stockChartData.data.filter(
-                        d =>
-                          d &&
-                          d.timestamp &&
-                          d.open != null &&
-                          d.close != null &&
-                          d.high != null &&
-                          d.low != null &&
-                          d.volume != null
-                      )
-                    : []}
+                  data={
+                    Array.isArray(stockChartData?.data)
+                      ? stockChartData.data.filter(
+                          (d) =>
+                            d &&
+                            d.timestamp &&
+                            d.open != null &&
+                            d.close != null &&
+                            d.high != null &&
+                            d.low != null &&
+                            d.volume != null
+                        )
+                      : []
+                  }
                   symbol={selectedInfo.symbol}
                   period={activePeriod}
                 />
@@ -622,18 +734,19 @@ export default function Dashboard() {
           {showPanel ? (
             <>
               {/* 매수 패널 */}
-              {showPanel === 'buy' && (
+              {showPanel === "buy" && (
                 <BuyPanel
-                  open={showPanel === 'buy'}
+                  key={selectedInfo.symbol} // ✅ 매번 새로 렌더링되
+                  open={showPanel === "buy"}
                   onClose={() => setShowPanel(false)}
                   symbol={selectedInfo.symbol}
                   name={selectedInfo.name}
                   price={selectedInfo.price}
                   totalAssets={portfolioData.totalAssets}
-                  cashAsset={cashAsset}
-                  seedMoney={portfolioData.seedMoney}
+                  cyberDollar={cyberDollars}
                   investmentAmount={portfolioData.investmentAmount}
                   profitLoss={portfolioData.profitLoss}
+                  returnRate={portfolioData.returnRate}
                   onBuyClick={(params) => {
                     setBuyParams(params);
                     setShowConfirmModal(true);
@@ -641,18 +754,18 @@ export default function Dashboard() {
                 />
               )}
               {/* 매도 패널 */}
-              {showPanel === 'sell' && (
+              {showPanel === "sell" && (
                 <SellPanel
-                  open={showPanel === 'sell'}
+                  open={showPanel === "sell"}
                   onClose={() => setShowPanel(false)}
                   symbol={selectedInfo.symbol}
                   name={selectedInfo.name}
                   price={selectedInfo.price}
                   totalAssets={portfolioData.totalAssets}
-                  cashAsset={cashAsset}
-                  seedMoney={portfolioData.seedMoney}
+                  cyberDollar={cyberDollars}
                   investmentAmount={portfolioData.investmentAmount}
                   profitLoss={portfolioData.profitLoss}
+                  returnRate={portfolioData.returnRate}
                   onSellClick={(params) => {
                     setSellParams(params);
                     setShowSellConfirmModal(true);
@@ -743,15 +856,20 @@ export default function Dashboard() {
               price: buyParams.price,
               quantity: buyParams.quantity,
             });
-            mutate('/api/portfolios/list'); // 내가 구매한 종목 새로고침
+            mutate("/api/portfolios/list"); // 내가 구매한 종목 새로고침
+
+            // 추가: 지갑, 포트폴리오 새로고침
+            refetchWallet();
+            refetchPortfolio();
+
             setShowConfirmModal(false);
             setShowPanel(false);
           } catch (e) {
-            alert('매수에 실패했습니다.');
+            alert("매수에 실패했습니다.");
           }
         }}
-        symbol={buyParams?.symbol || ''}
-        name={buyParams?.name || ''}
+        symbol={buyParams?.symbol || ""}
+        name={buyParams?.name || ""}
         price={buyParams?.price || 0}
         quantity={buyParams?.quantity || 1}
         fee={buyParams?.fee || 0}
@@ -768,15 +886,15 @@ export default function Dashboard() {
               price: sellParams.price,
               quantity: sellParams.quantity,
             });
-            mutate('/api/portfolios/list'); // 내가 구매한 종목 새로고침
+            mutate("/api/portfolios/list"); // 내가 구매한 종목 새로고침
             setShowSellConfirmModal(false);
             setShowPanel(false);
           } catch (e) {
-            alert('매도에 실패했습니다.');
+            alert("매도에 실패했습니다.");
           }
         }}
-        symbol={sellParams?.symbol || ''}
-        name={sellParams?.name || ''}
+        symbol={sellParams?.symbol || ""}
+        name={sellParams?.name || ""}
         price={sellParams?.price || 0}
         quantity={sellParams?.quantity || 1}
         fee={sellParams?.fee || 0}

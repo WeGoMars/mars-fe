@@ -1,22 +1,23 @@
 import { X, Minus, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
-
+import { useEffect, useState } from "react"; 
+import { useGetOverallPortfolioQuery,useGetWalletQuery } from "@/lib/api"; 
 // 매수, 매도 슬라이드 컴포넌트
 interface BuyPanelProps {
   open: boolean; // 패널 표시 여부
   onClose: () => void; // 패널 닫기 함수
   symbol: string;
   name: string;
-  price: number;
+  price: number; // 종목 가격
+   // 포트폴리오 데이터들
   totalAssets: number;
-  cashAsset: number;
-  seedMoney: number;
   investmentAmount: number;
   profitLoss: number;
+  returnRate: number;
+  cyberDollar: number;
   onBuyClick: (params: { symbol: string; name: string; price: number; quantity: number; fee: number; total: number }) => void;
 }
 
-export default function BuyPanel({ open, onClose, symbol, name, price, totalAssets, cashAsset, seedMoney, investmentAmount, profitLoss, onBuyClick }: BuyPanelProps) {
+export default function BuyPanel({ open, onClose, symbol, name, totalAssets, price , cyberDollar, returnRate, investmentAmount, profitLoss, onBuyClick }: BuyPanelProps) {
   const [quantity, setQuantity] = useState(1);
   useEffect(() => {
     if (open) {
@@ -27,6 +28,7 @@ export default function BuyPanel({ open, onClose, symbol, name, price, totalAsse
   // 수수료 예시: 0.5% (원하는 비율로 조정)
   const fee = Math.round(price * quantity * 0.005 * 100) / 100;
   const total = Math.round((price * quantity + fee) * 100) / 100;
+
 
   return (
     <div
@@ -100,17 +102,17 @@ export default function BuyPanel({ open, onClose, symbol, name, price, totalAsse
             </div>
           </div>
           <div className="flex justify-between items-center">
-            <div className="font-bold text-base">현금자산</div>
+            <div className="font-bold text-base">수익률</div>
             <div>
               <span className="text-xs mr-1">$</span>
-              <span className="text-xl font-bold">{cashAsset.toFixed(2)}</span>
+              <span className="text-xl font-bold">{returnRate.toFixed(2)}%</span>
             </div>
           </div>
           <div className="flex justify-between items-center">
             <div className="font-bold text-base">시드머니</div>
             <div>
               <span className="text-[#006ffd] text-xs mr-1">$</span>
-              <span className="text-[#006ffd] text-xl font-bold">{seedMoney.toFixed(2)}</span>
+              <span className="text-[#006ffd] text-xl font-bold">{cyberDollar.toFixed(2)}</span>
             </div>
           </div>
           <div className="flex justify-between items-center">
