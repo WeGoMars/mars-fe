@@ -162,8 +162,8 @@ export default function FinanceDashboard() {
   }>({
     symbol: "GOOGL",
     name: "Alphabet Inc.",
-    price: 0,
-    change: 0
+    price: 142.65,
+    change: 1.1
   });
 
   const handleStockSelect = async (stock: any) => {
@@ -256,6 +256,21 @@ export default function FinanceDashboard() {
       setSelectedInfo(newInfo);
     }
   }, [selectedStock, searchedStockInfo, favoriteStocks, stockListData, stockData]);
+
+  // stockListData가 로드되면 첫 번째 종목을 선택하도록 수정
+  useEffect(() => {
+    const stockListArr = stockListData?.data as any[] | undefined;
+    if (stockListArr && stockListArr.length > 0) {
+      const firstStock = stockListArr[0];
+      setSelectedStock(firstStock.symbol);
+      setSelectedInfo({
+        symbol: firstStock.symbol,
+        name: firstStock.name,
+        price: firstStock.currentPrice,
+        change: firstStock.priceDelta
+      });
+    }
+  }, [stockListData]);
 
   // 1시간일 때 timestamp를 YYYY-MM-DDTHH:00:00.000Z 형식(ISO 8601, 1시간 단위)으로 변환하는 함수
   const getProcessedChartData = () => {
