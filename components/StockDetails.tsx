@@ -31,11 +31,13 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   const [aiSubmitted, setAiSubmitted] = useState(false);
   const [isHeartFilled, setIsHeartFilled] = useState(false);
   // const [portfolioData, setPortfolioData] = useState(mockPortfolio);
+
+ 
   const { data: portfolioResponse, isLoading: portfolioLoading, isError: portfolioError } = useGetOverallPortfolioQuery();
   const { data: walletResponse, isLoading: walletLoading, isError: walletError } = useGetWalletQuery();
+   if (portfolioLoading || walletLoading) return <div>로딩 중...</div>;
   const portfolioData = portfolioResponse?.data;
   const walletData = walletResponse?.data;
-  if (portfolioLoading || walletLoading) return <div>로딩 중...</div>;
   if (portfolioError || walletError || !portfolioData || !walletData) return <div>에러 발생</div>;
 
   useEffect(() => {
