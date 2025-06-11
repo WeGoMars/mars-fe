@@ -20,7 +20,7 @@ import mockPortfolio from "@/lib/mock/mockportfolio";
 
 import ProfileHandler from "@/components/common/ProfileHandler"
 import useSWR from 'swr';
-import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, getStockDetails, getMyStocks, buyStock, sellStock } from "@/lib/api";
+import { getStockChartData, addToFavorites, removeFromFavorites, getFavoriteStocks, getStockDetails, getMyStocks, buyStock, sellStock, getTradeHistory } from "@/lib/api";
 import BuyPanel from "@/components/BuyPanel";
 import SellPanel from "@/components/SellPanel";
 import { mutate } from 'swr';
@@ -234,6 +234,21 @@ export default function Dashboard() {
       console.log('내 종목 목록:', myStocksData);
     }
   }, [myStocksData]);
+
+  // 거래내역 테스트를 위한 임시 함수
+  const testTradeHistory = async () => {
+    try {
+      const result = await getTradeHistory();
+      console.log('거래내역:', result);
+    } catch (error) {
+      console.error('거래내역 조회 실패:', error);
+    }
+  };
+
+  // 컴포넌트 마운트 시 테스트 실행
+  useEffect(() => {
+    testTradeHistory();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#f5f7f9]">

@@ -269,3 +269,17 @@ export interface GetMyStocksResponse {
   }[];
 }
 
+// 주식 거래내역 api test, type 정의
+export interface GetTradeHistoryResponse {
+  success: boolean;
+  message: string;
+  data: {
+    symbol: string;
+    name: string;
+    quantity: number;
+    currentPrice: number;
+    date: string;
+    returnRate: number;
+  }[];
+}
+

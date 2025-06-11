@@ -1,5 +1,5 @@
 import type { SignUpRequest, SignUpResponse, WalletResponse,TradeResponse, TradeRequest } from "./types"
-import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest, GetStockSearchRequest, GetStockSearchResponse, GetStockDetailsResponse, LikeStockRequest, LikeStockResponse, UnlikeStockResponse, GetLikedStocksResponse, GetMyStocksResponse } from "./types"
+import type { StockDetails, ChartDataResponse, NewsItem, ApiResponse, GetStockChartDataRequest, GetStockChartDataResponse, GetStockListResponse, GetStockListRequest, GetStockSearchRequest, GetStockSearchResponse, GetStockDetailsResponse, LikeStockRequest, LikeStockResponse, UnlikeStockResponse, GetLikedStocksResponse, GetMyStocksResponse, GetTradeHistoryResponse } from "./types"
 import { fetchBaseQuery, createApi } from '@reduxjs/toolkit/query/react';
 import type { LoginRequest, LoginResponse, UserProfile } from "./types"
 
@@ -140,6 +140,23 @@ export async function getMyStocks(): Promise<GetMyStocksResponse> {
 
   if (!response.ok) {
     throw new Error('Failed to fetch my stocks');
+  }
+
+  return response.json();
+}
+
+// 주식 거래내역 조회
+export async function getTradeHistory(): Promise<GetTradeHistoryResponse> {
+  const response = await fetch('/api/portfolios/history', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include', // 로그인 필수
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch trade history');
   }
 
   return response.json();
