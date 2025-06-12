@@ -308,3 +308,84 @@ export interface GetStockPortfolioResponse {
     returnRate: number;
   }[];
 }
+
+// 당신의 투자 성향(유저 선호 추가 api)
+export type RiskLevel = 'high' | 'low';
+
+// 당신의 선호 전략(유저 선호 추가 api)
+export type PreferredStrategy = 
+  | 'dividend_stability'
+  | 'portfolio_balance'
+  | 'value_stability'
+  | 'momentum'
+  | 'sector_rotation'
+  | 'rebound_buy';
+
+// 당신의 관심 산업 분야(유저 선호 추가 api)
+export type PreferredSector = 
+  | 'Basic Materials'
+  | 'Communication Services'
+  | 'Consumer Cyclical'
+  | 'Consumer Defensive'
+  | 'Energy'
+  | 'Financial Services'
+  | 'Healthcare'
+  | 'Industrials'
+  | 'Real Estate'
+  | 'Technology'
+  | 'Utilities';
+
+export interface UserPreferenceRequest {
+  riskLevel: RiskLevel;
+  preferredStrategies: PreferredStrategy[];
+  preferredSectors: PreferredSector[];
+}
+
+export interface UserPreferenceResponse {
+  success: boolean;
+  message: string;
+  data: {
+    riskLevel: RiskLevel;
+    preferredStrategies: PreferredStrategy[];
+    preferredSectors: PreferredSector[];
+    createdAt: string;
+    updatedAt: string;
+  };
+}
+
+export interface GetUserPreferenceResponse {
+  success: boolean;
+  message: string;
+  data: {
+    riskLevel: RiskLevel;
+    preferredStrategies: PreferredStrategy[];
+    preferredSectors: PreferredSector[];
+    createdAt: string;
+    updatedAt: string;
+  };
+}
+
+// AI추천이유 type 정의
+export interface AiRecommendationReasonRaw {
+  type: string;
+  detail: string;
+  score?: number;
+}
+
+export interface AiRecommendationItem {
+  symbol: string;
+  name: string;
+  sector: string;
+  industry: string;
+  score: number;
+  metrics: { name: string; value: number; score: number }[];
+  reasons: AiRecommendationReasonRaw[];
+}
+
+export interface GetAiRecommendationsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    stocks: AiRecommendationItem[];
+  };
+}

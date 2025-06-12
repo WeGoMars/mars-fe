@@ -7,6 +7,10 @@ import type {
   GetTradeHistoryResponse,
   OverallPortfolioResponse,
   GetStockPortfolioResponse,
+  UserPreferenceRequest,
+  UserPreferenceResponse,
+  GetUserPreferenceResponse,
+  GetAiRecommendationsResponse,
 } from "./types";
 import type {
   StockDetails,
@@ -383,5 +387,53 @@ export async function getStockPortfolio(): Promise<GetStockPortfolioResponse> {
     throw new Error("Failed to fetch stock portfolio");
   }
 
+  return response.json();
+}
+
+// AI 추천을 위한 사용자 선호도 저장
+export async function saveUserPreference(
+  params: UserPreferenceRequest
+): Promise<UserPreferenceResponse> {
+  const response = await fetch("/api/ai/preference", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(params),
+    credentials: "include", // 로그인 필수
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to save user preference");
+  }
+
+  return response.json();
+}
+
+// 내 선호 조회
+export async function getUserPreference(): Promise<GetUserPreferenceResponse> {
+  const response = await fetch("/api/ai/preference", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include", // 로그인 필수
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch user preference");
+  }
+
+  return response.json();
+}
+
+// AI 추천 종목/이유 조회
+export async function getAiRecommendations(): Promise<GetAiRecommendationsResponse> {
+  const response = await fetch("/api/ai/recommend", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  });
+  if (!response.ok) throw new Error("Failed to fetch AI recommendations");
   return response.json();
 }
