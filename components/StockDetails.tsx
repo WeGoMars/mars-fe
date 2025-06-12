@@ -215,9 +215,11 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
     try {
       if (isFavorite) {
         await removeFromFavorites({ symbol });
+        // 관심 종목에서 제거
         setFavoriteStocks(prev => prev.filter(stock => stock.symbol !== symbol));
       } else {
         await addToFavorites({ symbol });
+        // 관심 종목에 추가
         setFavoriteStocks(prev => [...prev, { symbol, name, price: '', change: '', changePercent: '' }]);
       }
     } catch (e) {
@@ -315,35 +317,20 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
           <div className="flex items-center justify-center gap-2">
             <ChevronLeft className="w-5 h-5 text-[#006ffd] cursor-pointer" onClick={() => setShowReasonDetail(false)} />
             <span className="text-[#1f2024] text-base font-medium">관심 종목으로 저장</span>
-            <button
-              onClick={() => {
-                const newIsHeartFilled = !isHeartFilled;
-                setIsHeartFilled(newIsHeartFilled);
-                
-                if (newIsHeartFilled) {
-                  // 구글 주식 정보를 직접 추가
-                  const googleStock: Stock = {
-                    symbol: 'GOOGL',
-                    name: 'Alphabet Inc.',
-                    price: '142.65',
-                    change: '+2.35',
-                    changePercent: '+1.67%'
-                  };
-                  if (!favoriteStocks.some(stock => stock.symbol === googleStock.symbol)) {
-                    setFavoriteStocks(prev => [...prev, googleStock]);
-                  }
-                } else {
-                  setFavoriteStocks(prev => prev.filter(stock => stock.symbol !== 'GOOGL'));
-                }
-              }}
-              className="flex items-center justify-center"
-            >
-              <Heart 
-                className={`w-4 h-4 cursor-pointer transition-colors ${
-                  isHeartFilled ? 'text-red-500 fill-red-500' : 'text-[#1f2024]'
-                }`} 
-              />
-            </button>
+            {selectedAiIndex !== null && (
+              <button
+                onClick={() => handleToggleFavorite(aiRecommendations[selectedAiIndex].symbol, aiRecommendations[selectedAiIndex].name)}
+                className="flex items-center justify-center"
+              >
+                <Heart 
+                  className={`w-4 h-4 cursor-pointer transition-colors ${
+                    favoriteStocks.some(stock => stock.symbol === aiRecommendations[selectedAiIndex].symbol) 
+                      ? 'text-red-500 fill-red-500' 
+                      : 'text-[#1f2024]'
+                  }`} 
+                />
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -702,9 +689,20 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                         <div className="flex items-center justify-center gap-2">
                           <ChevronLeft className="w-5 h-5 text-[#006ffd] cursor-pointer" onClick={() => setSelectedAiIndex(null)} />
                           <span className="text-[#1f2024] text-base font-medium">관심 종목으로 저장</span>
-                          <button className="flex items-center justify-center" onClick={() => handleToggleFavorite(aiRecommendations[selectedAiIndex].symbol, aiRecommendations[selectedAiIndex].name)}>
-                            <Heart className={`w-4 h-4 ${favoriteStocks.some(stock => stock.symbol === aiRecommendations[selectedAiIndex].symbol) ? 'text-red-500 fill-red-500' : 'text-[#1f2024]'}`} />
-                          </button>
+                          {selectedAiIndex !== null && (
+                            <button
+                              onClick={() => handleToggleFavorite(aiRecommendations[selectedAiIndex].symbol, aiRecommendations[selectedAiIndex].name)}
+                              className="flex items-center justify-center"
+                            >
+                              <Heart 
+                                className={`w-4 h-4 cursor-pointer transition-colors ${
+                                  favoriteStocks.some(stock => stock.symbol === aiRecommendations[selectedAiIndex].symbol) 
+                                    ? 'text-red-500 fill-red-500' 
+                                    : 'text-[#1f2024]'
+                                }`} 
+                              />
+                            </button>
+                          )}
                         </div>
                       </div>
                     )}
