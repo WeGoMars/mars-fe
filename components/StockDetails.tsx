@@ -448,8 +448,8 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                     <div
                       className={`flex items-center text-xl font-bold transition-colors 
                         ${(portfolioData?.data?.evalGain ?? 0) >= 0 
-                          ? "text-[#e74c3c] group-hover:text-[#c0392b]" 
-                          : "text-[#3498db] group-hover:text-[#2c80b4]"}
+                          ? "text-[#41c3a9] group-hover:text-[#4caf50]" 
+                          : "text-[#e74c3c] group-hover:text-[#a73d2a]"}
                       `}
                     >
                 <span className="text-xs mr-1">$</span>
@@ -469,8 +469,8 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                     <div
                     className={`text-xl font-bold transition-colors flex items-center gap-1 
                       ${(portfolioData?.data?.returnRate ?? 0) >= 0 
-                        ? "text-[#e74c3c] group-hover:text-[#4caf50]" 
-                        : "text-[#3498db] group-hover:text-[#a73d2a]"}
+                        ? "text-[#41c3a9] group-hover:text-[#4caf50]" 
+                        : "text-[#e74c3c] group-hover:text-[#a73d2a]"}
                     `}
                     >
                       {(portfolioData?.data?.returnRate ?? 0) >= 0 ? (

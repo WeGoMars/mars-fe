@@ -394,7 +394,8 @@ export default function MyPage() {
 
             {/* 시드머니 문의 */}
             
-              <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#f99f01] hover:shadow-md transition-all duration-200 cursor-pointer">
+              <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#f99f01] hover:shadow-md transition-all duration-200 cursor-pointer"
+              onClick={() => alert("준비중입니다. 곧 제공될 예정입니다.")}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-sm font-medium text-[#8f9098]">시드머니 문의</div>
                 </div>
