@@ -479,7 +479,8 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                       <TrendingDown className="h-5 w-5" />
                     )}
                     {(portfolioData?.data?.returnRate ?? 0) >= 0 ? "+" : "-"}
-                    {Math.abs(Number(portfolioData?.data?.returnRate ?? 0)*100).toFixed(2)}%
+                    {Math.abs((portfolioData?.data?.returnRate ?? 0)*1000).toFixed(2)}%
+                    
                   </div>
                   </span>
                 </div>
@@ -809,7 +810,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">ROE</span>
-                <span className="text-sm font-medium">{details.roe !== undefined ? `${details.roe.toFixed(2)}%` : '-'}</span>
+                <span className="text-sm font-medium">{details.roe !== undefined ? `${(details.roe*100).toFixed(2)}%` : '-'}</span>
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">EPS</span>
@@ -833,7 +834,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">부채비율</span>
-                <span className="text-sm font-medium">{details.debtRatio !== undefined ? `${details.debtRatio.toFixed(2)}%` : '-'}</span>
+                <span className="text-sm font-medium">{details.debtRatio !== undefined ? `${(details.debtRatio * 100).toFixed(2)}%` : '-'}</span>
               </div>
             </div>
           </>

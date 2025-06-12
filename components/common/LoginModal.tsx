@@ -108,7 +108,6 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="test@gmail.com"
               className="border-none bg-[#bfdbfe] dark:bg-gray-700 placeholder:text-[#3c3c43]/70 dark:placeholder:text-gray-400"
               required
             />
