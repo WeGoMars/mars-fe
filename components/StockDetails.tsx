@@ -107,37 +107,43 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   };
 
   const handleSubmit = async () => {
+    if (!isLoggedIn) {
+      setShowResult(true);
+      return;
+    }
+
     if (!selectedRiskLevel) {
       setSubmitError('투자 성향을 선택해주세요.');
       return;
     }
+
     if (selectedStrategies.length === 0) {
       setSubmitError('선호 전략을 하나 이상 선택해주세요.');
       return;
     }
+
     if (selectedSectors.length === 0) {
       setSubmitError('관심 산업 분야를 하나 이상 선택해주세요.');
       return;
     }
 
+    setSubmitError('');
     setIsSubmitting(true);
-    setSubmitError(null);
-
-    const requestData = {
-      riskLevel: selectedRiskLevel,
-      preferredStrategies: selectedStrategies,
-      preferredSectors: selectedSectors,
-    };
-
-    console.log('API 요청 데이터:', requestData);
 
     try {
+      const requestData = {
+        riskLevel: selectedRiskLevel,
+        preferredStrategies: selectedStrategies,
+        preferredSectors: selectedSectors,
+      };
+
+      console.log('API 요청 데이터:', requestData);
       const response = await saveUserPreference(requestData);
       console.log('API 응답 데이터:', response);
       setShowResult(true);
     } catch (error) {
       console.error('API 에러:', error);
-      setSubmitError('선호도 저장에 실패했습니다. 다시 시도해주세요.');
+      setSubmitError('선호도 저장 중 오류가 발생했습니다.');
     } finally {
       setIsSubmitting(false);
     }
@@ -379,12 +385,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
         )
       ) : activeTab === 'AI 추천' ? (
         <div className="max-w-md mx-auto bg-white rounded-2xl p-6">
-          {!isLoggedIn ? (
-            <div className="flex flex-col items-center justify-center h-full mt-[359px]">
-              <span className="text-xl text-gray-400 font-semibold mb-2">AI 추천</span>
-              <span className="text-gray-300">로그인이 필요합니다.</span>
-            </div>
-          ) : !showResult ? (
+          {!showResult ? (
             <>
               {/* Blue Message Box */}
               <div className="bg-[#eaf2ff] border-2 border-[#006ffd] rounded-2xl p-4 mb-6 text-center">
@@ -492,8 +493,17 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
             </>
           ) : (
             <div className="flex flex-col items-center justify-center h-full">
-              <span className="text-xl text-gray-400 font-semibold mb-2">AI 추천</span>
-              <span className="text-gray-300">선호도가 저장되었습니다.</span>
+              {!isLoggedIn ? (
+                <>
+                  <span className="text-xl text-gray-400 font-semibold mb-2">AI 추천</span>
+                  <span className="text-gray-300">로그인이 필요합니다.</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-xl text-gray-400 font-semibold mb-2">AI 추천</span>
+                  <span className="text-gray-300">선호도가 저장되었습니다.</span>
+                </>
+              )}
             </div>
           )}
         </div>
