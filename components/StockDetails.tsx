@@ -199,32 +199,30 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   };
 
   // 추천 이유 파싱 함수
-  const parseAiReason = (reasons: any[]): { portfolio: string; industry: string; ai: string } => {
-    // 전략 중 업계/포트폴리오 구분이 명확하지 않으면 첫 번째/두 번째 strategy로 분리
-    const strategyReasons = reasons.filter(r => r.type === 'strategy');
-    
-    // 각 전략을 정규식으로 파싱
-    const parsedStrategies = strategyReasons.map(reason => {
-      const match = reason.detail.match(/^(.+? 전략):\s*(.+)$/);
-      if (match) {
-        return {
-          name: match[1],
-          detail: match[2]
-        };
-      }
-      return {
-        name: reason.detail.split(':')[0],
-        detail: reason.detail.split(':')[1] || ''
-      };
-    });
-
+  const parseAiReason = (reasons: any[]): { 
+    portfolio: string; 
+    industry: string; 
+    ai: string;
+    portfolioStrategy: string;
+    industryStrategy: string;
+    aiStrategy: string;
+  } => {
     // 첫 번째 전략은 포트폴리오 균형 기준으로
-    // 두 번째 전략은 업계 동향 기준으로 사용
-    return {
-      portfolio: parsedStrategies[0]?.detail || '',
-      industry: parsedStrategies[1]?.detail || '',
-      ai: reasons.find(r => r.type === 'commentary')?.detail || '',
-    };
+    const portfolioMatch = reasons[0]?.match(/^(.+? 전략):\s*(.+)$/);
+    const portfolio = portfolioMatch ? portfolioMatch[2] : "당신의 포트폴리오 상 XX주의 비중이 낮아 추천드립니다.";
+    const portfolioStrategy = portfolioMatch ? portfolioMatch[1] : "포트폴리오 균형 기준";
+
+    // 두 번째 전략은 최근 업계 동향 기준으로
+    const industryMatch = reasons[1]?.match(/^(.+? 전략):\s*(.+)$/);
+    const industry = industryMatch ? industryMatch[2] : "당신의 포트폴리오 상 XX주의 비중이 낮아 추천드립니다.";
+    const industryStrategy = industryMatch ? industryMatch[1] : "최근 업계 동향 기준";
+
+    // 세 번째 전략은 AI의 추정으로
+    const aiMatch = reasons[2]?.match(/^(.+? 전략):\s*(.+)$/);
+    const ai = aiMatch ? aiMatch[2] : "당신의 포트폴리오 상 XX주의 비중이 낮아 추천드립니다.";
+    const aiStrategy = aiMatch ? aiMatch[1] : "AI의 추정";
+
+    return { portfolio, industry, ai, portfolioStrategy, industryStrategy, aiStrategy };
   };
 
   // 관심 종목 추가/삭제 핸들러
@@ -252,6 +250,34 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   };
 
   if (showReasonDetail) {
+    if (selectedAiIndex === null || !aiRecommendations[selectedAiIndex]) {
+      return (
+        <div className="flex-1 overflow-auto flex flex-col">
+          <div className="flex justify-between gap-1 md:gap-2 mb-4 overflow-x-auto">
+            {(['종목정보 상세', '내 계좌', 'AI 추천'] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => {
+                  onTabChange(tab);
+                  setShowReasonDetail(false);
+                }}
+                className={`px-2 md:px-4 py-2 rounded-xl font-medium text-xs md:text-sm whitespace-nowrap transition-colors ${
+                  activeTab === tab ? 'bg-[#f5f7f9]' : 'bg-[#f5f7f9] hover:bg-gray-200'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-col items-center justify-center h-full">
+            <span className="text-xl text-gray-400 font-semibold mb-2">추천 정보</span>
+            <span className="text-gray-300">추천 정보를 불러올 수 없습니다.</span>
+          </div>
+        </div>
+      );
+    }
+
+    const parsed = parseAiReason(aiRecommendations[selectedAiIndex].reasons);
     return (
       <div className="flex-1 overflow-auto flex flex-col">
         {/* Top Navigation with Gray Boxes */}
@@ -304,10 +330,10 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
             <Card className="bg-[#fff4e4] border-none shadow-none">
               <CardContent className="p-4">
                 <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
-                  포트폴리오 균형 기준
+                  {parsed.portfolioStrategy}
                 </div>
                 <p className="text-[#1f2024] text-center text-sm leading-relaxed">
-                  당신의 포트폴리오 상 XX주의 비중이 낮아 추천드립니다.
+                  {parsed.portfolio}
                 </p>
               </CardContent>
             </Card>
@@ -316,10 +342,10 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
             <Card className="bg-[#fff4e4] border-none shadow-none">
               <CardContent className="p-4">
                 <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
-                  최근 업계 동향 기준
+                  {parsed.industryStrategy}
                 </div>
                 <p className="text-[#1f2024] text-center text-sm leading-relaxed">
-                  당신의 포트폴리오 상 XX주의 비중이 낮아 추천드립니다.
+                  {parsed.industry}
                 </p>
               </CardContent>
             </Card>
@@ -328,10 +354,10 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
             <Card className="bg-[#fff4e4] border-none shadow-none">
               <CardContent className="p-4">
                 <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
-                  AI의 추정
+                  {parsed.aiStrategy}
                 </div>
                 <p className="text-[#1f2024] text-center text-sm leading-relaxed">
-                  당신의 포트폴리오 상 XX주의 비중이 낮아 추천드립니다.
+                  {parsed.ai}
                 </p>
               </CardContent>
             </Card>
@@ -669,7 +695,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                                     <Card className="bg-[#fff4e4] border-none shadow-none">
                                       <CardContent className="p-4">
                                         <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
-                                          포트폴리오 균형 기준
+                                          {parsed.portfolioStrategy}
                                         </div>
                                         <p className="text-[#1f2024] text-center text-sm leading-relaxed">
                                           {parsed.portfolio}
@@ -679,7 +705,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                                     <Card className="bg-[#fff4e4] border-none shadow-none">
                                       <CardContent className="p-4">
                                         <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
-                                          최근 업계 동향 기준
+                                          {parsed.industryStrategy}
                                         </div>
                                         <p className="text-[#1f2024] text-center text-sm leading-relaxed">
                                           {parsed.industry}
@@ -689,7 +715,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                                     <Card className="bg-[#fff4e4] border-none shadow-none">
                                       <CardContent className="p-4">
                                         <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
-                                          AI의 추정
+                                          {parsed.aiStrategy}
                                         </div>
                                         <p className="text-[#1f2024] text-center text-sm leading-relaxed">
                                           {parsed.ai}
