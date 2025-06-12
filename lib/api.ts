@@ -9,6 +9,7 @@ import type {
   GetStockPortfolioResponse,
   UserPreferenceRequest,
   UserPreferenceResponse,
+  GetUserPreferenceResponse,
 } from "./types";
 import type {
   StockDetails,
@@ -403,6 +404,23 @@ export async function saveUserPreference(
 
   if (!response.ok) {
     throw new Error("Failed to save user preference");
+  }
+
+  return response.json();
+}
+
+// 내 선호 조회
+export async function getUserPreference(): Promise<GetUserPreferenceResponse> {
+  const response = await fetch("/api/ai/preference", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include", // 로그인 필수
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch user preference");
   }
 
   return response.json();

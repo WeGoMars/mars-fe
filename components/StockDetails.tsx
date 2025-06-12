@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { getStockDetails, saveUserPreference } from '@/lib/api';
-import type { StockDetails, NewsItem, Stock, RiskLevel, PreferredStrategy, PreferredSector } from '@/lib/types';
+import { getStockDetails, saveUserPreference, getUserPreference } from '@/lib/api';
+import type { StockDetails, NewsItem, Stock, RiskLevel, PreferredStrategy, PreferredSector, GetUserPreferenceResponse } from '@/lib/types';
 import { Check, ChevronDown, ChevronLeft, Heart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -36,6 +36,8 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   const [selectedSectors, setSelectedSectors] = useState<PreferredSector[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [userPreference, setUserPreference] = useState<GetUserPreferenceResponse | null>(null);
+  const [isLoadingPreference, setIsLoadingPreference] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,6 +71,25 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
 
     fetchData();
   }, [symbol, activeTab, onTabChange]);
+
+  // 선호도 데이터 가져오기
+  useEffect(() => {
+    const fetchUserPreference = async () => {
+      if (!isLoggedIn) return;
+      
+      setIsLoadingPreference(true);
+      try {
+        const response = await getUserPreference();
+        setUserPreference(response);
+      } catch (error) {
+        console.error('Failed to fetch user preference:', error);
+      } finally {
+        setIsLoadingPreference(false);
+      }
+    };
+
+    fetchUserPreference();
+  }, [isLoggedIn]);
 
   if (isLoading) {
     return (
@@ -140,6 +161,11 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
       console.log('API 요청 데이터:', requestData);
       const response = await saveUserPreference(requestData);
       console.log('API 응답 데이터:', response);
+      
+      // 선호도 저장 후 데이터 다시 가져오기
+      const updatedPreference = await getUserPreference();
+      setUserPreference(updatedPreference);
+      
       setShowResult(true);
     } catch (error) {
       console.error('API 에러:', error);
@@ -498,11 +524,67 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                   <span className="text-xl text-gray-400 font-semibold mb-2">AI 추천</span>
                   <span className="text-gray-300">로그인이 필요합니다.</span>
                 </>
+              ) : isLoadingPreference ? (
+                <div className="text-gray-400">로딩 중...</div>
+              ) : userPreference ? (
+                <div className="w-full space-y-6">
+                  <div className="bg-[#e7f4e8] rounded-2xl p-4">
+                    <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">현재 회원님의 투자 전략</h2>
+                    <div className="space-y-4">
+                      <div>
+                        <h3 className="text-sm font-semibold mb-2">투자 성향</h3>
+                        <div className="flex gap-2">
+                          <button className={`flex-1 rounded-xl py-2 px-2 flex items-center justify-center gap-1 whitespace-nowrap ${
+                            userPreference.data.riskLevel === 'high' ? 'bg-[#ffe2e5]' : 'bg-[#c3e7f2]'
+                          }`}>
+                            <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
+                              userPreference.data.riskLevel === 'high' ? 'bg-[#ff616d]' : 'bg-[#006ffd]'
+                            }`}>
+                              <span className="text-white text-xs font-bold">
+                                {userPreference.data.riskLevel === 'high' ? '!' : '↓'}
+                              </span>
+                            </div>
+                            <span className="text-[#000000] font-medium text-sm tracking-tight">
+                              {userPreference.data.riskLevel === 'high' ? '고위험' : '저위험'}
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-semibold mb-2">선호 전략</h3>
+                        <div className="flex flex-wrap gap-2">
+                          {userPreference.data.preferredStrategies.map((strategy) => (
+                            <div key={strategy} className="bg-[#ffffff] rounded-xl py-2 px-2 border-2 border-[#006ffd]">
+                              <span className="text-[#000000] font-medium text-sm tracking-tight">
+                                {strategy === 'dividend_stability' ? '배당 안정성' :
+                                 strategy === 'portfolio_balance' ? '포트폴리오 균형' :
+                                 strategy === 'value_stability' ? '가치 안정성' :
+                                 strategy === 'momentum' ? '모멘텀' :
+                                 strategy === 'sector_rotation' ? '섹터 로테이션' :
+                                 '반등 매수'}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-semibold mb-2">관심 산업 분야</h3>
+                        <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto overflow-x-hidden">
+                          {userPreference.data.preferredSectors.map((sector) => (
+                            <div key={sector} className="bg-[#ffffff] rounded-xl py-1 px-2 border-2 border-[#006ffd]">
+                              <span className="text-[#000000] font-medium text-xs tracking-tight">{sector}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-center text-gray-500">
+                    <p>마지막 업데이트: {new Date(userPreference.data.updatedAt).toLocaleString()}</p>
+                  </div>
+                </div>
               ) : (
-                <>
-                  <span className="text-xl text-gray-400 font-semibold mb-2">AI 추천</span>
-                  <span className="text-gray-300">선호도가 저장되었습니다.</span>
-                </>
+                <div className="text-gray-400">선호도 정보를 불러오는데 실패했습니다.</div>
               )}
             </div>
           )}

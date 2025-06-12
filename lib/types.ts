@@ -352,3 +352,15 @@ export interface UserPreferenceResponse {
     updatedAt: string;
   };
 }
+
+export interface GetUserPreferenceResponse {
+  success: boolean;
+  message: string;
+  data: {
+    riskLevel: RiskLevel;
+    preferredStrategies: PreferredStrategy[];
+    preferredSectors: PreferredSector[];
+    createdAt: string;
+    updatedAt: string;
+  };
+}
