@@ -162,7 +162,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="test@gmail.com"
+                placeholder="이메일"
                 className={`w-full rounded bg-[#bfdbfe]/30 p-3 outline-none ${errors.email ? "border border-red-500" : ""}`}
               />
               {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
@@ -178,6 +178,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
+                placeholder="비밀번호 (8자 이상)"
                 className={`w-full rounded bg-[#bfdbfe]/30 p-3 outline-none ${errors.password ? "border border-red-500" : ""}`}
               />
               {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password}</p>}
@@ -193,6 +194,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
                 name="nickname"
                 value={formData.nickname}
                 onChange={handleChange}
+                placeholder="닉네임 2자 이상"
                 className={`w-full rounded bg-[#bfdbfe]/30 p-3 outline-none ${errors.nickname ? "border border-red-500" : ""}`}
               />
               {errors.nickname && <p className="mt-1 text-xs text-red-500">{errors.nickname}</p>}
