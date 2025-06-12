@@ -8,8 +8,7 @@ import { Check, ChevronDown, ChevronLeft, Heart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, TrendingDown } from "lucide-react"
-import { useGetOverallPortfolioQuery, useGetWalletQuery } from "@/lib/api"; 
-// 주식 상세 정보를 보여주는 컴포넌트(종목정보 상세, 내 계좌, AI 추천 탭)   
+import { useGetOverallPortfolioQuery, useGetWalletQuery } from "@/lib/api";  
 import { mutate } from 'swr';
 
 // 주식 상세 정보를 보여주는 컴포넌트(종목정보 상세, 내 계좌, AI 추천 탭)
