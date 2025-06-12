@@ -379,7 +379,12 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
         )
       ) : activeTab === 'AI 추천' ? (
         <div className="max-w-md mx-auto bg-white rounded-2xl p-6">
-          {!showResult ? (
+          {!isLoggedIn ? (
+            <div className="flex flex-col items-center justify-center h-full mt-[359px]">
+              <span className="text-xl text-gray-400 font-semibold mb-2">AI 추천</span>
+              <span className="text-gray-300">로그인이 필요합니다.</span>
+            </div>
+          ) : !showResult ? (
             <>
               {/* Blue Message Box */}
               <div className="bg-[#eaf2ff] border-2 border-[#006ffd] rounded-2xl p-4 mb-6 text-center">
@@ -486,18 +491,9 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               </div>
             </>
           ) : (
-            <div className="flex-1 flex flex-col">
-              {!isLoggedIn ? (
-                <div className="flex flex-col items-center justify-center h-full mt-[359px]">
-                  <span className="text-xl text-gray-400 font-semibold mb-2">AI 추천</span>
-                  <span className="text-gray-300">로그인이 필요합니다.</span>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full">
-                  <span className="text-xl text-gray-400 font-semibold mb-2">AI 추천</span>
-                  <span className="text-gray-300">선호도가 저장되었습니다.</span>
-                </div>
-              )}
+            <div className="flex flex-col items-center justify-center h-full">
+              <span className="text-xl text-gray-400 font-semibold mb-2">AI 추천</span>
+              <span className="text-gray-300">선호도가 저장되었습니다.</span>
             </div>
           )}
         </div>
