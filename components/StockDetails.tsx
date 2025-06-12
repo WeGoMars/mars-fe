@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { getStockDetails, saveUserPreference, getUserPreference } from '@/lib/api';
-import type { StockDetails, NewsItem, Stock, RiskLevel, PreferredStrategy, PreferredSector, GetUserPreferenceResponse } from '@/lib/types';
+import { getStockDetails, saveUserPreference, getUserPreference, getAiRecommendations } from '@/lib/api';
+import type { StockDetails, NewsItem, Stock, RiskLevel, PreferredStrategy, PreferredSector, GetUserPreferenceResponse, GetAiRecommendationsResponse, AiRecommendationItem } from '@/lib/types';
 import { Check, ChevronDown, ChevronLeft, Heart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -38,6 +38,9 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [userPreference, setUserPreference] = useState<GetUserPreferenceResponse | null>(null);
   const [isLoadingPreference, setIsLoadingPreference] = useState(false);
+  const [aiRecommendations, setAiRecommendations] = useState<AiRecommendationItem[]>([]);
+  const [selectedAiIndex, setSelectedAiIndex] = useState<number | null>(null);
+  const [isLoadingAi, setIsLoadingAi] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,6 +93,25 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
 
     fetchUserPreference();
   }, [isLoggedIn]);
+
+  // AI 추천 종목 데이터 가져오기
+  useEffect(() => {
+    const fetchAiRecommendations = async () => {
+      if (!isLoggedIn) return;
+      setIsLoadingAi(true);
+      try {
+        const res = await getAiRecommendations();
+        if (res.success && Array.isArray(res.data)) {
+          setAiRecommendations(res.data.slice(0, 3));
+        }
+      } catch (e) {
+        setAiRecommendations([]);
+      } finally {
+        setIsLoadingAi(false);
+      }
+    };
+    if (showResult && isLoggedIn) fetchAiRecommendations();
+  }, [showResult, isLoggedIn]);
 
   if (isLoading) {
     return (
@@ -518,7 +540,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               </div>
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full">
+            <div className="flex flex-col items-center justify-center h-full w-full">
               {!isLoggedIn ? (
                 <>
                   <span className="text-xl text-gray-400 font-semibold mb-2">AI 추천</span>
@@ -578,6 +600,90 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                         </div>
                       </div>
                     </div>
+                  </div>
+                  {/* AI 추천 종목 카드 3개 */}
+                  <div className="space-y-4">
+                    {isLoadingAi ? (
+                      <div className="text-gray-400">AI 추천 로딩 중...</div>
+                    ) : aiRecommendations.length === 0 ? (
+                      <div className="text-gray-400">AI 추천 종목이 없습니다.</div>
+                    ) : selectedAiIndex === null ? (
+                      aiRecommendations.map((item, idx) => (
+                        <div key={item.symbol} className="bg-[#fff4e4] rounded-2xl p-4 flex flex-col gap-2">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Image src={item.logoUrl} alt={item.name} width={28} height={28} className="rounded" />
+                            <span className="font-bold text-base">{item.name}</span>
+                            <span className="flex gap-1 ml-2">
+                              <span className="w-3 h-3 rounded-full bg-[#ff4444] inline-block"></span>
+                              <span className="w-3 h-3 rounded-full bg-[#00aa00] inline-block"></span>
+                              <span className="w-3 h-3 rounded-full bg-[#0066ff] inline-block"></span>
+                              <span className="w-3 h-3 rounded-full bg-[#ffaa00] inline-block"></span>
+                            </span>
+                            <span className="ml-2 text-xs bg-gray-100 px-2 py-1 rounded-full">{item.hashtag}</span>
+                          </div>
+                          <hr className="my-2" />
+                          <button className="flex items-center gap-1 font-semibold text-base text-[#222]" onClick={() => setSelectedAiIndex(idx)}>
+                            AI의 추천 이유 <ChevronDown className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="w-full">
+                        <Button className="w-full h-12 bg-white border-2 border-[#006ffd] text-[#006ffd] hover:bg-[#eaf2ff] rounded-xl text-base font-medium mb-4" variant="outline" onClick={() => setSelectedAiIndex(null)}>
+                          AI의 추천 이유
+                        </Button>
+                        <div className="flex items-center justify-center gap-4 mb-8">
+                          <span className="text-[#1f2024] text-base font-medium">{aiRecommendations[selectedAiIndex].name}</span>
+                          <span className="flex gap-1">
+                            <span className="w-5 h-5 bg-[#ff4444] rounded-sm inline-block"></span>
+                            <span className="w-5 h-5 bg-[#00aa00] rounded-sm inline-block"></span>
+                            <span className="w-5 h-5 bg-[#0066ff] rounded-sm inline-block"></span>
+                            <span className="w-5 h-5 bg-[#ffaa00] rounded-sm inline-block"></span>
+                          </span>
+                          <span className="text-[#71727a] text-xs bg-gray-100 px-1.5 py-0.5 rounded-full">{aiRecommendations[selectedAiIndex].hashtag}</span>
+                        </div>
+                        {/* 추천 이유 카드들 */}
+                        <div className="space-y-4 mb-8">
+                          <Card className="bg-[#fff4e4] border-none shadow-none">
+                            <CardContent className="p-4">
+                              <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
+                                포트폴리오 균형 기준
+                              </div>
+                              <p className="text-[#1f2024] text-center text-sm leading-relaxed">
+                                {aiRecommendations[selectedAiIndex].aiReason.portfolio}
+                              </p>
+                            </CardContent>
+                          </Card>
+                          <Card className="bg-[#fff4e4] border-none shadow-none">
+                            <CardContent className="p-4">
+                              <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
+                                최근 업계 동향 기준
+                              </div>
+                              <p className="text-[#1f2024] text-center text-sm leading-relaxed">
+                                {aiRecommendations[selectedAiIndex].aiReason.industry}
+                              </p>
+                            </CardContent>
+                          </Card>
+                          <Card className="bg-[#fff4e4] border-none shadow-none">
+                            <CardContent className="p-4">
+                              <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
+                                AI의 추정
+                              </div>
+                              <p className="text-[#1f2024] text-center text-sm leading-relaxed">
+                                {aiRecommendations[selectedAiIndex].aiReason.ai}
+                              </p>
+                            </CardContent>
+                          </Card>
+                        </div>
+                        <div className="flex items-center justify-center gap-2">
+                          <ChevronLeft className="w-5 h-5 text-[#006ffd] cursor-pointer" onClick={() => setSelectedAiIndex(null)} />
+                          <span className="text-[#1f2024] text-base font-medium">관심 종목으로 저장</span>
+                          <button className="flex items-center justify-center">
+                            <Heart className="w-4 h-4 text-[#1f2024]" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className="text-center text-gray-500">
                     <p>마지막 업데이트: {new Date(userPreference.data.updatedAt).toLocaleString()}</p>

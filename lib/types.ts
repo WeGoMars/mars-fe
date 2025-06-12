@@ -364,3 +364,25 @@ export interface GetUserPreferenceResponse {
     updatedAt: string;
   };
 }
+
+// AI추천이유 type 정의
+export interface AiRecommendationReason {
+  portfolio: string;
+  industry: string;
+  ai: string;
+}
+
+export interface AiRecommendationItem {
+  symbol: string;
+  name: string;
+  sector: string;
+  hashtag: string;
+  logoUrl: string;
+  aiReason: AiRecommendationReason;
+}
+
+export interface GetAiRecommendationsResponse {
+  success: boolean;
+  message: string;
+  data: AiRecommendationItem[];
+}

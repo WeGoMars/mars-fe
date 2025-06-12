@@ -10,6 +10,7 @@ import type {
   UserPreferenceRequest,
   UserPreferenceResponse,
   GetUserPreferenceResponse,
+  GetAiRecommendationsResponse,
 } from "./types";
 import type {
   StockDetails,
@@ -423,5 +424,16 @@ export async function getUserPreference(): Promise<GetUserPreferenceResponse> {
     throw new Error("Failed to fetch user preference");
   }
 
+  return response.json();
+}
+
+// AI 추천 종목/이유 조회
+export async function getAiRecommendations(): Promise<GetAiRecommendationsResponse> {
+  const response = await fetch("/api/ai/recommendation", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  });
+  if (!response.ok) throw new Error("Failed to fetch AI recommendations");
   return response.json();
 }
