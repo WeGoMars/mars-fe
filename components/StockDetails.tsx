@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { getStockDetails, saveUserPreference, getUserPreference, getAiRecommendations } from '@/lib/api';
+import { getStockDetails, saveUserPreference, getUserPreference, getAiRecommendations, addToFavorites, removeFromFavorites } from '@/lib/api';
 import type { StockDetails, NewsItem, Stock, RiskLevel, PreferredStrategy, PreferredSector, GetUserPreferenceResponse, GetAiRecommendationsResponse, AiRecommendationItem } from '@/lib/types';
 import { Check, ChevronDown, ChevronLeft, Heart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -209,13 +209,19 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   };
 
   // 관심 종목 추가/삭제 핸들러
-  const handleToggleFavorite = (symbol: string, name: string) => {
+  const handleToggleFavorite = async (symbol: string, name: string) => {
     if (!isLoggedIn) return;
     const isFavorite = favoriteStocks.some(stock => stock.symbol === symbol);
-    if (isFavorite) {
-      setFavoriteStocks(prev => prev.filter(stock => stock.symbol !== symbol));
-    } else {
-      setFavoriteStocks(prev => [...prev, { symbol, name, price: '', change: '', changePercent: '' }]);
+    try {
+      if (isFavorite) {
+        await removeFromFavorites({ symbol });
+        setFavoriteStocks(prev => prev.filter(stock => stock.symbol !== symbol));
+      } else {
+        await addToFavorites({ symbol });
+        setFavoriteStocks(prev => [...prev, { symbol, name, price: '', change: '', changePercent: '' }]);
+      }
+    } catch (e) {
+      alert('관심 종목 처리 중 오류가 발생했습니다.');
     }
   };
 
