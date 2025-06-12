@@ -433,8 +433,8 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                 <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
                   <span className="text-sm text-gray-500">투자금액</span>
                   <div>
-                  <span className="text-[#439a86] text-xs mr-1">$</span>
-                  <span className="text-xl font-bold text-[#439a86] ">
+                  <span className="text-xs mr-1">$</span>
+                  <span className="text-xl font-bold ">
                     {portfolioData?.data?.investedAmount?.toLocaleString("en-US", {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
@@ -479,7 +479,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                       <TrendingDown className="h-5 w-5" />
                     )}
                     {(portfolioData?.data?.returnRate ?? 0) >= 0 ? "+" : "-"}
-                    {Math.abs((portfolioData?.data?.returnRate ?? 0)*100).toFixed(2)}%
+                    {Math.abs((portfolioData?.data?.returnRate ?? 0) * 100).toFixed(2)}%
                   </div>
                   </span>
                 </div>
