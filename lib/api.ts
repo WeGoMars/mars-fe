@@ -7,6 +7,8 @@ import type {
   GetTradeHistoryResponse,
   OverallPortfolioResponse,
   GetStockPortfolioResponse,
+  UserPreferenceRequest,
+  UserPreferenceResponse,
 } from "./types";
 import type {
   StockDetails,
@@ -381,6 +383,26 @@ export async function getStockPortfolio(): Promise<GetStockPortfolioResponse> {
 
   if (!response.ok) {
     throw new Error("Failed to fetch stock portfolio");
+  }
+
+  return response.json();
+}
+
+// AI 추천을 위한 사용자 선호도 저장
+export async function saveUserPreference(
+  params: UserPreferenceRequest
+): Promise<UserPreferenceResponse> {
+  const response = await fetch("/api/ai/preference", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(params),
+    credentials: "include", // 로그인 필수
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to save user preference");
   }
 
   return response.json();

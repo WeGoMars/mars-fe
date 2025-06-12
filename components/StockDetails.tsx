@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { getStockDetails } from '@/lib/api';
-import type { StockDetails, NewsItem, Stock } from '@/lib/types';
+import { getStockDetails, saveUserPreference } from '@/lib/api';
+import type { StockDetails, NewsItem, Stock, RiskLevel, PreferredStrategy, PreferredSector } from '@/lib/types';
 import { Check, ChevronDown, ChevronLeft, Heart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,6 +31,11 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   const [aiSubmitted, setAiSubmitted] = useState(false);
   const [isHeartFilled, setIsHeartFilled] = useState(false);
   const [portfolioData, setPortfolioData] = useState(mockPortfolio);
+  const [selectedRiskLevel, setSelectedRiskLevel] = useState<RiskLevel | null>(null);
+  const [selectedStrategies, setSelectedStrategies] = useState<PreferredStrategy[]>([]);
+  const [selectedSectors, setSelectedSectors] = useState<PreferredSector[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -83,6 +88,59 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
 
   const handleTabClick = (tab: '종목정보 상세' | '내 계좌' | 'AI 추천') => {
     onTabChange(tab);
+  };
+
+  const handleStrategyClick = (strategy: PreferredStrategy) => {
+    setSelectedStrategies(prev => 
+      prev.includes(strategy)
+        ? prev.filter(s => s !== strategy)
+        : [...prev, strategy]
+    );
+  };
+
+  const handleSectorClick = (sector: PreferredSector) => {
+    setSelectedSectors(prev => 
+      prev.includes(sector)
+        ? prev.filter(s => s !== sector)
+        : [...prev, sector]
+    );
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedRiskLevel) {
+      setSubmitError('투자 성향을 선택해주세요.');
+      return;
+    }
+    if (selectedStrategies.length === 0) {
+      setSubmitError('선호 전략을 하나 이상 선택해주세요.');
+      return;
+    }
+    if (selectedSectors.length === 0) {
+      setSubmitError('관심 산업 분야를 하나 이상 선택해주세요.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    const requestData = {
+      riskLevel: selectedRiskLevel,
+      preferredStrategies: selectedStrategies,
+      preferredSectors: selectedSectors,
+    };
+
+    console.log('API 요청 데이터:', requestData);
+
+    try {
+      const response = await saveUserPreference(requestData);
+      console.log('API 응답 데이터:', response);
+      setShowResult(true);
+    } catch (error) {
+      console.error('API 에러:', error);
+      setSubmitError('선호도 저장에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (showReasonDetail) {
@@ -334,13 +392,23 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               <div className="bg-[#e7f4e8] rounded-2xl p-4 mb-6">
                 <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 투자 성향</h2>
                 <div className="flex gap-2">
-                  <button className="flex-1 bg-[#ffe2e5] rounded-xl py-2 px-2 flex items-center justify-center gap-1 whitespace-nowrap">
+                  <button 
+                    className={`flex-1 rounded-xl py-2 px-2 flex items-center justify-center gap-1 whitespace-nowrap ${
+                      selectedRiskLevel === 'high' ? 'bg-[#ffe2e5]' : 'bg-[#ffe2e5] opacity-50'
+                    }`}
+                    onClick={() => setSelectedRiskLevel('high')}
+                  >
                     <div className="w-5 h-5 bg-[#ff616d] rounded-full flex items-center justify-center">
                       <span className="text-white text-xs font-bold">!</span>
                     </div>
                     <span className="text-[#000000] font-medium text-sm tracking-tight">고위험</span>
                   </button>
-                  <button className="flex-1 bg-[#c3e7f2] rounded-xl py-2 px-2 flex items-center justify-center gap-1 whitespace-nowrap">
+                  <button 
+                    className={`flex-1 rounded-xl py-2 px-2 flex items-center justify-center gap-1 whitespace-nowrap ${
+                      selectedRiskLevel === 'low' ? 'bg-[#c3e7f2]' : 'bg-[#c3e7f2] opacity-50'
+                    }`}
+                    onClick={() => setSelectedRiskLevel('low')}
+                  >
                     <div className="w-5 h-5 bg-[#006ffd] rounded-full flex items-center justify-center">
                       <span className="text-white text-xs font-bold">↓</span>
                     </div>
@@ -351,47 +419,69 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               {/* Preferred Strategy Section */}
               <div className="bg-[#fff4e4] rounded-2xl p-4 mb-6">
                 <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 선호 전략</h2>
-                <div className="flex gap-2">
-                  <button className="flex-1 bg-[#ffffff] rounded-xl py-2 px-2 whitespace-nowrap">
-                    <span className="text-[#000000] font-medium text-sm tracking-tight">가치투자</span>
-                  </button>
-                  <button className="flex-1 bg-[#ffffff] rounded-xl py-2 px-2 whitespace-nowrap">
-                    <span className="text-[#000000] font-medium text-sm tracking-tight">성장투자</span>
-                  </button>
-                  <button className="flex-1 bg-[#ffffff] rounded-xl py-2 px-2 whitespace-nowrap">
-                    <span className="text-[#000000] font-medium text-sm tracking-tight">모멘텀</span>
-                  </button>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { value: 'dividend_stability', label: '배당 안정성' },
+                    { value: 'portfolio_balance', label: '포트폴리오 균형' },
+                    { value: 'value_stability', label: '가치 안정성' },
+                    { value: 'momentum', label: '모멘텀' },
+                    { value: 'sector_rotation', label: '섹터 로테이션' },
+                    { value: 'rebound_buy', label: '반등 매수' },
+                  ].map((strategy) => (
+                    <button
+                      key={strategy.value}
+                      className={`flex-1 bg-[#ffffff] rounded-xl py-2 px-2 whitespace-nowrap ${
+                        selectedStrategies.includes(strategy.value as PreferredStrategy) ? 'border-2 border-[#006ffd]' : ''
+                      }`}
+                      onClick={() => handleStrategyClick(strategy.value as PreferredStrategy)}
+                    >
+                      <span className="text-[#000000] font-medium text-sm tracking-tight">{strategy.label}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
               {/* Interest Areas Section */}
               <div className="bg-[#c3e7f2] rounded-2xl p-4 mb-6">
                 <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 관심 산업 분야</h2>
-                <div className="grid grid-cols-3 gap-2 max-h-32 overflow-y-auto overflow-x-hidden">
+                <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto overflow-x-hidden">
                   {[
-                    '# 빅테크', '# 2차전지', '# 반도체', '# 바이오', '# 친환경', '# 클라우드', '# AI', '# 모빌리티',
-                    '# 게임', '# 엔터', '# 금융', '# 로봇', '# 우주항공', '# 헬스케어', '# 에너지', '# 소재',
-                    '# 유통', '# 소비재', '# 통신', '# 미디어', '# 여행', '# 식품', '# 건설', '# 부동산',
-                    '# 패션', '# 교육', '# 물류', '# 광고', '# 데이터', '# 보안', '# IoT', '# 스마트팜',
-                  ].map((tag, index) => (
-                    <button key={index} className="bg-[#ffffff] rounded-xl py-1 px-2 whitespace-nowrap">
-                      <span className="text-[#000000] font-medium text-xs tracking-tight">{tag}</span>
+                    'Basic Materials',
+                    'Communication Services',
+                    'Consumer Cyclical',
+                    'Consumer Defensive',
+                    'Energy',
+                    'Financial Services',
+                    'Healthcare',
+                    'Industrials',
+                    'Real Estate',
+                    'Technology',
+                    'Utilities',
+                  ].map((sector) => (
+                    <button
+                      key={sector}
+                      className={`bg-[#ffffff] rounded-xl py-1 px-2 whitespace-nowrap ${
+                        selectedSectors.includes(sector as PreferredSector) ? 'border-2 border-[#006ffd]' : ''
+                      }`}
+                      onClick={() => handleSectorClick(sector as PreferredSector)}
+                    >
+                      <span className="text-[#000000] font-medium text-xs tracking-tight">{sector}</span>
                     </button>
                   ))}
                 </div>
               </div>
               {/* 제출 버튼 */}
               <div className="bg-[#f4f5f9] rounded-2xl p-4 text-center">
+                {submitError && (
+                  <p className="text-red-500 text-sm mb-2">{submitError}</p>
+                )}
                 <button
-                  className="text-[#71727a] font-medium text-sm tracking-tight border-2 border-[#2563eb] rounded-md px-4 py-2"
-                  onClick={() => {
-                    if (!isLoggedIn) {
-                      setShowResult(true);
-                    } else {
-                      setShowResult(true);
-                    }
-                  }}
+                  className={`text-[#71727a] font-medium text-sm tracking-tight border-2 border-[#2563eb] rounded-md px-4 py-2 ${
+                    isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
                 >
-                  제출
+                  {isSubmitting ? '제출 중...' : '제출'}
                 </button>
               </div>
             </>
@@ -403,67 +493,10 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                   <span className="text-gray-300">로그인이 필요합니다.</span>
                 </div>
               ) : (
-                <>
-                  <div className="bg-transparent border-2 border-[#006ffd] rounded-2xl p-3 mb-3">
-                    <p className="text-[#006ffd] text-center font-medium text-sm">회원님의 투자 전략 알려드릴게요.</p>
-                  </div>
-                  <div className="bg-[#e7f4e8] border-0 rounded-2xl p-4 space-y-3 mb-3">
-                    <h2 className="text-[#1f2024] text-base font-semibold text-center">현재 회원님의 투자 전략</h2>
-                    <div className="flex gap-2 justify-center">
-                      <div className="bg-[#ffe2e5] px-3 py-1 rounded-full flex items-center gap-1">
-                        <div className="w-5 h-5 bg-[#ff9500] rounded-full flex items-center justify-center">
-                          <span className="text-white text-[10px] font-bold">!</span>
-                        </div>
-                        <span className="text-[#1f2024] text-xs font-medium">저위험</span>
-                      </div>
-                      <div className="bg-[#eaf2ff] px-3 py-1 rounded-full flex items-center gap-1">
-                        <div className="w-5 h-5 bg-[#006ffd] rounded-full flex items-center justify-center">
-                          <span className="text-white text-[10px] font-bold">!</span>
-                        </div>
-                        <span className="text-[#1f2024] text-xs font-medium">가치투자</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-2 mb-3">
-                    {[1, 2, 3, 4].map((index) => (
-                      <div key={index} className="bg-[#fff4e4] border-0 rounded-2xl p-3 mb-1">
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-center gap-2">
-                            <span className="text-[#1f2024] text-base font-semibold">구글</span>
-                            <div className="grid grid-cols-2 gap-0.5 w-5 h-5">
-                              <div className="bg-red-500 rounded-sm"></div>
-                              <div className="bg-green-500 rounded-sm"></div>
-                              <div className="bg-blue-500 rounded-sm"></div>
-                              <div className="bg-yellow-500 rounded-sm"></div>
-                            </div>
-                            <span className="text-[#71727a] text-xs bg-gray-100 px-1.5 py-0.5 rounded-full">#빅테크</span>
-                          </div>
-                          <div className="border-t border-gray-200 pt-2">
-                            <div 
-                              className="flex items-center justify-center gap-1 cursor-pointer hover:bg-gray-50 rounded-lg py-1 transition-colors"
-                              onClick={() => setShowReasonDetail(true)}
-                            >
-                              <span className="text-[#1f2024] font-medium text-sm flex items-center gap-1">
-                                AI의 추천 이유
-                                <ChevronDown className="w-4 h-4 text-[#71727a]" />
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="text-center space-y-2">
-                    <p className="text-[#71727a] text-xs">좀 더 젊고 MZ한 종목으로 추천 해봐!</p>
-                    <button
-                      className="bg-[#006ffd] hover:bg-[#0056cc] text-white rounded-full px-4 py-1.5 flex items-center gap-1 mx-auto text-sm"
-                      onClick={() => setShowResult(false)}
-                    >
-                      다시 추천!
-                      <Check className="w-4 h-4" />
-                    </button>
-                  </div>
-                </>
+                <div className="flex flex-col items-center justify-center h-full">
+                  <span className="text-xl text-gray-400 font-semibold mb-2">AI 추천</span>
+                  <span className="text-gray-300">선호도가 저장되었습니다.</span>
+                </div>
               )}
             </div>
           )}
