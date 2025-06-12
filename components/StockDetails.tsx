@@ -323,20 +323,6 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
           <div className="flex items-center justify-center gap-2">
             <ChevronLeft className="w-5 h-5 text-[#006ffd] cursor-pointer" onClick={() => setShowReasonDetail(false)} />
             <span className="text-[#1f2024] text-base font-medium">관심 종목으로 저장</span>
-            {selectedAiIndex !== null && (
-              <button
-                onClick={() => handleToggleFavorite(aiRecommendations[selectedAiIndex].symbol, aiRecommendations[selectedAiIndex].name)}
-                className="flex items-center justify-center"
-              >
-                <Heart 
-                  className={`w-4 h-4 cursor-pointer transition-colors ${
-                    favoriteStocks.some(stock => stock.symbol === aiRecommendations[selectedAiIndex].symbol) 
-                      ? 'text-red-500 fill-red-500' 
-                      : 'text-[#1f2024]'
-                  }`} 
-                />
-              </button>
-            )}
           </div>
         </div>
       </div>
@@ -639,20 +625,6 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                               <span className="font-bold text-base">{item.name}</span>
                               <span className="text-[#71727a] text-xs bg-gray-100 px-2 py-1 rounded-full">{item.sector}</span>
                             </div>
-                            {isLoggedIn && (
-                              <button
-                                onClick={() => handleToggleFavorite(item.symbol, item.name)}
-                                className="flex items-center justify-center"
-                              >
-                                <Heart 
-                                  className={`w-4 h-4 cursor-pointer transition-colors ${
-                                    favoriteStocks.some(stock => stock.symbol === item.symbol) 
-                                      ? 'text-red-500 fill-red-500' 
-                                      : 'text-[#1f2024]'
-                                  }`} 
-                                />
-                              </button>
-                            )}
                           </div>
                           <hr className="my-2" />
                           <button className="flex items-center gap-1 font-semibold text-base text-[#222]" onClick={() => setSelectedAiIndex(idx)}>
