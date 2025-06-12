@@ -207,16 +207,16 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
     industryStrategy: string;
     aiStrategy: string;
   } => {
-    // 첫 번째 전략은 포트폴리오 균형 기준으로 데이터 바인딩
+    // 첫 번째 전략은 포트폴리오 균형 기준으로
     const portfolioDetail = typeof reasons[0] === 'string' ? reasons[0] : reasons[0]?.detail || '';
-    const portfolioMatch = portfolioDetail.match(/^(.+? 전략):\s*(.+)$/);
-    const portfolio = portfolioMatch ? portfolioMatch[2] : "당신의 포트폴리오 상 XX주의 비중이 낮아 추천드립니다.";
+    const portfolioMatch = reasons[0]?.type === 'strategy' ? portfolioDetail.match(/^(.+? 전략):\s*(.+)$/) : null;
+    const portfolio = portfolioMatch ? portfolioMatch[2] : portfolioDetail;
     const portfolioStrategy = portfolioMatch ? portfolioMatch[1] : "포트폴리오 균형 기준";
 
-    // 두 번째 전략은 최근 업계 동향 기준으로 데이터 바인딩
+    // 두 번째 전략은 최근 업계 동향 기준으로
     const industryDetail = typeof reasons[1] === 'string' ? reasons[1] : reasons[1]?.detail || '';
-    const industryMatch = industryDetail.match(/^(.+? 전략):\s*(.+)$/);
-    const industry = industryMatch ? industryMatch[2] : "당신의 포트폴리오 상 XX주의 비중이 낮아 추천드립니다.";
+    const industryMatch = reasons[1]?.type === 'strategy' ? industryDetail.match(/^(.+? 전략):\s*(.+)$/) : null;
+    const industry = industryMatch ? industryMatch[2] : industryDetail;
     const industryStrategy = industryMatch ? industryMatch[1] : "최근 업계 동향 기준";
 
     // 세 번째 전략은 AI의 추정으로 데이터 바인딩
