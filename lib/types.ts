@@ -1,22 +1,22 @@
 export interface ApiResponse<T> {
   // 성공 여부
-  success: boolean
+  success: boolean;
   // 메시지
-  message: string
+  message: string;
   // 데이터
-  data: T
+  data: T;
 }
 
 export interface Stock {
-  symbol: string
-  name: string
-  price: string
-  change: string
-  changePercent: string
-  logoUrl?: string
-  volume?: string
-  marketCap?: string
-  description?: string
+  symbol: string;
+  name: string;
+  price: string;
+  change: string;
+  changePercent: string;
+  logoUrl?: string;
+  volume?: string;
+  marketCap?: string;
+  description?: string;
 }
 
 export interface StockDetails {
@@ -67,74 +67,72 @@ export interface StockDetails {
 }
 
 export interface ChartData {
-  date: string
-  value: number
+  date: string;
+  value: number;
 }
 
 export interface ChartDataResponse {
-  prices: ChartData[]
-  volumes: ChartData[]
+  prices: ChartData[];
+  volumes: ChartData[];
 }
 
 export interface NewsItem {
-  id: number
-  title: string
-  source: string
-  time: string
-  imageUrl: string
+  id: number;
+  title: string;
+  source: string;
+  time: string;
+  imageUrl: string;
 }
 
-export interface GetStockChartDataRequest{
-  symbol: string
-  interval: '1h' | '1day' | '1week' | '1month'
-  limit: number
+export interface GetStockChartDataRequest {
+  symbol: string;
+  interval: "1h" | "1day" | "1week" | "1month";
+  limit: number;
 }
 
 export interface GetStockChartDataResponse {
   // 시간스탬프
-  timestamp: string
+  timestamp: string;
   // 시가
-  open: number
+  open: number;
   // 고가
-  high: number 
+  high: number;
   // 저가
-  low: number
+  low: number;
   // 종가
-  close: number
+  close: number;
   // 거래량
-  volume: number
+  volume: number;
 }
 
-
-export interface GetStockListRequest{
+export interface GetStockListRequest {
   // 검색 옵션 (hot, owned, liked)
-  option: 'hot' | 'owned' | 'liked'
+  option: "hot" | "owned" | "liked";
   // 검색 결과 개수
-  limit: number
+  limit: number;
 }
 
-export interface GetStockListResponse{
+export interface GetStockListResponse {
   // 종목 심볼
-  symbol: string
+  symbol: string;
   // 종목 이름
-  name: string
+  name: string;
   // 현재 가격
-  currentPrice: number
+  currentPrice: number;
   // 가격 변동
-  priceDelta: number
+  priceDelta: number;
 }
- //회원가입
-export interface SignUpRequest
-{
+//회원가입
+export interface SignUpRequest {
   // 이메일
-  email: string
+  email: string;
   // 비밀번호
-  password: string
+  password: string;
   // 닉네임
-  nickname: string
+  nickname: string;
 }
 
-export interface SignUpResponse{
+export interface SignUpResponse {
   success: boolean;
   message: string;
   data: {
@@ -150,8 +148,8 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-   success: boolean;
-   message: string;
+  success: boolean;
+  message: string;
 }
 export interface UserProfile {
   id: number;
@@ -174,7 +172,7 @@ export interface WalletResponse {
   };
 }
 
- export interface WalletErrorResponse {
+export interface WalletErrorResponse {
   success: false;
   message: string;
 }
@@ -257,7 +255,6 @@ export interface GetLikedStocksResponse {
   }[];
 }
 
-
 export interface OverallPortfolioResponse {
   success: boolean;
   message: string;
@@ -281,7 +278,33 @@ export interface GetMyStocksResponse {
     currentPrice: number;
     priceDelta: number;
   }[];
-
 }
 
+// 주식 거래내역 api test, type 정의
+export interface GetTradeHistoryResponse {
+  success: boolean;
+  message: string;
+  data: {
+    symbol: string;
+    name: string;
+    quantity: number;
+    currentPrice: number;
+    date: string;
+    returnRate: number;
+  }[];
+}
 
+// 보유종목/상품현황 type 정의(주식 종목별 포트폴리오 조회 응답)
+export interface GetStockPortfolioResponse {
+  success: boolean;
+  message: string;
+  data: {
+    symbol: string;
+    name: string;
+    quantity: number;
+    avgBuyPrice: number;
+    evalAmount: number;
+    evalGain: number;
+    returnRate: number;
+  }[];
+}
