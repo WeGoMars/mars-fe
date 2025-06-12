@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import mockPortfolio from "@/lib/mock/mockportfolio";
 import { TrendingUp, TrendingDown } from "lucide-react"
+import { mutate } from 'swr';
 
 // 주식 상세 정보를 보여주는 컴포넌트(종목정보 상세, 내 계좌, AI 추천 탭)
 interface StockDetailsProps {
@@ -210,20 +211,25 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
 
   // 관심 종목 추가/삭제 핸들러
   const handleToggleFavorite = async (symbol: string, name: string) => {
-    if (!isLoggedIn) return;
-    const isFavorite = favoriteStocks.some(stock => stock.symbol === symbol);
+    if (!isLoggedIn) {
+      alert("로그인이 필요한 기능입니다.");
+      return;
+    }
+
     try {
+      const isFavorite = favoriteStocks.some(stock => stock.symbol === symbol);
+
       if (isFavorite) {
         await removeFromFavorites({ symbol });
-        // 관심 종목에서 제거
-        setFavoriteStocks(prev => prev.filter(stock => stock.symbol !== symbol));
       } else {
         await addToFavorites({ symbol });
-        // 관심 종목에 추가
-        setFavoriteStocks(prev => [...prev, { symbol, name, price: '', change: '', changePercent: '' }]);
       }
-    } catch (e) {
-      alert('관심 종목 처리 중 오류가 발생했습니다.');
+
+      // 관심 종목 목록 새로고침
+      await mutate("/api/portfolios/like");
+    } catch (error) {
+      console.error("Failed to update favorite status:", error);
+      alert("관심 종목 업데이트에 실패했습니다.");
     }
   };
 
@@ -628,9 +634,25 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                     ) : selectedAiIndex === null ? (
                       aiRecommendations.map((item, idx) => (
                         <div key={item.symbol} className="bg-[#fff4e4] rounded-2xl p-4 flex flex-col gap-2">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="font-bold text-base">{item.name}</span>
-                            <span className="text-[#71727a] text-xs bg-gray-100 px-2 py-1 rounded-full">{item.sector}</span>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-base">{item.name}</span>
+                              <span className="text-[#71727a] text-xs bg-gray-100 px-2 py-1 rounded-full">{item.sector}</span>
+                            </div>
+                            {isLoggedIn && (
+                              <button
+                                onClick={() => handleToggleFavorite(item.symbol, item.name)}
+                                className="flex items-center justify-center"
+                              >
+                                <Heart 
+                                  className={`w-4 h-4 cursor-pointer transition-colors ${
+                                    favoriteStocks.some(stock => stock.symbol === item.symbol) 
+                                      ? 'text-red-500 fill-red-500' 
+                                      : 'text-[#1f2024]'
+                                  }`} 
+                                />
+                              </button>
+                            )}
                           </div>
                           <hr className="my-2" />
                           <button className="flex items-center gap-1 font-semibold text-base text-[#222]" onClick={() => setSelectedAiIndex(idx)}>
@@ -643,67 +665,71 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                         <Button className="w-full h-12 bg-white border-2 border-[#006ffd] text-[#006ffd] hover:bg-[#eaf2ff] rounded-xl text-base font-medium mb-4" variant="outline" onClick={() => setSelectedAiIndex(null)}>
                           AI의 추천 이유
                         </Button>
-                        <div className="flex items-center justify-center gap-4 mb-8">
-                          <span className="text-[#1f2024] text-base font-medium">{aiRecommendations[selectedAiIndex].name}</span>
-                          <span className="text-[#71727a] text-xs bg-gray-100 px-1.5 py-0.5 rounded-full">{aiRecommendations[selectedAiIndex].sector}</span>
-                        </div>
-                        <div className="space-y-4 mb-8">
-                          {(() => {
-                            const parsed = parseAiReason(aiRecommendations[selectedAiIndex].reasons);
-                            return (
-                              <>
-                                <Card className="bg-[#fff4e4] border-none shadow-none">
-                                  <CardContent className="p-4">
-                                    <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
-                                      포트폴리오 균형 기준
-                                    </div>
-                                    <p className="text-[#1f2024] text-center text-sm leading-relaxed">
-                                      {parsed.portfolio}
-                                    </p>
-                                  </CardContent>
-                                </Card>
-                                <Card className="bg-[#fff4e4] border-none shadow-none">
-                                  <CardContent className="p-4">
-                                    <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
-                                      최근 업계 동향 기준
-                                    </div>
-                                    <p className="text-[#1f2024] text-center text-sm leading-relaxed">
-                                      {parsed.industry}
-                                    </p>
-                                  </CardContent>
-                                </Card>
-                                <Card className="bg-[#fff4e4] border-none shadow-none">
-                                  <CardContent className="p-4">
-                                    <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
-                                      AI의 추정
-                                    </div>
-                                    <p className="text-[#1f2024] text-center text-sm leading-relaxed">
-                                      {parsed.ai}
-                                    </p>
-                                  </CardContent>
-                                </Card>
-                              </>
-                            );
-                          })()}
-                        </div>
-                        <div className="flex items-center justify-center gap-2">
-                          <ChevronLeft className="w-5 h-5 text-[#006ffd] cursor-pointer" onClick={() => setSelectedAiIndex(null)} />
-                          <span className="text-[#1f2024] text-base font-medium">관심 종목으로 저장</span>
-                          {selectedAiIndex !== null && (
-                            <button
-                              onClick={() => handleToggleFavorite(aiRecommendations[selectedAiIndex].symbol, aiRecommendations[selectedAiIndex].name)}
-                              className="flex items-center justify-center"
-                            >
-                              <Heart 
-                                className={`w-4 h-4 cursor-pointer transition-colors ${
-                                  favoriteStocks.some(stock => stock.symbol === aiRecommendations[selectedAiIndex].symbol) 
-                                    ? 'text-red-500 fill-red-500' 
-                                    : 'text-[#1f2024]'
-                                }`} 
-                              />
-                            </button>
-                          )}
-                        </div>
+                        {selectedAiIndex !== null && aiRecommendations[selectedAiIndex] && (
+                          <>
+                            <div className="flex items-center justify-center gap-4 mb-8">
+                              <span className="text-[#1f2024] text-base font-medium">{aiRecommendations[selectedAiIndex].name}</span>
+                              <span className="text-[#71727a] text-xs bg-gray-100 px-1.5 py-0.5 rounded-full">{aiRecommendations[selectedAiIndex].sector}</span>
+                            </div>
+                            <div className="space-y-4 mb-8">
+                              {(() => {
+                                const parsed = parseAiReason(aiRecommendations[selectedAiIndex].reasons);
+                                return (
+                                  <>
+                                    <Card className="bg-[#fff4e4] border-none shadow-none">
+                                      <CardContent className="p-4">
+                                        <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
+                                          포트폴리오 균형 기준
+                                        </div>
+                                        <p className="text-[#1f2024] text-center text-sm leading-relaxed">
+                                          {parsed.portfolio}
+                                        </p>
+                                      </CardContent>
+                                    </Card>
+                                    <Card className="bg-[#fff4e4] border-none shadow-none">
+                                      <CardContent className="p-4">
+                                        <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
+                                          최근 업계 동향 기준
+                                        </div>
+                                        <p className="text-[#1f2024] text-center text-sm leading-relaxed">
+                                          {parsed.industry}
+                                        </p>
+                                      </CardContent>
+                                    </Card>
+                                    <Card className="bg-[#fff4e4] border-none shadow-none">
+                                      <CardContent className="p-4">
+                                        <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
+                                          AI의 추정
+                                        </div>
+                                        <p className="text-[#1f2024] text-center text-sm leading-relaxed">
+                                          {parsed.ai}
+                                        </p>
+                                      </CardContent>
+                                    </Card>
+                                  </>
+                                );
+                              })()}
+                            </div>
+                            <div className="flex items-center justify-center gap-2">
+                              <ChevronLeft className="w-5 h-5 text-[#006ffd] cursor-pointer" onClick={() => setSelectedAiIndex(null)} />
+                              <span className="text-[#1f2024] text-base font-medium">관심 종목으로 저장</span>
+                              {isLoggedIn && (
+                                <button
+                                  onClick={() => handleToggleFavorite(aiRecommendations[selectedAiIndex].symbol, aiRecommendations[selectedAiIndex].name)}
+                                  className="flex items-center justify-center"
+                                >
+                                  <Heart 
+                                    className={`w-4 h-4 cursor-pointer transition-colors ${
+                                      favoriteStocks.some(stock => stock.symbol === aiRecommendations[selectedAiIndex].symbol) 
+                                        ? 'text-red-500 fill-red-500' 
+                                        : 'text-[#1f2024]'
+                                    }`} 
+                                  />
+                                </button>
+                              )}
+                            </div>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
