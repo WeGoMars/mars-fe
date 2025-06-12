@@ -366,19 +366,20 @@ export interface GetUserPreferenceResponse {
 }
 
 // AI추천이유 type 정의
-export interface AiRecommendationReason {
-  portfolio: string;
-  industry: string;
-  ai: string;
+export interface AiRecommendationReasonRaw {
+  type: string;
+  detail: string;
+  score?: number;
 }
 
 export interface AiRecommendationItem {
   symbol: string;
   name: string;
   sector: string;
-  hashtag: string;
-  logoUrl: string;
-  aiReason: AiRecommendationReason;
+  industry: string;
+  score: number;
+  metrics: { name: string; value: number; score: number }[];
+  reasons: AiRecommendationReasonRaw[];
 }
 
 export interface GetAiRecommendationsResponse {

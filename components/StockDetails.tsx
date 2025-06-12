@@ -197,6 +197,17 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
     }
   };
 
+  // 추천 이유 파싱 함수
+  const parseAiReason = (reasons: any[]): { portfolio: string; industry: string; ai: string } => {
+    // 전략 중 업계/포트폴리오 구분이 명확하지 않으면 첫 번째/두 번째 strategy로 분리
+    const strategyReasons = reasons.filter(r => r.type === 'strategy');
+    return {
+      portfolio: strategyReasons[0]?.detail || '',
+      industry: strategyReasons[1]?.detail || '',
+      ai: reasons.find(r => r.type === 'commentary')?.detail || '',
+    };
+  };
+
   if (showReasonDetail) {
     return (
       <div className="flex-1 overflow-auto flex flex-col">
@@ -634,46 +645,47 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                         </Button>
                         <div className="flex items-center justify-center gap-4 mb-8">
                           <span className="text-[#1f2024] text-base font-medium">{aiRecommendations[selectedAiIndex].name}</span>
-                          <span className="flex gap-1">
-                            <span className="w-5 h-5 bg-[#ff4444] rounded-sm inline-block"></span>
-                            <span className="w-5 h-5 bg-[#00aa00] rounded-sm inline-block"></span>
-                            <span className="w-5 h-5 bg-[#0066ff] rounded-sm inline-block"></span>
-                            <span className="w-5 h-5 bg-[#ffaa00] rounded-sm inline-block"></span>
-                          </span>
-                          <span className="text-[#71727a] text-xs bg-gray-100 px-1.5 py-0.5 rounded-full">{aiRecommendations[selectedAiIndex].hashtag}</span>
+                          <span className="text-[#71727a] text-xs bg-gray-100 px-1.5 py-0.5 rounded-full">{aiRecommendations[selectedAiIndex].sector}</span>
                         </div>
                         {/* 추천 이유 카드들 */}
                         <div className="space-y-4 mb-8">
-                          <Card className="bg-[#fff4e4] border-none shadow-none">
-                            <CardContent className="p-4">
-                              <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
-                                포트폴리오 균형 기준
-                              </div>
-                              <p className="text-[#1f2024] text-center text-sm leading-relaxed">
-                                {aiRecommendations[selectedAiIndex].aiReason.portfolio}
-                              </p>
-                            </CardContent>
-                          </Card>
-                          <Card className="bg-[#fff4e4] border-none shadow-none">
-                            <CardContent className="p-4">
-                              <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
-                                최근 업계 동향 기준
-                              </div>
-                              <p className="text-[#1f2024] text-center text-sm leading-relaxed">
-                                {aiRecommendations[selectedAiIndex].aiReason.industry}
-                              </p>
-                            </CardContent>
-                          </Card>
-                          <Card className="bg-[#fff4e4] border-none shadow-none">
-                            <CardContent className="p-4">
-                              <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
-                                AI의 추정
-                              </div>
-                              <p className="text-[#1f2024] text-center text-sm leading-relaxed">
-                                {aiRecommendations[selectedAiIndex].aiReason.ai}
-                              </p>
-                            </CardContent>
-                          </Card>
+                          {(() => {
+                            const parsed = parseAiReason(aiRecommendations[selectedAiIndex].reasons);
+                            return (
+                              <>
+                                <Card className="bg-[#fff4e4] border-none shadow-none">
+                                  <CardContent className="p-4">
+                                    <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
+                                      포트폴리오 균형 기준
+                                    </div>
+                                    <p className="text-[#1f2024] text-center text-sm leading-relaxed">
+                                      {parsed.portfolio}
+                                    </p>
+                                  </CardContent>
+                                </Card>
+                                <Card className="bg-[#fff4e4] border-none shadow-none">
+                                  <CardContent className="p-4">
+                                    <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
+                                      최근 업계 동향 기준
+                                    </div>
+                                    <p className="text-[#1f2024] text-center text-sm leading-relaxed">
+                                      {parsed.industry}
+                                    </p>
+                                  </CardContent>
+                                </Card>
+                                <Card className="bg-[#fff4e4] border-none shadow-none">
+                                  <CardContent className="p-4">
+                                    <div className="bg-[#eaf2ff] text-[#1f2024] px-3 py-1.5 rounded-lg text-center mb-3 text-sm font-medium">
+                                      AI의 추정
+                                    </div>
+                                    <p className="text-[#1f2024] text-center text-sm leading-relaxed">
+                                      {parsed.ai}
+                                    </p>
+                                  </CardContent>
+                                </Card>
+                              </>
+                            );
+                          })()}
                         </div>
                         <div className="flex items-center justify-center gap-2">
                           <ChevronLeft className="w-5 h-5 text-[#006ffd] cursor-pointer" onClick={() => setSelectedAiIndex(null)} />
