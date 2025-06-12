@@ -208,6 +208,17 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
     };
   };
 
+  // 관심 종목 추가/삭제 핸들러
+  const handleToggleFavorite = (symbol: string, name: string) => {
+    if (!isLoggedIn) return;
+    const isFavorite = favoriteStocks.some(stock => stock.symbol === symbol);
+    if (isFavorite) {
+      setFavoriteStocks(prev => prev.filter(stock => stock.symbol !== symbol));
+    } else {
+      setFavoriteStocks(prev => [...prev, { symbol, name, price: '', change: '', changePercent: '' }]);
+    }
+  };
+
   if (showReasonDetail) {
     return (
       <div className="flex-1 overflow-auto flex flex-col">
@@ -561,57 +572,60 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                 <div className="text-gray-400">로딩 중...</div>
               ) : userPreference ? (
                 <div className="w-full space-y-6">
-                  <div className="bg-[#e7f4e8] rounded-2xl p-4">
-                    <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">현재 회원님의 투자 전략</h2>
-                    <div className="space-y-4">
-                      <div>
-                        <h3 className="text-sm font-semibold mb-2">투자 성향</h3>
-                        <div className="flex gap-2">
-                          <button className={`flex-1 rounded-xl py-2 px-2 flex items-center justify-center gap-1 whitespace-nowrap ${
-                            userPreference.data.riskLevel === 'high' ? 'bg-[#ffe2e5]' : 'bg-[#c3e7f2]'
-                          }`}>
-                            <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
-                              userPreference.data.riskLevel === 'high' ? 'bg-[#ff616d]' : 'bg-[#006ffd]'
+                  {/* 'AI의 추천 이유' 상세 화면이 아닐 때만 투자 전략 박스 노출 */}
+                  {selectedAiIndex === null && (
+                    <div className="bg-[#e7f4e8] rounded-2xl p-4">
+                      <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">현재 회원님의 투자 전략</h2>
+                      <div className="space-y-4">
+                        <div>
+                          <h3 className="text-sm font-semibold mb-2">투자 성향</h3>
+                          <div className="flex gap-2">
+                            <button className={`flex-1 rounded-xl py-2 px-2 flex items-center justify-center gap-1 whitespace-nowrap ${
+                              userPreference.data.riskLevel === 'high' ? 'bg-[#ffe2e5]' : 'bg-[#c3e7f2]'
                             }`}>
-                              <span className="text-white text-xs font-bold">
-                                {userPreference.data.riskLevel === 'high' ? '!' : '↓'}
-                              </span>
-                            </div>
-                            <span className="text-[#000000] font-medium text-sm tracking-tight">
-                              {userPreference.data.riskLevel === 'high' ? '고위험' : '저위험'}
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-semibold mb-2">선호 전략</h3>
-                        <div className="flex flex-wrap gap-2">
-                          {userPreference.data.preferredStrategies.map((strategy) => (
-                            <div key={strategy} className="bg-[#ffffff] rounded-xl py-2 px-2 border-2 border-[#006ffd]">
+                              <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
+                                userPreference.data.riskLevel === 'high' ? 'bg-[#ff616d]' : 'bg-[#006ffd]'
+                              }`}>
+                                <span className="text-white text-xs font-bold">
+                                  {userPreference.data.riskLevel === 'high' ? '!' : '↓'}
+                                </span>
+                              </div>
                               <span className="text-[#000000] font-medium text-sm tracking-tight">
-                                {strategy === 'dividend_stability' ? '배당 안정성' :
-                                 strategy === 'portfolio_balance' ? '포트폴리오 균형' :
-                                 strategy === 'value_stability' ? '가치 안정성' :
-                                 strategy === 'momentum' ? '모멘텀' :
-                                 strategy === 'sector_rotation' ? '섹터 로테이션' :
-                                 '반등 매수'}
+                                {userPreference.data.riskLevel === 'high' ? '고위험' : '저위험'}
                               </span>
-                            </div>
-                          ))}
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-semibold mb-2">관심 산업 분야</h3>
-                        <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto overflow-x-hidden">
-                          {userPreference.data.preferredSectors.map((sector) => (
-                            <div key={sector} className="bg-[#ffffff] rounded-xl py-1 px-2 border-2 border-[#006ffd]">
-                              <span className="text-[#000000] font-medium text-xs tracking-tight">{sector}</span>
-                            </div>
-                          ))}
+                        <div>
+                          <h3 className="text-sm font-semibold mb-2">선호 전략</h3>
+                          <div className="flex flex-wrap gap-2">
+                            {userPreference.data.preferredStrategies.map((strategy) => (
+                              <div key={strategy} className="bg-[#ffffff] rounded-xl py-2 px-2 border-2 border-[#006ffd]">
+                                <span className="text-[#000000] font-medium text-sm tracking-tight">
+                                  {strategy === 'dividend_stability' ? '배당 안정성' :
+                                   strategy === 'portfolio_balance' ? '포트폴리오 균형' :
+                                   strategy === 'value_stability' ? '가치 안정성' :
+                                   strategy === 'momentum' ? '모멘텀' :
+                                   strategy === 'sector_rotation' ? '섹터 로테이션' :
+                                   '반등 매수'}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-semibold mb-2">관심 산업 분야</h3>
+                          <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto overflow-x-hidden">
+                            {userPreference.data.preferredSectors.map((sector) => (
+                              <div key={sector} className="bg-[#ffffff] rounded-xl py-1 px-2 border-2 border-[#006ffd]">
+                                <span className="text-[#000000] font-medium text-xs tracking-tight">{sector}</span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                   {/* AI 추천 종목 카드 3개 */}
                   <div className="space-y-4">
                     {isLoadingAi ? (
@@ -622,15 +636,8 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                       aiRecommendations.map((item, idx) => (
                         <div key={item.symbol} className="bg-[#fff4e4] rounded-2xl p-4 flex flex-col gap-2">
                           <div className="flex items-center gap-2 mb-2">
-                            <Image src={item.logoUrl} alt={item.name} width={28} height={28} className="rounded" />
                             <span className="font-bold text-base">{item.name}</span>
-                            <span className="flex gap-1 ml-2">
-                              <span className="w-3 h-3 rounded-full bg-[#ff4444] inline-block"></span>
-                              <span className="w-3 h-3 rounded-full bg-[#00aa00] inline-block"></span>
-                              <span className="w-3 h-3 rounded-full bg-[#0066ff] inline-block"></span>
-                              <span className="w-3 h-3 rounded-full bg-[#ffaa00] inline-block"></span>
-                            </span>
-                            <span className="ml-2 text-xs bg-gray-100 px-2 py-1 rounded-full">{item.hashtag}</span>
+                            <span className="text-[#71727a] text-xs bg-gray-100 px-2 py-1 rounded-full">{item.sector}</span>
                           </div>
                           <hr className="my-2" />
                           <button className="flex items-center gap-1 font-semibold text-base text-[#222]" onClick={() => setSelectedAiIndex(idx)}>
@@ -647,7 +654,6 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                           <span className="text-[#1f2024] text-base font-medium">{aiRecommendations[selectedAiIndex].name}</span>
                           <span className="text-[#71727a] text-xs bg-gray-100 px-1.5 py-0.5 rounded-full">{aiRecommendations[selectedAiIndex].sector}</span>
                         </div>
-                        {/* 추천 이유 카드들 */}
                         <div className="space-y-4 mb-8">
                           {(() => {
                             const parsed = parseAiReason(aiRecommendations[selectedAiIndex].reasons);
@@ -690,8 +696,8 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                         <div className="flex items-center justify-center gap-2">
                           <ChevronLeft className="w-5 h-5 text-[#006ffd] cursor-pointer" onClick={() => setSelectedAiIndex(null)} />
                           <span className="text-[#1f2024] text-base font-medium">관심 종목으로 저장</span>
-                          <button className="flex items-center justify-center">
-                            <Heart className="w-4 h-4 text-[#1f2024]" />
+                          <button className="flex items-center justify-center" onClick={() => handleToggleFavorite(aiRecommendations[selectedAiIndex].symbol, aiRecommendations[selectedAiIndex].name)}>
+                            <Heart className={`w-4 h-4 ${favoriteStocks.some(stock => stock.symbol === aiRecommendations[selectedAiIndex].symbol) ? 'text-red-500 fill-red-500' : 'text-[#1f2024]'}`} />
                           </button>
                         </div>
                       </div>
