@@ -101,8 +101,8 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
       setIsLoadingAi(true);
       try {
         const res = await getAiRecommendations();
-        if (res.success && Array.isArray(res.data)) {
-          setAiRecommendations(res.data.slice(0, 3));
+        if (res.success && Array.isArray(res.data.stocks)) {
+          setAiRecommendations(res.data.stocks.slice(0, 3));
         }
       } catch (e) {
         setAiRecommendations([]);

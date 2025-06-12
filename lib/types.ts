@@ -384,5 +384,7 @@ export interface AiRecommendationItem {
 export interface GetAiRecommendationsResponse {
   success: boolean;
   message: string;
-  data: AiRecommendationItem[];
+  data: {
+    stocks: AiRecommendationItem[];
+  };
 }
