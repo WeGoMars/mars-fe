@@ -103,14 +103,14 @@ export default function SellPanel({ open, onClose, symbol, name, price, totalAss
             <div className="font-bold text-base">수익률</div>
             <div>
               <span className="text-xs mr-1">$</span>
-              <span className="text-xl font-bold">{returnRate.toFixed(2)}%</span>
+              <span className="text-xl font-bold">{(returnRate * 100).toFixed(2)}%</span>
             </div>
           </div>
           <div className="flex justify-between items-center">
             <div className="font-bold text-base">시드머니</div>
             <div>
-              <span className="text-[#006ffd] text-xs mr-1">$</span>
-              <span className="text-[#006ffd] text-xl font-bold">{cyberDollar.toFixed(2)}</span>
+              <span className="text-[#0a0a0a] text-xs mr-1">$</span>
+              <span className="text-[#0a0a0a] text-xl font-bold">{cyberDollar.toFixed(2)}</span>
             </div>
           </div>
           <div className="flex justify-between items-center">

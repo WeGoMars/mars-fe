@@ -365,7 +365,7 @@ export default function MyPage() {
                     <TrendingDown className="h-5 w-5" />
                   )}
                   {portfolioData.returnRate >= 0 ? "+" : "-"}
-                  {Math.abs(portfolioData.returnRate).toFixed(2)}%
+                  {Math.abs(portfolioData.returnRate*100).toFixed(2)}%
                 </div>
 
                 <div className="text-xs text-[#8f9098] mt-1">Return Rate</div>
