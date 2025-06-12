@@ -16,7 +16,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import ProfileModal from "@/components/common/ProfileModal";
 import { Heart } from "lucide-react";
-import mockPortfolio from "@/lib/mock/mockportfolio";
 
 import ProfileHandler from "@/components/common/ProfileHandler";
 import useSWR from "swr";
@@ -321,7 +320,7 @@ export default function Dashboard() {
     totalAssets: overallData?.data?.totalAsset ?? 0,
     investmentAmount: overallData?.data?.investedAmount ?? 0,
     profitLoss: overallData?.data?.evalGain ?? 0,
-    returnRate: (overallData?.data?.returnRate ?? 0) * 100,
+    returnRate: (overallData?.data?.returnRate ?? 0) * 10,
   };
 
   return (
