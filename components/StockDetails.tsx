@@ -202,9 +202,27 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   const parseAiReason = (reasons: any[]): { portfolio: string; industry: string; ai: string } => {
     // 전략 중 업계/포트폴리오 구분이 명확하지 않으면 첫 번째/두 번째 strategy로 분리
     const strategyReasons = reasons.filter(r => r.type === 'strategy');
+    
+    // 각 전략을 정규식으로 파싱
+    const parsedStrategies = strategyReasons.map(reason => {
+      const match = reason.detail.match(/^(.+? 전략):\s*(.+)$/);
+      if (match) {
+        return {
+          name: match[1],
+          detail: match[2]
+        };
+      }
+      return {
+        name: reason.detail.split(':')[0],
+        detail: reason.detail.split(':')[1] || ''
+      };
+    });
+
+    // 첫 번째 전략은 포트폴리오 균형 기준으로
+    // 두 번째 전략은 업계 동향 기준으로 사용
     return {
-      portfolio: strategyReasons[0]?.detail || '',
-      industry: strategyReasons[1]?.detail || '',
+      portfolio: parsedStrategies[0]?.detail || '',
+      industry: parsedStrategies[1]?.detail || '',
       ai: reasons.find(r => r.type === 'commentary')?.detail || '',
     };
   };
