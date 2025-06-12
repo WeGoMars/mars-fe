@@ -429,7 +429,7 @@ export async function getUserPreference(): Promise<GetUserPreferenceResponse> {
 
 // AI 추천 종목/이유 조회
 export async function getAiRecommendations(): Promise<GetAiRecommendationsResponse> {
-  const response = await fetch("/api/ai/recommendation", {
+  const response = await fetch("/api/ai/recommend", {
     method: "GET",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
