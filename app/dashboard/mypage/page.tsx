@@ -45,7 +45,7 @@ export default function MyPage() {
   }, [isLoggedIn, refetchPortfolio, refetchWallet]);
 
   if (isLoading) return <div>로딩 중...</div>;
-  if (error || !data?.data) return <div>에러 발생</div>;
+  if (error || !data?.data) return <div>잠시만 기다려주세요</div>;
   
  //포트폴리오 데이터
   const portfolioData = {
