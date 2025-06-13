@@ -324,6 +324,30 @@ export default function Dashboard() {
     returnRate: (overallData?.data?.returnRate ?? 0) * 100,
   };
 
+  // 컴포넌트 마운트 시 실시간 데이터 가져오기
+  useEffect(() => {
+    const fetchInitialStockData = async () => {
+      try {
+        const res = await getStockDetails(selectedStock);
+        if (res.success && res.data) {
+          const price = res.data.currentPrice;
+          const lastPrice = res.data.lastPrice;
+          const change = lastPrice !== 0 ? ((price - lastPrice) / lastPrice) * 100 : 0;
+          setSelectedInfo({
+            symbol: res.data.symbol,
+            name: res.data.name,
+            price: price,
+            change: change,
+          });
+        }
+      } catch (error) {
+        console.error('초기 주식 데이터 로딩 실패:', error);
+      }
+    };
+
+    fetchInitialStockData();
+  }, []); // 컴포넌트 마운트 시 한 번만 실행
+
   return (
     <div className="min-h-screen bg-[#f5f7f9]">
       {/* Header */}
