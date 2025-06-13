@@ -691,7 +691,10 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                   {/* AI 추천 종목 카드 3개 */}
                   <div className="space-y-4">
                     {isLoadingAi ? (
-                      <div className="text-gray-400">AI 추천 로딩 중...</div>
+                      <div className="flex flex-col items-center justify-center text-gray-400 text-center mt-8 mb-4">
+                        <div className="w-6 h-6 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mb-2"></div>
+                        <span className="font-semibold text-base">AI 추천 로딩 중...</span>
+                      </div>
                     ) : aiRecommendations.length === 0 ? (
                       <div className="text-gray-400">AI 추천 종목이 없습니다.</div>
                     ) : selectedAiIndex === null ? (
