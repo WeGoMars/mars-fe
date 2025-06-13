@@ -43,6 +43,21 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   const [selectedAiIndex, setSelectedAiIndex] = useState<number | null>(null);
   const [isLoadingAi, setIsLoadingAi] = useState(false);
 
+  // API가 요구하는 sector value 변환 테이블
+  const sectorValueToApi: Record<string, string> = {
+    basic_materials: "Basic Materials",
+    communication_services: "Communication Services",
+    consumer_cyclical: "Consumer Cyclical",
+    consumer_defensive: "Consumer Defensive",
+    energy: "Energy",
+    financial_services: "Financial Services",
+    healthcare: "Healthcare",
+    industrials: "Industrials",
+    real_estate: "Real Estate",
+    technology: "Technology",
+    utilities: "Utilities",
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       if (!symbol) return; // symbol이 없으면 실행하지 않음
@@ -175,11 +190,11 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
     setIsSubmitting(true);
 
     try {
-      // value(영문)만 API로 전송
+      // value(영문)만 API로 전송, 산업 분야는 API가 요구하는 값으로 변환
       const requestData = {
         riskLevel: selectedRiskLevel,
-        preferredStrategies: selectedStrategies, // value(영문)만 담김
-        preferredSectors: selectedSectors,       // value(영문)만 담김
+        preferredStrategies: selectedStrategies,
+        preferredSectors: selectedSectors.map(v => sectorValueToApi[v] || v) as any,
       };
 
       console.log('API 요청 데이터:', requestData);
