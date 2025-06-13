@@ -550,29 +550,27 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               {/* Interest Areas Section */}
               <div className="bg-[#c3e7f2] rounded-2xl p-4 mb-6">
                 <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 관심 산업 분야</h2>
-                <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto overflow-x-hidden">
+                <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto overflow-x-hidden pr-2">
                   {[
-                    'Basic Materials',
-                    'Communication Services',
-                    'Consumer Cyclical',
-                    'Consumer Defensive',
-                    'Energy',
-                    'Financial Services',
-                    'Healthcare',
-                    'Industrials',
-                    'Real Estate',
-                    'Technology',
-                    'Utilities',
-                  ].map((sector) => (
-                    <button
-                      key={sector}
-                      className={`bg-[#ffffff] rounded-xl py-1 px-2 whitespace-nowrap ${
-                        selectedSectors.includes(sector as PreferredSector) ? 'border-2 border-[#006ffd]' : ''
-                      }`}
-                      onClick={() => handleSectorClick(sector as PreferredSector)}
+                    { eng: 'Basic Materials', kor: '원자재' },
+                    { eng: 'Communication Services', kor: '통신서비스' },
+                    { eng: 'Consumer Cyclical', kor: '경기소비재' },
+                    { eng: 'Consumer Defensive', kor: '필수소비재' },
+                    { eng: 'Energy', kor: '에너지' },
+                    { eng: 'Financial Services', kor: '금융서비스' },
+                    { eng: 'Healthcare', kor: '헬스케어' },
+                    { eng: 'Industrials', kor: '산업재' },
+                    { eng: 'Real Estate', kor: '부동산' },
+                    { eng: 'Technology', kor: '기술' },
+                    { eng: 'Utilities', kor: '유틸리티' },
+                  ].map((industry, index) => (
+                    <div
+                      key={index}
+                      className="bg-[#f5f7f9] rounded-lg p-2 text-center text-sm hover:bg-[#e8e8e8] transition-colors cursor-pointer"
+                      title={industry.eng}
                     >
-                      <span className="text-[#000000] font-medium text-xs tracking-tight">{sector}</span>
-                    </button>
+                      {industry.kor}
+                    </div>
                   ))}
                 </div>
               </div>
