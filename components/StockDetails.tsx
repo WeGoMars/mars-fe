@@ -58,6 +58,21 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
     utilities: "Utilities",
   };
 
+  // sector API value → label(한글) 매핑 테이블
+  const sectorApiToLabel: Record<string, string> = {
+    "Basic Materials": "원자재",
+    "Communication Services": "통신서비스",
+    "Consumer Cyclical": "경기소비재",
+    "Consumer Defensive": "필수소비재",
+    "Energy": "에너지",
+    "Financial Services": "금융서비스",
+    "Healthcare": "헬스케어",
+    "Industrials": "산업재",
+    "Real Estate": "부동산",
+    "Technology": "기술",
+    "Utilities": "유틸리티",
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       if (!symbol) return; // symbol이 없으면 실행하지 않음
@@ -625,7 +640,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                       <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">현재 회원님의 투자 전략</h2>
                       <div className="space-y-4">
                         <div>
-                          <h3 className="text-sm font-semibold mb-2">투자 성향</h3>
+                          <h3 className="text-sm font-semibold mb-2 text-center">투자 성향</h3>
                           <div className="flex gap-2">
                             <button className={`flex-1 rounded-xl py-2 px-2 flex items-center justify-center gap-1 whitespace-nowrap ${
                               userPreference.data.riskLevel === 'high' ? 'bg-[#ffe2e5]' : 'bg-[#c3e7f2]'
@@ -644,7 +659,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                           </div>
                         </div>
                         <div>
-                          <h3 className="text-sm font-semibold mb-2">선호 전략</h3>
+                          <h3 className="text-sm font-semibold mb-2 text-center">선호 전략</h3>
                           <div className="flex flex-wrap gap-2">
                             {userPreference.data.preferredStrategies.map((strategy) => (
                               <div key={strategy} className="bg-[#ffffff] rounded-xl py-2 px-2 border-2 border-[#006ffd]">
@@ -661,11 +676,11 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                           </div>
                         </div>
                         <div>
-                          <h3 className="text-sm font-semibold mb-2">관심 산업 분야</h3>
+                          <h3 className="text-sm font-semibold mb-2 text-center">관심 산업 분야</h3>
                           <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto overflow-x-hidden">
                             {userPreference.data.preferredSectors.map((sector) => (
                               <div key={sector} className="bg-[#ffffff] rounded-xl py-1 px-2 border-2 border-[#006ffd]">
-                                <span className="text-[#000000] font-medium text-xs tracking-tight">{sector}</span>
+                                <span className="text-[#000000] font-medium text-xs tracking-tight">{sectorApiToLabel[sector] || sector}</span>
                               </div>
                             ))}
                           </div>
