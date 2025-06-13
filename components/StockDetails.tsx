@@ -175,10 +175,11 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
     setIsSubmitting(true);
 
     try {
+      // value(영문)만 API로 전송
       const requestData = {
         riskLevel: selectedRiskLevel,
-        preferredStrategies: selectedStrategies,
-        preferredSectors: selectedSectors,
+        preferredStrategies: selectedStrategies, // value(영문)만 담김
+        preferredSectors: selectedSectors,       // value(영문)만 담김
       };
 
       console.log('API 요청 데이터:', requestData);
