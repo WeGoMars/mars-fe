@@ -526,23 +526,23 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               {/* Preferred Strategy Section */}
               <div className="bg-[#fff4e4] rounded-2xl p-4 mb-6">
                 <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 관심 전략</h2>
-                <div className="grid grid-cols-2 gap-4 max-w-xs mx-auto">
+                <div className="flex flex-wrap gap-2">
                   {[
-                    '배당 안정성',
-                    '포트폴리오 균형',
-                    '가치 안정성',
-                    '모멘텀',
-                    '섹터 로테이션',
-                    '반등 매수',
+                    { value: 'dividend_stability', label: '배당 안정성' },
+                    { value: 'portfolio_balance', label: '포트폴리오 균형' },
+                    { value: 'value_stability', label: '가치 안정성' },
+                    { value: 'momentum', label: '모멘텀' },
+                    { value: 'sector_rotation', label: '섹터 로테이션' },
+                    { value: 'rebound_buy', label: '반등 매수' },
                   ].map((strategy) => (
                     <button
-                      key={strategy}
-                      className={`bg-[#ffffff] rounded-xl py-4 px-2 min-w-[120px] flex items-center justify-center whitespace-nowrap text-center font-medium text-base tracking-tight shadow-sm transition-colors duration-150 hover:bg-[#f5f7f9] ${
-                        selectedSectors.includes(strategy as PreferredSector) ? 'border-2 border-[#006ffd]' : ''
+                      key={strategy.value}
+                      className={`flex-1 bg-[#ffffff] rounded-xl py-2 px-2 whitespace-nowrap ${
+                        selectedStrategies.includes(strategy.value as PreferredStrategy) ? 'border-2 border-[#006ffd]' : ''
                       }`}
-                      onClick={() => handleSectorClick(strategy as PreferredSector)}
+                      onClick={() => handleStrategyClick(strategy.value as PreferredStrategy)}
                     >
-                      {strategy}
+                      <span className="text-[#000000] font-medium text-sm tracking-tight">{strategy.label}</span>
                     </button>
                   ))}
                 </div>
@@ -552,26 +552,26 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                 <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 관심 산업 분야</h2>
                 <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto overflow-x-hidden">
                   {[
-                    'Basic Materials',
-                    'Communication Services',
-                    'Consumer Cyclical',
-                    'Consumer Defensive',
-                    'Energy',
-                    'Financial Services',
-                    'Healthcare',
-                    'Industrials',
-                    'Real Estate',
-                    'Technology',
-                    'Utilities',
+                    { value: 'basic_materials', label: '원자재' },
+                    { value: 'communication_services', label: '통신서비스' },
+                    { value: 'consumer_cyclical', label: '경기소비재' },
+                    { value: 'consumer_defensive', label: '필수소비재' },
+                    { value: 'energy', label: '에너지' },
+                    { value: 'financial_services', label: '금융서비스' },
+                    { value: 'healthcare', label: '헬스케어' },
+                    { value: 'industrials', label: '산업재' },
+                    { value: 'real_estate', label: '부동산' },
+                    { value: 'technology', label: '기술' },
+                    { value: 'utilities', label: '유틸리티' },
                   ].map((sector) => (
                     <button
-                      key={sector}
+                      key={sector.value}
                       className={`bg-[#ffffff] rounded-xl py-1 px-2 whitespace-nowrap ${
-                        selectedSectors.includes(sector as PreferredSector) ? 'border-2 border-[#006ffd]' : ''
+                        selectedSectors.includes(sector.value as PreferredSector) ? 'border-2 border-[#006ffd]' : ''
                       }`}
-                      onClick={() => handleSectorClick(sector as PreferredSector)}
+                      onClick={() => handleSectorClick(sector.value as PreferredSector)}
                     >
-                      <span className="text-[#000000] font-medium text-xs tracking-tight">{sector}</span>
+                      <span className="text-[#000000] font-medium text-xs tracking-tight">{sector.label}</span>
                     </button>
                   ))}
                 </div>
