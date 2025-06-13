@@ -453,15 +453,12 @@ export default function MyPage() {
                   stockPortfolio.map((stock, index) => (
                     <tr key={index} className="border-b border-[#f5f7f9] hover:bg-[#f5f7f9] transition-colors">
                       <td className="py-4">
-                        <Link
-                          href={`/holdings/${stock.symbol}`}
-                          className="flex items-center gap-3 hover:text-[#197bbd] transition-colors"
-                        >
+                        <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold">
                             {stock.symbol.charAt(0)}
                           </div>
                           <span className="font-medium text-[#1c2730]">{stock.name}</span>
-                        </Link>
+                        </div>
                       </td>
                       <td className="text-right py-4 text-[#1c2730]">
                         ${stock.avgBuyPrice.toLocaleString("en-US", {
@@ -546,15 +543,12 @@ export default function MyPage() {
                           })()}
                         </td>
                         <td className="py-4">
-                          <Link
-                            href={`/holdings/${trade.symbol}`}
-                            className="flex items-center gap-3 hover:text-[#197bbd] transition-colors"
-                          >
+                          <div className="flex items-center gap-3">
                             <div className="w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold">
                               {trade.symbol.charAt(0)}
                             </div>
                             <span className="font-medium text-[#1c2730]">{trade.name}</span>
-                          </Link>
+                          </div>
                         </td>
                         <td className="text-right py-4 text-[#1c2730]">
                           ${trade.currentPrice.toLocaleString("en-US", {
