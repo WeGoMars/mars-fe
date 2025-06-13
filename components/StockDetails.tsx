@@ -525,24 +525,24 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               </div>
               {/* Preferred Strategy Section */}
               <div className="bg-[#fff4e4] rounded-2xl p-4 mb-6">
-                <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 선호 전략</h2>
-                <div className="flex flex-wrap gap-2">
+                <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 관심 전략</h2>
+                <div className="grid grid-cols-2 gap-4 max-w-xs mx-auto">
                   {[
-                    { value: 'dividend_stability', label: '배당 안정성' },
-                    { value: 'portfolio_balance', label: '포트폴리오 균형' },
-                    { value: 'value_stability', label: '가치 안정성' },
-                    { value: 'momentum', label: '모멘텀' },
-                    { value: 'sector_rotation', label: '섹터 로테이션' },
-                    { value: 'rebound_buy', label: '반등 매수' },
+                    '배당 안정성',
+                    '포트폴리오 균형',
+                    '가치 안정성',
+                    '모멘텀',
+                    '섹터 로테이션',
+                    '반등 매수',
                   ].map((strategy) => (
                     <button
-                      key={strategy.value}
-                      className={`flex-1 bg-[#ffffff] rounded-xl py-2 px-2 whitespace-nowrap ${
-                        selectedStrategies.includes(strategy.value as PreferredStrategy) ? 'border-2 border-[#006ffd]' : ''
+                      key={strategy}
+                      className={`bg-[#ffffff] rounded-xl py-4 px-2 min-w-[120px] flex items-center justify-center whitespace-nowrap text-center font-medium text-base tracking-tight shadow-sm transition-colors duration-150 hover:bg-[#f5f7f9] ${
+                        selectedSectors.includes(strategy as PreferredSector) ? 'border-2 border-[#006ffd]' : ''
                       }`}
-                      onClick={() => handleStrategyClick(strategy.value as PreferredStrategy)}
+                      onClick={() => handleSectorClick(strategy as PreferredSector)}
                     >
-                      <span className="text-[#000000] font-medium text-sm tracking-tight">{strategy.label}</span>
+                      {strategy}
                     </button>
                   ))}
                 </div>
@@ -550,27 +550,29 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               {/* Interest Areas Section */}
               <div className="bg-[#c3e7f2] rounded-2xl p-4 mb-6">
                 <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 관심 산업 분야</h2>
-                <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto overflow-x-hidden pr-2">
+                <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto overflow-x-hidden">
                   {[
-                    { eng: 'Basic Materials', kor: '원자재' },
-                    { eng: 'Communication Services', kor: '통신서비스' },
-                    { eng: 'Consumer Cyclical', kor: '경기소비재' },
-                    { eng: 'Consumer Defensive', kor: '필수소비재' },
-                    { eng: 'Energy', kor: '에너지' },
-                    { eng: 'Financial Services', kor: '금융서비스' },
-                    { eng: 'Healthcare', kor: '헬스케어' },
-                    { eng: 'Industrials', kor: '산업재' },
-                    { eng: 'Real Estate', kor: '부동산' },
-                    { eng: 'Technology', kor: '기술' },
-                    { eng: 'Utilities', kor: '유틸리티' },
-                  ].map((industry, index) => (
-                    <div
-                      key={index}
-                      className="bg-[#f5f7f9] rounded-lg p-2 text-center text-sm hover:bg-[#e8e8e8] transition-colors cursor-pointer"
-                      title={industry.eng}
+                    'Basic Materials',
+                    'Communication Services',
+                    'Consumer Cyclical',
+                    'Consumer Defensive',
+                    'Energy',
+                    'Financial Services',
+                    'Healthcare',
+                    'Industrials',
+                    'Real Estate',
+                    'Technology',
+                    'Utilities',
+                  ].map((sector) => (
+                    <button
+                      key={sector}
+                      className={`bg-[#ffffff] rounded-xl py-1 px-2 whitespace-nowrap ${
+                        selectedSectors.includes(sector as PreferredSector) ? 'border-2 border-[#006ffd]' : ''
+                      }`}
+                      onClick={() => handleSectorClick(sector as PreferredSector)}
                     >
-                      {industry.kor}
-                    </div>
+                      <span className="text-[#000000] font-medium text-xs tracking-tight">{sector}</span>
+                    </button>
                   ))}
                 </div>
               </div>
