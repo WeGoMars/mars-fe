@@ -395,7 +395,7 @@ export default function Dashboard() {
             내계좌
           </Link>
           <LogoutButton redirectTo="/">
-            <span className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full block text-center">
+            <span className="px-4 py-2 text-white hidden md:flex bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
               로그아웃
             </span>
           </LogoutButton>
@@ -413,7 +413,7 @@ export default function Dashboard() {
             <div className="text-sm text-gray-600">
               oo님 mars 모투에 오신걸 환영합니다
             </div>
-            <button className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full">
+            <button className="px-4 py-2 text-white hidden md:flex bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
               로그아웃
             </button>
             <button
