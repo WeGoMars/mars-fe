@@ -125,14 +125,14 @@ export default function MyPage() {
           <div className="flex items-center gap-2">
             <a href="/dashboard">
             <Image
-              src="/marslogo.png"
+              src="/mars_logo_main.png"
               alt="Mars 로고"
-              width={30}
-              height={30}
+              width={40}
+              height={40}
               className="rounded-full cursor-pointer"
             />
             </a>
-            <span className="text-lg font-medium">Mars</span>
+            {/* <span className="text-lg font-medium">Mars</span> */}
           </div>
 
           <div className="flex items-center gap-4">
@@ -156,11 +156,11 @@ export default function MyPage() {
         {/* Left Column - Hidden on mobile, visible on lg screens */}
         <div className="lg:flex lg:w-64 flex-col">
           {/* Interest Stocks Section */}
-          <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center">
+          <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center shadow-md">
             <span className="text-sm">관심 종목</span>
           </div>
   
-          <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
+          <div className="bg-white rounded-xl p-4 shadow-lg flex-1 overflow-auto">
             <div className="space-y-6">
               {isLoadingFavorites ? (
                 <div className="text-center py-4">로딩 중...</div>
@@ -209,11 +209,11 @@ export default function MyPage() {
       
       
       {/* Purchased Stocks Section */}
-      <div className="bg-[#f0f0f0] rounded-xl p-3 my-4 text-center">
+      <div className="bg-[#f0f0f0] rounded-xl p-3 my-4 text-center shadow-md">
         <span className="text-sm">내가 구매한 종목</span>
       </div>
 
-      <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
+      <div className="bg-white rounded-xl p-4 shadow-lg flex-1 overflow-auto">
         <div className="space-y-6">
           {isLoadingMyStocks ? (
             <div className="text-center py-4">로딩 중...</div>
@@ -271,7 +271,7 @@ export default function MyPage() {
       </div>
 
       {/* Integrated Portfolio Overview Block */}
-      <Card className="bg-white border-[#e8e8e8] mb-8 shadow-sm">
+      <Card className="bg-white border-[#e8e8e8] mb-8 shadow-lg">
         <CardHeader className="pb-4">
           <CardTitle className="text-[#1c2730] text-xl font-semibold">포트폴리오 현황</CardTitle>
         </CardHeader>
@@ -423,7 +423,7 @@ export default function MyPage() {
       </Card>
 
       {/* Holdings Table */}
-      <Card className="bg-white border-[#e8e8e8] mb-6">
+      <Card className="bg-white border-[#e8e8e8] mb-6 shadow-lg">
         <CardHeader>
           <CardTitle className="text-[#1c2730]">보유종목/상품현황</CardTitle>
         </CardHeader>
@@ -453,15 +453,29 @@ export default function MyPage() {
                   stockPortfolio.map((stock, index) => (
                     <tr key={index} className="border-b border-[#f5f7f9] hover:bg-[#f5f7f9] transition-colors">
                       <td className="py-4">
-                        <Link
-                          href={`/holdings/${stock.symbol}`}
-                          className="flex items-center gap-3 hover:text-[#197bbd] transition-colors"
-                        >
-                          <div className="w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold">
-                            {stock.symbol.charAt(0)}
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8">
+                            <Image
+                              src={`/logos/${stock.symbol}.png`}
+                              alt={stock.symbol}
+                              width={32}
+                              height={32}
+                              className="rounded-full"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = "none";
+                                const parent = target.parentElement;
+                                if (parent) {
+                                  const fallback = document.createElement("div");
+                                  fallback.className = "w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold";
+                                  fallback.innerHTML = `<span>${stock.symbol.charAt(0)}</span>`;
+                                  parent.appendChild(fallback);
+                                }
+                              }}
+                            />
                           </div>
                           <span className="font-medium text-[#1c2730]">{stock.name}</span>
-                        </Link>
+                        </div>
                       </td>
                       <td className="text-right py-4 text-[#1c2730]">
                         ${stock.avgBuyPrice.toLocaleString("en-US", {
@@ -495,7 +509,7 @@ export default function MyPage() {
       </Card>
 
       {/* Stock Performance Table */}
-      <Card className="bg-white border-[#e8e8e8]">
+      <Card className="bg-white border-[#e8e8e8] shadow-lg">
         <CardHeader>
           <CardTitle className="text-[#1c2730]">주식 거래내역</CardTitle>
         </CardHeader>
@@ -546,15 +560,29 @@ export default function MyPage() {
                           })()}
                         </td>
                         <td className="py-4">
-                          <Link
-                            href={`/holdings/${trade.symbol}`}
-                            className="flex items-center gap-3 hover:text-[#197bbd] transition-colors"
-                          >
-                            <div className="w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold">
-                              {trade.symbol.charAt(0)}
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8">
+                              <Image
+                                src={`/logos/${trade.symbol}.png`}
+                                alt={trade.symbol}
+                                width={32}
+                                height={32}
+                                className="rounded-full"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = "none";
+                                  const parent = target.parentElement;
+                                  if (parent) {
+                                    const fallback = document.createElement("div");
+                                    fallback.className = "w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold";
+                                    fallback.innerHTML = `<span>${trade.symbol.charAt(0)}</span>`;
+                                    parent.appendChild(fallback);
+                                  }
+                                }}
+                              />
                             </div>
                             <span className="font-medium text-[#1c2730]">{trade.name}</span>
-                          </Link>
+                          </div>
                         </td>
                         <td className="text-right py-4 text-[#1c2730]">
                           ${trade.currentPrice.toLocaleString("en-US", {

@@ -334,14 +334,14 @@ export default function FinanceDashboard() {
                     </button>
                     <Link href="/">
                         <Image
-                            src="/marslogo.png"
+                            src="/mars_logo_main.png"
                             alt="Mars 로고"
-                            width={30}
-                            height={30}
+                            width={40}
+                            height={40}
                             className="rounded-full cursor-pointer"
                         />
                     </Link>
-                    <span className="text-lg font-medium">Mars</span>
+                    {/* <span className="text-lg font-medium">Mars</span> */}
                 </div>
 
                 <div className="hidden md:flex items-center gap-3">
@@ -464,7 +464,7 @@ export default function FinanceDashboard() {
                 {/* Left Column - Hidden on mobile, visible on lg screens */}
                 <div className="hidden lg:flex lg:w-64 flex-col">
                     {/* 오늘의 핫 종목 목록 */}
-                    <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center">
+                    <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center shadow-md">
                         <span className="text-sm">오늘의 핫 종목</span>
                     </div>
 
@@ -516,7 +516,7 @@ export default function FinanceDashboard() {
                         </div>
                     </div>
                     {/* Main Chart Area */}
-                    <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm flex-1 overflow-auto">
+                    <div className="bg-white rounded-xl p-4 shadow-lg flex-1 overflow-auto">
                         {/* S&P 500 Header with Tabs - Styled like the image */}
                         <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-3">
                             <div className="flex items-center gap-2">
@@ -752,7 +752,7 @@ export default function FinanceDashboard() {
                         </div>
                     ) : (
                         // 기존 카드 내용
-                        <div className="bg-white rounded-xl p-4 md:p-5 shadow-sm flex-1 overflow-auto flex flex-col">
+                        <div className="bg-white rounded-xl p-4 md:p-5 shadow-lg flex-1 overflow-auto flex flex-col">
                             {selectedInfo.symbol && (
                                 <StockDetails
                                     symbol={selectedInfo.symbol}
