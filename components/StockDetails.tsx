@@ -439,8 +439,8 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
             ) : (
               <div className="space-y-8">
                 {/* Total Assets */}
-                <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
-                  <span className="text-sm text-gray-500">총자산</span>
+                <div className="flex justify-between items-center p-3 bg-[#197bbd]/50 rounded-lg">
+                  <span className="text-sm ">총자산</span>
                   <div className="text-xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
                     <span className="text-[#197bbd] text-xs mr-1">$</span>
                     {portfolioData?.data?.totalAsset?.toLocaleString("en-US", {
@@ -450,8 +450,8 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                   </div>
                 </div>
                 {/* 시드머니 */}
-                <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
-                  <span className="text-sm text-gray-500">시드머니</span>
+                <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
+                  <span className="text-sm">시드머니</span>
                   <div className="text-xl font-bold group-hover:text-[#1565a0] transition-colors">
                     <span className="text-xs mr-1">$</span>
                     {walletData?.data?.cyberDollar?.toLocaleString("en-US", {

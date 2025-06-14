@@ -3,7 +3,7 @@ import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp, TrendingDown, ChevronRight, Menu,PieChart } from "lucide-react"
+import { TrendingUp, TrendingDown, ChevronRight, Menu,PieChart,BarChart3 } from "lucide-react"
 import Image from "next/image";
 import { useRouter } from "next/navigation" 
 import { useEffect, useState } from "react"
@@ -440,9 +440,11 @@ export default function MyPage() {
       </Card>
 
       {/* Holdings Table */}
-      <Card className="bg-white border-[#e8e8e8] mb-6 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-[#1c2730]">보유종목/상품현황</CardTitle>
+      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-2xl rounded-3xl overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-8">
+              <CardTitle className="text-2xl font-bold flex items-center gap-3">
+                <BarChart3 className="w-8 h-8" />보유종목/상품현황</CardTitle>
+                <p className="text-emerald-100 mt-2">현재 보유 중인</p>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -526,9 +528,11 @@ export default function MyPage() {
       </Card>
 
       {/* Stock Performance Table */}
-      <Card className="bg-white border-[#e8e8e8] shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-[#1c2730]">주식 거래내역</CardTitle>
+       <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-2xl rounded-3xl overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-8">
+              <CardTitle className="text-2xl font-bold flex items-center gap-3">
+                <TrendingUp className="w-8 h-8" />주식 거래내역</CardTitle>
+                <p className="text-indigo-100 mt-2">최근 주식 거래 기록</p>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
