@@ -19,7 +19,7 @@ export default function SellConfirmModal({ open, onClose, onConfirm, symbol, nam
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="w-[500px] h-[500px] bg-gray-100 p-4 mx-auto rounded-3xl">
+      <div className="w-[500px] h-[400px] bg-gray-100 p-4 mx-auto rounded-3xl">
         {/* Header - 분리된 회색 박스 */}
         <div className="bg-[#eeeeee] rounded-3xl px-6 py-6 text-center mb-4">
           <div className="flex items-center justify-center gap-3">
