@@ -46,6 +46,36 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   const [selectedAiIndex, setSelectedAiIndex] = useState<number | null>(null);
   const [isLoadingAi, setIsLoadingAi] = useState(false);
 
+  // API가 요구하는 sector value 변환 테이블
+  const sectorValueToApi: Record<string, string> = {
+    basic_materials: "Basic Materials",
+    communication_services: "Communication Services",
+    consumer_cyclical: "Consumer Cyclical",
+    consumer_defensive: "Consumer Defensive",
+    energy: "Energy",
+    financial_services: "Financial Services",
+    healthcare: "Healthcare",
+    industrials: "Industrials",
+    real_estate: "Real Estate",
+    technology: "Technology",
+    utilities: "Utilities",
+  };
+
+  // sector API value → label(한글) 매핑 테이블
+  const sectorApiToLabel: Record<string, string> = {
+    "Basic Materials": "원자재",
+    "Communication Services": "통신서비스",
+    "Consumer Cyclical": "경기소비재",
+    "Consumer Defensive": "필수소비재",
+    "Energy": "에너지",
+    "Financial Services": "금융서비스",
+    "Healthcare": "헬스케어",
+    "Industrials": "산업재",
+    "Real Estate": "부동산",
+    "Technology": "기술",
+    "Utilities": "유틸리티",
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       if (!symbol) return; // symbol이 없으면 실행하지 않음
@@ -178,10 +208,11 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
     setIsSubmitting(true);
 
     try {
+      // value(영문)만 API로 전송, 산업 분야는 API가 요구하는 값으로 변환
       const requestData = {
         riskLevel: selectedRiskLevel,
         preferredStrategies: selectedStrategies,
-        preferredSectors: selectedSectors,
+        preferredSectors: selectedSectors.map(v => sectorValueToApi[v] || v) as any,
       };
 
       console.log('API 요청 데이터:', requestData);
@@ -534,7 +565,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               </div>
               {/* Preferred Strategy Section */}
               <div className="bg-[#fff4e4] rounded-2xl p-4 mb-6">
-                <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 선호 전략</h2>
+                <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 관심 전략</h2>
                 <div className="flex flex-wrap gap-2">
                   {[
                     { value: 'dividend_stability', label: '배당 안정성' },
@@ -561,26 +592,26 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                 <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">당신의 관심 산업 분야</h2>
                 <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto overflow-x-hidden">
                   {[
-                    'Basic Materials',
-                    'Communication Services',
-                    'Consumer Cyclical',
-                    'Consumer Defensive',
-                    'Energy',
-                    'Financial Services',
-                    'Healthcare',
-                    'Industrials',
-                    'Real Estate',
-                    'Technology',
-                    'Utilities',
+                    { value: 'basic_materials', label: '원자재' },
+                    { value: 'communication_services', label: '통신서비스' },
+                    { value: 'consumer_cyclical', label: '경기소비재' },
+                    { value: 'consumer_defensive', label: '필수소비재' },
+                    { value: 'energy', label: '에너지' },
+                    { value: 'financial_services', label: '금융서비스' },
+                    { value: 'healthcare', label: '헬스케어' },
+                    { value: 'industrials', label: '산업재' },
+                    { value: 'real_estate', label: '부동산' },
+                    { value: 'technology', label: '기술' },
+                    { value: 'utilities', label: '유틸리티' },
                   ].map((sector) => (
                     <button
-                      key={sector}
+                      key={sector.value}
                       className={`bg-[#ffffff] rounded-xl py-1 px-2 whitespace-nowrap ${
-                        selectedSectors.includes(sector as PreferredSector) ? 'border-2 border-[#006ffd]' : ''
+                        selectedSectors.includes(sector.value as PreferredSector) ? 'border-2 border-[#006ffd]' : ''
                       }`}
-                      onClick={() => handleSectorClick(sector as PreferredSector)}
+                      onClick={() => handleSectorClick(sector.value as PreferredSector)}
                     >
-                      <span className="text-[#000000] font-medium text-xs tracking-tight">{sector}</span>
+                      <span className="text-[#000000] font-medium text-xs tracking-tight">{sector.label}</span>
                     </button>
                   ))}
                 </div>
@@ -618,7 +649,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                       <h2 className="text-[#000000] text-base font-bold text-center mb-3 tracking-tight">현재 회원님의 투자 전략</h2>
                       <div className="space-y-4">
                         <div>
-                          <h3 className="text-sm font-semibold mb-2">투자 성향</h3>
+                          <h3 className="text-sm font-semibold mb-2 text-center">투자 성향</h3>
                           <div className="flex gap-2">
                             <button className={`flex-1 rounded-xl py-2 px-2 flex items-center justify-center gap-1 whitespace-nowrap ${
                               userPreference.data.riskLevel === 'high' ? 'bg-[#ffe2e5]' : 'bg-[#c3e7f2]'
@@ -637,7 +668,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                           </div>
                         </div>
                         <div>
-                          <h3 className="text-sm font-semibold mb-2">선호 전략</h3>
+                          <h3 className="text-sm font-semibold mb-2 text-center">선호 전략</h3>
                           <div className="flex flex-wrap gap-2">
                             {userPreference.data.preferredStrategies.map((strategy) => (
                               <div key={strategy} className="bg-[#ffffff] rounded-xl py-2 px-2 border-2 border-[#006ffd]">
@@ -654,11 +685,11 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                           </div>
                         </div>
                         <div>
-                          <h3 className="text-sm font-semibold mb-2">관심 산업 분야</h3>
+                          <h3 className="text-sm font-semibold mb-2 text-center">관심 산업 분야</h3>
                           <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto overflow-x-hidden">
                             {userPreference.data.preferredSectors.map((sector) => (
                               <div key={sector} className="bg-[#ffffff] rounded-xl py-1 px-2 border-2 border-[#006ffd]">
-                                <span className="text-[#000000] font-medium text-xs tracking-tight">{sector}</span>
+                                <span className="text-[#000000] font-medium text-xs tracking-tight">{sectorApiToLabel[sector] || sector}</span>
                               </div>
                             ))}
                           </div>
@@ -669,7 +700,10 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                   {/* AI 추천 종목 카드 3개 */}
                   <div className="space-y-4">
                     {isLoadingAi ? (
-                      <div className="text-gray-400">AI 추천 로딩 중...</div>
+                      <div className="flex flex-col items-center justify-center text-gray-400 text-center mt-8 mb-4">
+                        <div className="w-6 h-6 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mb-2"></div>
+                        <span className="font-semibold text-base">AI 추천 로딩 중...</span>
+                      </div>
                     ) : aiRecommendations.length === 0 ? (
                       <div className="text-gray-400">AI 추천 종목이 없습니다.</div>
                     ) : selectedAiIndex === null ? (

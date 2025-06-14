@@ -121,14 +121,14 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
         title="홈으로 이동"
       >
         <Image
-          src="/marslogo.png"
+          src="/mars_logo_main.png"
           alt="Mars 로고"
           width={60}
           height={60}
           className="rounded-full cursor-pointer"
         />
       </Link>
-      <span className="fixed left-7 top-4 text-lg font-medium">Mars</span>
+      {/* <span className="fixed left-7 top-4 text-lg font-medium">Mars</span> */}
       {/* <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}> */}
       {/* Close button positioned in the top-right corner of the modal window frame */}
       <button

@@ -71,7 +71,7 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
         title="홈으로 이동"
       >
         <Image
-          src="/marslogo.png"
+          src="/mars_logo_main.png"
           alt="Mars 로고"
           width={60}
           height={60}
@@ -79,7 +79,7 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
         />
       </Link>
       {/* 마스로고 + 글자 크기랑 위치 수정 할수도잇음 */}
-      <span className="fixed left-7 top-4 text-lg font-medium" >Mars</span>
+      {/* <span className="fixed left-7 top-4 text-lg font-medium" >Mars</span> */}
       <button
         onClick={handleClose}
         className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm hover:bg-black/20"
