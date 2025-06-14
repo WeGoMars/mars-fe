@@ -516,7 +516,7 @@ export default function FinanceDashboard() {
                         </div>
                     </div>
                     {/* Main Chart Area */}
-                    <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm flex-1 overflow-auto">
+                    <div className="bg-white rounded-xl p-4 shadow-lg flex-1 overflow-auto">
                         {/* S&P 500 Header with Tabs - Styled like the image */}
                         <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-3">
                             <div className="flex items-center gap-2">
@@ -752,7 +752,7 @@ export default function FinanceDashboard() {
                         </div>
                     ) : (
                         // 기존 카드 내용
-                        <div className="bg-white rounded-xl p-4 md:p-5 shadow-sm flex-1 overflow-auto flex flex-col">
+                        <div className="bg-white rounded-xl p-4 md:p-5 shadow-lg flex-1 overflow-auto flex flex-col">
                             {selectedInfo.symbol && (
                                 <StockDetails
                                     symbol={selectedInfo.symbol}

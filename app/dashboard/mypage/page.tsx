@@ -160,7 +160,7 @@ export default function MyPage() {
             <span className="text-sm">관심 종목</span>
           </div>
   
-          <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
+          <div className="bg-white rounded-xl p-4 shadow-lg flex-1 overflow-auto">
             <div className="space-y-6">
               {isLoadingFavorites ? (
                 <div className="text-center py-4">로딩 중...</div>
@@ -213,7 +213,7 @@ export default function MyPage() {
         <span className="text-sm">내가 구매한 종목</span>
       </div>
 
-      <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
+      <div className="bg-white rounded-xl p-4 shadow-lg flex-1 overflow-auto">
         <div className="space-y-6">
           {isLoadingMyStocks ? (
             <div className="text-center py-4">로딩 중...</div>
@@ -271,7 +271,7 @@ export default function MyPage() {
       </div>
 
       {/* Integrated Portfolio Overview Block */}
-      <Card className="bg-white border-[#e8e8e8] mb-8 shadow-sm">
+      <Card className="bg-white border-[#e8e8e8] mb-8 shadow-lg">
         <CardHeader className="pb-4">
           <CardTitle className="text-[#1c2730] text-xl font-semibold">포트폴리오 현황</CardTitle>
         </CardHeader>
@@ -423,7 +423,7 @@ export default function MyPage() {
       </Card>
 
       {/* Holdings Table */}
-      <Card className="bg-white border-[#e8e8e8] mb-6">
+      <Card className="bg-white border-[#e8e8e8] mb-6 shadow-lg">
         <CardHeader>
           <CardTitle className="text-[#1c2730]">보유종목/상품현황</CardTitle>
         </CardHeader>
@@ -509,7 +509,7 @@ export default function MyPage() {
       </Card>
 
       {/* Stock Performance Table */}
-      <Card className="bg-white border-[#e8e8e8]">
+      <Card className="bg-white border-[#e8e8e8] shadow-lg">
         <CardHeader>
           <CardTitle className="text-[#1c2730]">주식 거래내역</CardTitle>
         </CardHeader>

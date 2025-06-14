@@ -475,7 +475,7 @@ export default function Dashboard() {
             <span className="text-sm">관심 종목</span>
           </div>
 
-          <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
+          <div className="bg-white rounded-xl p-4 shadow-lg flex-1 overflow-auto">
             {!isLoggedIn ? (
               <div className="text-center text-gray-500 py-4">
                 로그인이 필요한 기능입니다.
@@ -548,7 +548,7 @@ export default function Dashboard() {
             <span className="text-sm">내가 구매한 종목</span>
           </div>
 
-          <div className="bg-white rounded-xl p-4 shadow-sm flex-1 overflow-auto">
+          <div className="bg-white rounded-xl p-4 shadow-lg flex-1 overflow-auto">
             <div className="space-y-6">
               {myStocksData === undefined ? (
                 <div className="text-center py-4">로딩 중...</div>
@@ -634,7 +634,7 @@ export default function Dashboard() {
             </div>
           </div>
           {/* Main Chart Area - app/page.tsx 참고하여 UI 통일 */}
-          <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm flex-1 overflow-auto">
+          <div className="bg-white rounded-xl p-4 md:p-6 shadow-lg flex-1 overflow-auto">
             {/* S&P 500 Header with Tabs + 좋아요 하트 */}
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-3">
               <div className="flex items-center gap-2">
@@ -853,7 +853,7 @@ export default function Dashboard() {
             </>
           ) : (
             // 기존 카드 내용
-            <div className="bg-white rounded-xl p-4 md:p-5 shadow-sm flex-1 overflow-auto flex flex-col">
+            <div className="bg-white rounded-xl p-4 md:p-5 shadow-lg flex-1 overflow-auto flex flex-col">
               {selectedInfo.symbol && (
                 <StockDetails
                   symbol={selectedInfo.symbol}
