@@ -454,8 +454,25 @@ export default function MyPage() {
                     <tr key={index} className="border-b border-[#f5f7f9] hover:bg-[#f5f7f9] transition-colors">
                       <td className="py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold">
-                            {stock.symbol.charAt(0)}
+                          <div className="w-8 h-8">
+                            <Image
+                              src={`/logos/${stock.symbol}.png`}
+                              alt={stock.symbol}
+                              width={32}
+                              height={32}
+                              className="rounded-full"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = "none";
+                                const parent = target.parentElement;
+                                if (parent) {
+                                  const fallback = document.createElement("div");
+                                  fallback.className = "w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold";
+                                  fallback.innerHTML = `<span>${stock.symbol.charAt(0)}</span>`;
+                                  parent.appendChild(fallback);
+                                }
+                              }}
+                            />
                           </div>
                           <span className="font-medium text-[#1c2730]">{stock.name}</span>
                         </div>
@@ -544,8 +561,25 @@ export default function MyPage() {
                         </td>
                         <td className="py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold">
-                              {trade.symbol.charAt(0)}
+                            <div className="w-8 h-8">
+                              <Image
+                                src={`/logos/${trade.symbol}.png`}
+                                alt={trade.symbol}
+                                width={32}
+                                height={32}
+                                className="rounded-full"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = "none";
+                                  const parent = target.parentElement;
+                                  if (parent) {
+                                    const fallback = document.createElement("div");
+                                    fallback.className = "w-8 h-8 bg-[#f99f01] rounded-full flex items-center justify-center text-white text-sm font-bold";
+                                    fallback.innerHTML = `<span>${trade.symbol.charAt(0)}</span>`;
+                                    parent.appendChild(fallback);
+                                  }
+                                }}
+                              />
                             </div>
                             <span className="font-medium text-[#1c2730]">{trade.name}</span>
                           </div>
