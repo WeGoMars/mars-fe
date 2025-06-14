@@ -334,7 +334,7 @@ export default function FinanceDashboard() {
                     </button>
                     <Link href="/">
                         <Image
-                            src="/marslogo.png"
+                            src="/mars_logo_main.png"
                             alt="Mars 로고"
                             width={30}
                             height={30}

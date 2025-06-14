@@ -361,7 +361,7 @@ export default function Dashboard() {
           </button>
           <a href="/dashboard">
             <Image
-              src="/marslogo.png"
+              src="/mars_logo_main.png"
               alt="Mars 로고"
               width={40}
               height={40}
