@@ -156,7 +156,7 @@ export default function MyPage() {
         {/* Left Column - Hidden on mobile, visible on lg screens */}
         <div className="lg:flex lg:w-64 flex-col">
           {/* Interest Stocks Section */}
-          <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center">
+          <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center shadow-md">
             <span className="text-sm">관심 종목</span>
           </div>
   
@@ -209,7 +209,7 @@ export default function MyPage() {
       
       
       {/* Purchased Stocks Section */}
-      <div className="bg-[#f0f0f0] rounded-xl p-3 my-4 text-center">
+      <div className="bg-[#f0f0f0] rounded-xl p-3 my-4 text-center shadow-md">
         <span className="text-sm">내가 구매한 종목</span>
       </div>
 
