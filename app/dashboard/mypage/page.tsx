@@ -156,7 +156,7 @@ export default function MyPage() {
                 onLoginStatusUpdate={setIsLoggedIn}
               />
             <LogoutButton redirectTo="/" >
-              <span className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full block text-center">
+              <span className="px-4 py-2 text-white hidden md:flex bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
                 로그아웃
               </span>
             </LogoutButton>

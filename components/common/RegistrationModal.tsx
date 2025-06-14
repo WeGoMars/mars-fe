@@ -165,7 +165,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="email" className="mb-1 block text-sm font-medium text-[#3c3c43]">
-                Email
+                email
               </label>
               <input
                 type="email"
@@ -174,7 +174,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="이메일"
-                className={`w-full pl-10 pr-4 py-3 rounded-xl border-2 bg-white/70 backdrop-blur-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${errors.email ? "border border-red-500" : ""}`}
+                className={`w-full pl-4 pr-4 py-3 rounded-xl border-2 bg-white/70 backdrop-blur-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${errors.email ? "border border-red-500" : ""}`}
               />
               {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
             </div>
@@ -189,8 +189,8 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="비밀번호 (8자 이상)"
-                className={`w-full rounded bg-[#bfdbfe]/30 p-3 outline-none ${errors.password ? "border border-red-500" : ""}`}
+                placeholder="비밀번호 (8자 이상)입력해주세요"
+                className={`w-full pl-4 pr-12 py-3 rounded-xl border-2 bg-white/70 backdrop-blur-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${errors.password ? "border border-red-500" : ""}`}
               />
               {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password}</p>}
             </div>
@@ -205,8 +205,8 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
                 name="nickname"
                 value={formData.nickname}
                 onChange={handleChange}
-                placeholder="닉네임 2자 이상"
-                className={`w-full rounded bg-[#bfdbfe]/30 p-3 outline-none ${errors.nickname ? "border border-red-500" : ""}`}
+                placeholder="닉네임 2자 이상 입력해주세요"
+                className={`w-full pl-4 pr-12 py-3 rounded-xl border-2 bg-white/70 backdrop-blur-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${errors.nickname ? "border border-red-500" : ""}`}
               />
               {errors.nickname && <p className="mt-1 text-xs text-red-500">{errors.nickname}</p>}
             </div>
