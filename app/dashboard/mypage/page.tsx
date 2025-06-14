@@ -117,7 +117,7 @@ export default function MyPage() {
   }, [isLoggedIn, refetchPortfolio, refetchWallet]);
 
   if (isLoading) return <div>로딩 중...</div>;
-  if (error || !data?.data) return <div>에러 발생</div>;
+  if (error || !data?.data) return <div>잠시만 기다려주세요</div>;
 
   //포트폴리오 데이터
   const portfolioData = {
@@ -282,167 +282,167 @@ export default function MyPage() {
               {`${nickname}님 자산현황 입니다.`}</span>
           </div>
 
-          {/* Integrated Portfolio Overview Block */}
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-2xl rounded-3xl overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-slate-800 to-slate-700 text-white p-8">
-              <CardTitle className="text-2xl font-bold flex items-center gap-3">
-                <PieChart className="w-8 h-8" />
-                포트폴리오 현황
-              </CardTitle>
-              <p className="text-slate-200 mt-2">실시간 투자 성과 분석</p>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* 총자산 */}
+          <div className="flex-1 space-y-8">
+            {/* Integrated Portfolio Overview Block */}
+            <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-2xl rounded-3xl overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-slate-800 to-slate-700 text-white p-8">
+                <CardTitle className="text-2xl font-bold flex items-center gap-3">
+                  <PieChart className="w-8 h-8" />
+                  포트폴리오 현황
+                </CardTitle>
+                <p className="text-slate-200 mt-2">실시간 투자 성과 분석</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {/* 총자산 */}
 
-                <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#197bbd] hover:shadow-md transition-all duration-200 cursor-pointer">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-sm font-medium text-[#8f9098]">총자산</div>
-                  </div>
-                  <div className="text-2xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
-                    ${" "}
-                    {portfolioData.totalAssets.toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </div>
-                  <div className="text-xs text-[#8f9098] mt-1">Total Assets</div>
-                </div>
-
-
-                {/* 투자금액 */}
-
-                <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#197bbd] hover:shadow-md transition-all duration-200 cursor-pointer">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-sm font-medium text-[#8f9098]">투자금액</div>
-                  </div>
-                  <div className="text-2xl font-bold  group-hover:text-[#1565a0] transition-colors">
-                    ${" "}
-                    {portfolioData.investmentAmount.toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </div>
-                  <div className="text-xs text-[#8f9098] mt-1">Investment Amount</div>
-                </div>
-
-
-                {/* 평가손익 */}
-
-                <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#bb4430] hover:shadow-md transition-all duration-200 cursor-pointer">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-sm font-medium text-[#8f9098]">평가손익</div>
-                  </div>
-                  <div
-                    className={`text-2xl font-bold transition-colors 
-                    ${portfolioData.profitLoss >= 0
-                        ? "text-[#41c3a9] group-hover:text-[#c0392b]"
-                        : "text-[#e74c3c] group-hover:text-[#2c80b4]"}
-                  `}
-                  >
-                    {portfolioData.profitLoss >= 0 ? "+$" : "-$"}
-                    {Math.abs(portfolioData.profitLoss).toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </div>
-                  <div className="text-xs text-[#8f9098] mt-1">Profit & Loss</div>
-                </div>
-
-
-                {/* 수익률 */}
-
-                <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#63c89b] hover:shadow-md transition-all duration-200 cursor-pointer">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-sm font-medium text-[#8f9098]">수익률</div>
-                  </div>
-                  <div
-                    className={`text-2xl font-bold transition-colors flex items-center gap-1 
-                    ${portfolioData.returnRate >= 0
-                        ? "text-[#41c3a9] group-hover:text-[#4caf50]"
-                        : "text-[#e74c3c] group-hover:text-[#a73d2a]"}
-                  `}//#41c3a9
-                  >
-                    {portfolioData.returnRate >= 0 ? (
-                      <TrendingUp className="h-5 w-5" />
-                    ) : (
-                      <TrendingDown className="h-5 w-5" />
-                    )}
-                    {portfolioData.returnRate >= 0 ? "+" : "-"}
-                    {Math.abs(portfolioData.returnRate * 100).toFixed(2)}%
-                  </div>
-
-                  <div className="text-xs text-[#8f9098] mt-1">Return Rate</div>
-                </div>
-
-
-                {/* 제공시드머니 */}
-
-                <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#197bbd] hover:shadow-md transition-all duration-200 cursor-pointer">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-sm font-medium text-[#8f9098]">제공시드머니</div>
-                  </div>
-                  <div className="text-2xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
-                    {isLoading ? "Loading..." : isError || !walletData?.data ? (
-                      "$0.00"
-                    ) : (
-                      `$ ${walletData.data.cyberDollar.toLocaleString("en-US", {
+                  <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#197bbd] hover:shadow-md transition-all duration-200 cursor-pointer">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-sm font-medium text-[#8f9098]">총자산</div>
+                    </div>
+                    <div className="text-2xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
+                      ${" "}
+                      {portfolioData.totalAssets.toLocaleString("en-US", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
-                      })}`
-                    )}
+                      })}
+                    </div>
+                    <div className="text-xs text-[#8f9098] mt-1">Total Assets</div>
                   </div>
-                  <div className="text-xs text-[#8f9098] mt-1">Provided Seed Money</div>
-                </div>
 
 
-                {/* 시드머니 문의 */}
+                  {/* 투자금액 */}
 
-                <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-50 to-orange-100 p-6 border border-amber-200/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-                  onClick={() => alert("준비중입니다. 곧 제공될 예정입니다.")}>
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-amber-400/20 to-orange-500/20 rounded-full -translate-y-10 translate-x-10"></div>
-                  <div className="relative">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="text-sm font-medium text-[#8f9098]">시드머니 문의</div>
-                      <ChevronRight className="w-5 h-5 text-amber-600 group-hover:translate-x-1 transition-transform" />
+                  <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#197bbd] hover:shadow-md transition-all duration-200 cursor-pointer">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-sm font-medium text-[#8f9098]">투자금액</div>
                     </div>
-                    <div className="text-lg font-semibold text-[#1c2730] group-hover:text-[#f99f01] transition-colors">
-                      챗봇에게 문의하기
+                    <div className="text-2xl font-bold  group-hover:text-[#1565a0] transition-colors">
+                      ${" "}
+                      {portfolioData.investmentAmount.toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </div>
-                    <div className="text-xs text-amber-600 font-medium">Seed Money Inquiry</div>
+                    <div className="text-xs text-[#8f9098] mt-1">Investment Amount</div>
                   </div>
-                </div>
 
-              </div>
 
-              {/* Summary Bar */}
-              <div className="mt-6 pt-6 border-t border-[#e8e8e8]">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div className="flex items-center gap-6">
-                    <div className="text-center">
-                      <div className="text-xs text-[#8f9098] mb-1">총 투자 비율</div>
-                      <div className="text-lg font-semibold text-[#1c2730]">
-                        {(portfolioData.investRatio).toFixed(1)}%
-                      </div>
+                  {/* 평가손익 */}
+
+                  <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#bb4430] hover:shadow-md transition-all duration-200 cursor-pointer">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-sm font-medium text-[#8f9098]">평가손익</div>
+                    </div>
+                    <div
+                      className={`text-2xl font-bold transition-colors 
+                    ${portfolioData.profitLoss >= 0
+                          ? "text-[#41c3a9] group-hover:text-[#c0392b]"
+                          : "text-[#e74c3c] group-hover:text-[#2c80b4]"}
+                  `}
+                    >
+                      {portfolioData.profitLoss >= 0 ? "+$" : "-$"}
+                      {Math.abs(portfolioData.profitLoss).toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </div>
+                    <div className="text-xs text-[#8f9098] mt-1">Profit & Loss</div>
+                  </div>
+
+
+                  {/* 수익률 */}
+
+                  <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#63c89b] hover:shadow-md transition-all duration-200 cursor-pointer">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-sm font-medium text-[#8f9098]">수익률</div>
+                    </div>
+                    <div
+                      className={`text-2xl font-bold transition-colors flex items-center gap-1 
+                    ${portfolioData.returnRate >= 0
+                          ? "text-[#41c3a9] group-hover:text-[#4caf50]"
+                          : "text-[#e74c3c] group-hover:text-[#a73d2a]"}
+                  `}//#41c3a9
+                    >
+                      {portfolioData.returnRate >= 0 ? (
+                        <TrendingUp className="h-5 w-5" />
+                      ) : (
+                        <TrendingDown className="h-5 w-5" />
+                      )}
+                      {portfolioData.returnRate >= 0 ? "+" : "-"}
+                      {Math.abs(portfolioData.returnRate * 100).toFixed(2)}%
                     </div>
 
-                    <div className="text-center">
-                      <div className="text-xs text-[#8f9098] mb-1">현금 자산</div>
-                      <div className="text-lg font-semibold">
-                        ${" "}
-                        {portfolioData.cash.toLocaleString("en-US", {
+                    <div className="text-xs text-[#8f9098] mt-1">Return Rate</div>
+                  </div>
+
+
+                  {/* 제공시드머니 */}
+
+                  <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#197bbd] hover:shadow-md transition-all duration-200 cursor-pointer">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-sm font-medium text-[#8f9098]">제공시드머니</div>
+                    </div>
+                    <div className="text-2xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
+                      {isLoading ? "Loading..." : isError || !walletData?.data ? (
+                        "$0.00"
+                      ) : (
+                        `$ ${walletData.data.cyberDollar.toLocaleString("en-US", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                        })}
+                        })}`
+                      )}
+                    </div>
+                    <div className="text-xs text-[#8f9098] mt-1">Provided Seed Money</div>
+                  </div>
+
+
+                  {/* 시드머니 문의 */}
+
+                  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-50 to-orange-100 p-6 border border-amber-200/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                    onClick={() => alert("준비중입니다. 곧 제공될 예정입니다.")}>
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-amber-400/20 to-orange-500/20 rounded-full -translate-y-10 translate-x-10"></div>
+                    <div className="relative">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="text-sm font-medium text-[#8f9098]">시드머니 문의</div>
+                        <ChevronRight className="w-5 h-5 text-amber-600 group-hover:translate-x-1 transition-transform" />
                       </div>
+                      <div className="text-lg font-semibold text-[#1c2730] group-hover:text-[#f99f01] transition-colors">
+                        챗봇에게 문의하기
+                      </div>
+                      <div className="text-xs text-amber-600 font-medium">Seed Money Inquiry</div>
                     </div>
                   </div>
 
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          <div className="flex-1 space-y-8">
+
+                {/* Summary Bar */}
+                <div className="mt-6 pt-6 border-t border-[#e8e8e8]">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex items-center gap-6">
+                      <div className="text-center">
+                        <div className="text-xs text-[#8f9098] mb-1">총 투자 비율</div>
+                        <div className="text-lg font-semibold text-[#1c2730]">
+                          {(portfolioData.investRatio).toFixed(1)}%
+                        </div>
+                      </div>
+
+                      <div className="text-center">
+                        <div className="text-xs text-[#8f9098] mb-1">현금 자산</div>
+                        <div className="text-lg font-semibold">
+                          ${" "}
+                          {portfolioData.cash.toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
             {/* Holdings Table */}
             <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-2xl rounded-3xl overflow-hidden">
               <CardHeader className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-8">
