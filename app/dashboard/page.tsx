@@ -368,7 +368,7 @@ export default function Dashboard() {
               className="rounded-full"
             />
           </a>
-          <span className="text-lg font-medium">mars</span>
+          {/* <span className="text-lg font-medium">mars</span> */}
         </div>
 
         {/* 헤더에 있는 "내계좌" 텍스트 클릭 시 "내계좌" 페이지로 이동 코드 */}

@@ -336,12 +336,12 @@ export default function FinanceDashboard() {
                         <Image
                             src="/mars_logo_main.png"
                             alt="Mars 로고"
-                            width={30}
-                            height={30}
+                            width={40}
+                            height={40}
                             className="rounded-full cursor-pointer"
                         />
                     </Link>
-                    <span className="text-lg font-medium">Mars</span>
+                    {/* <span className="text-lg font-medium">Mars</span> */}
                 </div>
 
                 <div className="hidden md:flex items-center gap-3">
