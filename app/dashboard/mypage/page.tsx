@@ -3,7 +3,7 @@ import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp, TrendingDown, ChevronRight, Menu } from "lucide-react"
+import { TrendingUp, TrendingDown, ChevronRight, Menu,PieChart } from "lucide-react"
 import Image from "next/image";
 import { useRouter } from "next/navigation" 
 import { useEffect, useState } from "react"
@@ -284,9 +284,13 @@ export default function MyPage() {
 
       {/* Integrated Portfolio Overview Block */}
       <Card className="bg-white border-[#e8e8e8] mb-8 shadow-lg">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-[#1c2730] text-xl font-semibold">포트폴리오 현황</CardTitle>
-        </CardHeader>
+         <CardHeader className="bg-gradient-to-r from-slate-800 to-slate-700 text-white p-8">
+              <CardTitle className="text-2xl font-bold flex items-center gap-3">
+                <PieChart className="w-8 h-8" />
+                포트폴리오 현황
+              </CardTitle>
+              <p className="text-slate-200 mt-2">실시간 투자 성과 분석</p>
+            </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* 총자산 */}

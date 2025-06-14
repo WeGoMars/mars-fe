@@ -362,8 +362,8 @@ export default function FinanceDashboard() {
                             url.searchParams.set("modal", "login")
                             router.push(url.toString())
                         }}
-                        className="bg-[#006ffd] text-white px-4 py-2 rounded-md hover:bg-[#0057cc] transition-colors"
-                    >
+                        
+                     className="px-4 py-2 hidden md:flex bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
                         로그인
                     </button>
                     <LoginModal
