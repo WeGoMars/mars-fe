@@ -283,7 +283,7 @@ export default function MyPage() {
       </div>
 
       {/* Integrated Portfolio Overview Block */}
-      <Card className="bg-white border-[#e8e8e8] mb-8 shadow-lg">
+      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-2xl rounded-3xl overflow-hidden">
          <CardHeader className="bg-gradient-to-r from-slate-800 to-slate-700 text-white p-8">
               <CardTitle className="text-2xl font-bold flex items-center gap-3">
                 <PieChart className="w-8 h-8" />
