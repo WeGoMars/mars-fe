@@ -269,7 +269,7 @@ export default function Dashboard() {
   // 내 종목 목록 데이터가 변경될 때마다 콘솔에 출력
   useEffect(() => {
     if (myStocksData) {
-      console.log("내 종목 목록:", myStocksData);
+      // console.log("내 종목 목록:", myStocksData);
     }
   }, [myStocksData]);
 
@@ -277,9 +277,9 @@ export default function Dashboard() {
   const testTradeHistory = async () => {
     try {
       const result = await getTradeHistory();
-      console.log("거래내역:", result);
+      // console.log("거래내역:", result);
     } catch (error) {
-      console.error("거래내역 조회 실패:", error);
+      // console.error("거래내역 조회 실패:", error);
     }
   };
 
@@ -340,7 +340,7 @@ export default function Dashboard() {
           });
         }
       } catch (error) {
-        console.error('초기 주식 데이터 로딩 실패:', error);
+        // console.error('초기 주식 데이터 로딩 실패:', error);
       }
     };
 

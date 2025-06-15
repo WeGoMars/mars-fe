@@ -377,8 +377,6 @@ export default function FinanceDashboard() {
                             if (!open) clearModalQuery()
                         }}
                     />
-                    {/* <RegistrationModal isOpen={registerOpen} onClose={() => setRegisterOpen(false)} /> */}
-                    {/* <RegistrationModal isOpen={registerOpen} onClose={() => router.back()} /> */}
                     <RegistrationModal
                         isOpen={registerOpen}
                         onClose={clearModalQuery}

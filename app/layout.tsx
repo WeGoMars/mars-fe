@@ -2,8 +2,6 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css";
-import { store } from "@/lib/store"; //
-import { Provider } from "react-redux";
 import ProviderWrapper from '@/components/common/ProviderWrapper';
 const inter = Inter({ subsets: ["latin"] })
 
