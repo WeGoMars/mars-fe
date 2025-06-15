@@ -82,7 +82,7 @@ export default function SearchBar({ onSelectStock }: SearchBarProps) {
             setShowResults(true)
           }}
           onFocus={() => setShowResults(true)}
-          className="flex-1 bg-transparent border-0 focus:outline-none text-base text-gray-700 placeholder-gray-500"
+          className="flex-1 bg-transparent border-0 focus:outline-none text-base text-white placeholder-white"
         />
       </div>
 
