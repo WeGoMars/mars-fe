@@ -70,7 +70,8 @@ export default function SearchBar({ onSelectStock }: SearchBarProps) {
 
   return (
     <div className="relative w-full max-w-2xl" ref={wrapperRef}>
-      <div className="flex items-center bg-[#f0f0f0] rounded-full px-4 py-3 shadow-md">
+      {/* <div className="flex items-center bg-[#f0f0f0] rounded-full px-4 py-3 shadow-md"> */}
+       <div className="hidden md:flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 px-4 py-3">
         <Search className="text-gray-500 w-5 h-5 mr-3" />
         <input
           type="text"
