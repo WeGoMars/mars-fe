@@ -53,14 +53,6 @@ export default function FinanceDashboard() {
         })
     );
 
-    const { data: favoriteStocksData } = useSWR(
-        ['favoriteStocks'],
-        () => getStockList({
-            option: 'liked',
-            limit: 10
-        })
-    );
-
     useEffect(() => {
         const checkLoginStatus = () => {
             try {
