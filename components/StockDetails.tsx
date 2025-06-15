@@ -439,7 +439,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
             ) : (
               <div className="space-y-8">
                 {/* Total Assets */}
-                <div className="flex justify-between items-center p-3 bg-[#197bbd]/50 rounded-lg">
+                <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
                   <span className="text-sm ">총자산</span>
                   <div className="text-xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
                     <span className="text-[#197bbd] text-xs mr-1">$</span>
@@ -461,7 +461,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                   </div>
                 </div>
                 {/* Investment Amount */}
-                <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
+                <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
                   <span className="text-sm text-gray-500">투자금액</span>
                   <div>
                   <span className="text-xs mr-1">$</span>
@@ -474,7 +474,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                 </div>
                 </div>
                 {/* Unrealized P&L */}
-                <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
+                <div className="flex justify-between items-center p-3 bg-emerald-50 rounded-lg">
                   <span className="text-sm text-gray-500">평가손익</span>
                     <div
                       className={`flex items-center text-xl font-bold transition-colors 
@@ -494,7 +494,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               </div>
                 </div>
                 {/* Return Rate */}
-                <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
+                <div className="flex justify-between items-center p-3 bg-emerald-50 rounded-lg">
                   <span className="text-sm text-gray-500">수익률</span>
                   <span className="text-sm font-medium">
                     <div

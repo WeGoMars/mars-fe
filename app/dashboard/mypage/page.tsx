@@ -330,16 +330,37 @@ export default function MyPage() {
 
                   {/* 평가손익 */}
 
-                  <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#bb4430] hover:shadow-md transition-all duration-200 cursor-pointer">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="text-sm font-medium text-[#8f9098]">평가손익</div>
+                     <div
+                  className={`group relative overflow-hidden rounded-2xl p-6 border hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
+                    portfolioData.profitLoss >= 0
+                      ? "bg-gradient-to-br from-emerald-50 to-teal-100 border-emerald-200/50"
+                      : "bg-gradient-to-br from-red-50 to-rose-100 border-red-200/50"
+                  }`}
+                >
+                  <div
+                    className={`absolute top-0 right-0 w-20 h-20 rounded-full -translate-y-10 translate-x-10 ${
+                      portfolioData.profitLoss >= 0
+                        ? "bg-gradient-to-br from-emerald-400/20 to-teal-500/20"
+                        : "bg-gradient-to-br from-red-400/20 to-rose-500/20"
+                    }`}
+                  ></div>
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-4">
+                      <div
+                        className={`text-sm font-semibold ${portfolioData.profitLoss >= 0 ? "text-emerald-700" : "text-red-700"}`}
+                      >
+                        평가손익
+                      </div>
+                      {portfolioData.profitLoss >= 0 ? (
+                        <TrendingUp className="w-5 h-5 text-emerald-600" />
+                      ) : (
+                        <TrendingDown className="w-5 h-5 text-red-600" />
+                      )}
                     </div>
                     <div
-                      className={`text-2xl font-bold transition-colors 
-                    ${portfolioData.profitLoss >= 0
-                          ? "text-[#41c3a9] group-hover:text-[#c0392b]"
-                          : "text-[#e74c3c] group-hover:text-[#2c80b4]"}
-                  `}
+                      className={`text-3xl font-bold mb-2 ${
+                        portfolioData.profitLoss >= 0 ? "text-emerald-800" : "text-red-800"
+                      }`}
                     >
                       {portfolioData.profitLoss >= 0 ? "+$" : "-$"}
                       {Math.abs(portfolioData.profitLoss).toLocaleString("en-US", {
@@ -347,9 +368,13 @@ export default function MyPage() {
                         maximumFractionDigits: 2,
                       })}
                     </div>
-                    <div className="text-xs text-[#8f9098] mt-1">Profit & Loss</div>
+                    <div
+                      className={`text-xs font-medium ${portfolioData.profitLoss >= 0 ? "text-emerald-600" : "text-red-600"}`}
+                    >
+                      Profit & Loss
+                    </div>
                   </div>
-
+                </div>
 
                   {/* 수익률 */}
 
