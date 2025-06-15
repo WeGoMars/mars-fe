@@ -168,8 +168,10 @@ export default function MyPage() {
         {/* Left Column - Hidden on mobile, visible on lg screens */}
         <div className="lg:flex lg:w-64 flex-col">
           {/* Interest Stocks Section */}
-          <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center shadow-md">
-            <span className="text-sm">관심 종목</span>
+          {/* <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center shadow-md"> */}
+           {/* <div className="text-white hidden md:flex bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"> */}
+           <div className="p-3 mb-4 text-center rounded-xl shadow-md bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+            <span className="text-sm text-white">관심 종목</span>
           </div>
 
           <div className="bg-white rounded-xl p-4 shadow-lg flex-1 overflow-auto">
@@ -303,7 +305,7 @@ export default function MyPage() {
                       <div className="text-sm font-semibold text-blue-700">총자산</div>
                       <DollarSign className="w-5 h-5 text-blue-600" />
                     </div>
-                    <div className="text-2xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
+                    <div className="text-3xl font-bold text-blue-800 mb-2">
                       ${" "}
                       {portfolioData.totalAssets.toLocaleString("en-US", {
                         minimumFractionDigits: 2,
