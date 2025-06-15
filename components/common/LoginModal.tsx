@@ -73,9 +73,9 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
         <Image
           src="/mars_logo_main.png"
           alt="Mars 로고"
-          width={60}
-          height={60}
-          className="rounded-full cursor-pointer"
+          width={64}
+          height={64}
+          className="mb-4 rounded-full"
         />
       </Link>
       {/* 마스로고 + 글자 크기랑 위치 수정 할수도잇음 */}
@@ -98,9 +98,6 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
               <span className="text-white font-bold text-xl">M</span>
             </div>
           <h2 className="mt-2 text-3xl font-bold text-[#000000] dark:text-white">로그인</h2>
-          <p className="text-sm text-[#747480] dark:text-gray-400">
-            MARS 모의투자에 오신걸 환영합니다 !!!
-          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

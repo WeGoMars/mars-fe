@@ -153,14 +153,17 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
           {/* Header */}
           <div className="mb-8 text-center">
             <div className="mb-4">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg mb-4">
-                <User className="w-8 h-8 text-white" />
-              </div>
+              <Image
+                src="/mars_logo_main.png"
+                alt="Mars 로고"
+                width={64}
+                height={64}
+                className="mb-4 rounded-full mx-auto"
+              />
             </div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-2">
               회원가입
             </h1>
-            <p className="text-gray-600 text-sm">MARS 모의투자에 오신걸 환영합니다!</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
