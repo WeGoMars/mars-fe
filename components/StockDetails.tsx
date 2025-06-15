@@ -634,10 +634,6 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
             </>
           ) : (
             <div className="flex flex-col items-center justify-center h-full w-full">
-              <div className="flex flex-col items-center justify-center h-full">
-                <span className="text-xl text-gray-400 font-semibold mb-2">AI 추천</span>
-                <span className="text-gray-300">로그인이 필요합니다.</span>
-              </div>
               {!isLoggedIn ? (
                 <>
                   <span className="text-xl text-gray-400 font-semibold mb-2">AI 추천</span>
