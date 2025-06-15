@@ -94,9 +94,13 @@ export default function LoginModal({ open, onOpenChange }: LoginModalProps) {
         className="relative w-full max-w-md rounded-lg bg-white dark:bg-gray-800 p-8 shadow-lg"
       >
         <div className="mb-6 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4">
-              <span className="text-white font-bold text-xl">M</span>
-            </div>
+          <Image
+            src="/mars_logo_main.png"
+            alt="Mars 로고"
+            width={64}
+            height={64}
+            className="mb-4 rounded-full mx-auto"
+          />
           <h2 className="mt-2 text-3xl font-bold text-[#000000] dark:text-white">로그인</h2>
         </div>
 
