@@ -3,7 +3,7 @@ import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp, TrendingDown, ChevronRight, Menu, PieChart, BarChart3 } from "lucide-react"
+import { TrendingUp, TrendingDown, ChevronRight, Menu, PieChart, BarChart3,Wallet } from "lucide-react"
 import Image from "next/image";
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -292,7 +292,7 @@ export default function MyPage() {
                 </CardTitle>
                 <p className="text-slate-200 mt-2">실시간 투자 성과 분석</p>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {/* 총자산 */}
 
@@ -313,20 +313,23 @@ export default function MyPage() {
 
                   {/* 투자금액 */}
 
-                  <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#197bbd] hover:shadow-md transition-all duration-200 cursor-pointer">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="text-sm font-medium text-[#8f9098]">투자금액</div>
+                  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-50 to-pink-100 p-6 border border-purple-200/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-purple-400/20 to-pink-500/20 rounded-full -translate-y-10 translate-x-10"></div>
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="text-sm font-semibold text-purple-700">투자금액</div>
+                      <BarChart3 className="w-5 h-5 text-purple-600" />
                     </div>
-                    <div className="text-2xl font-bold  group-hover:text-[#1565a0] transition-colors">
+                    <div className="ttext-3xl font-bold text-purple-800 mb-2">
                       ${" "}
                       {portfolioData.investmentAmount.toLocaleString("en-US", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
                     </div>
-                    <div className="text-xs text-[#8f9098] mt-1">Investment Amount</div>
+                    <div className="text-xs text-purple-600 font-medium">Investment Amount</div>
                   </div>
-
+                </div>
 
                   {/* 평가손익 */}
 
@@ -378,37 +381,60 @@ export default function MyPage() {
 
                   {/* 수익률 */}
 
-                  <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#63c89b] hover:shadow-md transition-all duration-200 cursor-pointer">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="text-sm font-medium text-[#8f9098]">수익률</div>
+                   <div
+                  className={`group relative overflow-hidden rounded-2xl p-6 border hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
+                    portfolioData.returnRate >= 0
+                      ? "bg-gradient-to-br from-green-50 to-emerald-100 border-green-200/50"
+                      : "bg-gradient-to-br from-orange-50 to-red-100 border-orange-200/50"
+                  }`}
+                >
+                  <div
+                    className={`absolute top-0 right-0 w-20 h-20 rounded-full -translate-y-10 translate-x-10 ${
+                      portfolioData.returnRate >= 0
+                        ? "bg-gradient-to-br from-green-400/20 to-emerald-500/20"
+                        : "bg-gradient-to-br from-orange-400/20 to-red-500/20"
+                    }`}
+                  ></div>
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-4">
+                      <div
+                        className={`text-sm font-semibold ${portfolioData.returnRate >= 0 ? "text-green-700" : "text-orange-700"}`}
+                      >
+                        수익률
+                      </div>
+                      {portfolioData.returnRate >= 0 ? (
+                        <TrendingUp className="w-5 h-5 text-green-600" />
+                      ) : (
+                        <TrendingDown className="w-5 h-5 text-orange-600" />
+                      )}
                     </div>
                     <div
-                      className={`text-2xl font-bold transition-colors flex items-center gap-1 
-                    ${portfolioData.returnRate >= 0
-                          ? "text-[#41c3a9] group-hover:text-[#4caf50]"
-                          : "text-[#e74c3c] group-hover:text-[#a73d2a]"}
-                  `}//#41c3a9
+                      className={`text-3xl font-bold mb-2 flex items-center gap-2 ${
+                        portfolioData.returnRate >= 0 ? "text-green-800" : "text-orange-800"
+                      }`}
                     >
-                      {portfolioData.returnRate >= 0 ? (
-                        <TrendingUp className="h-5 w-5" />
-                      ) : (
-                        <TrendingDown className="h-5 w-5" />
-                      )}
                       {portfolioData.returnRate >= 0 ? "+" : "-"}
                       {Math.abs(portfolioData.returnRate * 100).toFixed(2)}%
                     </div>
-
-                    <div className="text-xs text-[#8f9098] mt-1">Return Rate</div>
+                    <div
+                      className={`text-xs font-medium ${portfolioData.returnRate >= 0 ? "text-green-600" : "text-orange-600"}`}
+                    >
+                      Return Rate
+                    </div>
                   </div>
+                </div>
 
 
                   {/* 제공시드머니 */}
 
-                  <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#197bbd] hover:shadow-md transition-all duration-200 cursor-pointer">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="text-sm font-medium text-[#8f9098]">제공시드머니</div>
+                  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-50 to-blue-100 p-6 border border-cyan-200/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-cyan-400/20 to-blue-500/20 rounded-full -translate-y-10 translate-x-10"></div>
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="text-sm font-semibold text-cyan-700">제공시드머니</div>
+                      <Wallet className="w-5 h-5 text-cyan-600" />
                     </div>
-                    <div className="text-2xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
+                    <div className="text-3xl font-bold text-cyan-800 mb-2">
                       {isLoading ? "Loading..." : isError || !walletData?.data ? (
                         "$0.00"
                       ) : (
@@ -418,7 +444,8 @@ export default function MyPage() {
                         })}`
                       )}
                     </div>
-                    <div className="text-xs text-[#8f9098] mt-1">Provided Seed Money</div>
+                    <div className="ttext-xs text-cyan-600 font-medium">Provided Seed Money</div>
+                  </div>
                   </div>
 
 
