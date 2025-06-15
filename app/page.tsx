@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Search, X, Menu, ChevronLeft, Minus, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button"
 import Image from "next/image";
 import StockChart from "@/components/StockChart";
 import LoginModal from "@/components/common/LoginModal";
@@ -346,26 +347,30 @@ export default function FinanceDashboard() {
 
                 <div className="hidden md:flex items-center gap-3">
                     {/* <button onClick={() => setRegisterOpen(true)} */}
-                    <button
-                        type="button"
+                    <Button
+                        // type="button"
                         onClick={() => {
                             const url = new URL(window.location.href)
                             url.searchParams.set("modal", "register")
                             router.push(url.toString())
                         }}
-                        className="border border-[#006ffd] text-[#006ffd] px-4 py-2 rounded-md hover:bg-[#f0f7ff] transition-colors">
+                        // className="border border-[#006ffd] text-[#006ffd] px-4 py-2 rounded-xl hover:bg-[#f0f7ff] transition-colors">
+                             
+                        variant="outline"
+                        className="px-4 py-2 hidden md:flex rounded-xl border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200"
+                        >
                         회원가입
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={() => {
                             const url = new URL(window.location.href)
                             url.searchParams.set("modal", "login")
                             router.push(url.toString())
                         }}
-                        className="bg-[#006ffd] text-white px-4 py-2 rounded-md hover:bg-[#0057cc] transition-colors"
-                    >
+                        
+                     className="px-4 py-2 text-white hidden md:flex bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
                         로그인
-                    </button>
+                    </Button>
                     <LoginModal
                         open={loginOpen}
                         onOpenChange={(open) => {
@@ -464,7 +469,8 @@ export default function FinanceDashboard() {
                 {/* Left Column - Hidden on mobile, visible on lg screens */}
                 <div className="hidden lg:flex lg:w-64 flex-col">
                     {/* 오늘의 핫 종목 목록 */}
-                    <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center shadow-md">
+                    {/* <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center shadow-md"> */}
+                    <div className="p-3 mb-4 text-center rounded-xl shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white">
                         <span className="text-sm">오늘의 핫 종목</span>
                     </div>
 

@@ -16,7 +16,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import ProfileModal from "@/components/common/ProfileModal";
 import { Heart } from "lucide-react";
-import mockPortfolio from "@/lib/mock/mockportfolio";
 
 import ProfileHandler from "@/components/common/ProfileHandler";
 import useSWR from "swr";
@@ -316,12 +315,12 @@ export default function Dashboard() {
     isLoading: isPortfolioLoading,
     isError: isPortfolioError,
   } = useGetOverallPortfolioQuery();
-  const cyberDollars = walletData?.data?.cyberDollar ?? 0;
+  const cyberDollar = walletData?.data?.cyberDollar ?? 0;
   const portfolioData = {
     totalAssets: overallData?.data?.totalAsset ?? 0,
     investmentAmount: overallData?.data?.investedAmount ?? 0,
     profitLoss: overallData?.data?.evalGain ?? 0,
-    returnRate: (overallData?.data?.returnRate ?? 0) * 100,
+    returnRate: (overallData?.data?.returnRate ?? 0) * 10,
   };
 
   // 컴포넌트 마운트 시 실시간 데이터 가져오기
@@ -396,7 +395,7 @@ export default function Dashboard() {
             내계좌
           </Link>
           <LogoutButton redirectTo="/">
-            <span className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full block text-center">
+            <span className="px-4 py-2 text-white hidden md:flex bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
               로그아웃
             </span>
           </LogoutButton>
@@ -414,7 +413,7 @@ export default function Dashboard() {
             <div className="text-sm text-gray-600">
               oo님 mars 모투에 오신걸 환영합니다
             </div>
-            <button className="bg-[#006ffd] text-white px-4 py-2 rounded-md w-full">
+            <button className="px-4 py-2 text-white hidden md:flex bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
               로그아웃
             </button>
             <button
@@ -471,7 +470,8 @@ export default function Dashboard() {
         {/* Left Column - Hidden on mobile, visible on lg screens */}
         <div className="hidden lg:flex lg:w-64 flex-col">
           {/* Interest Stocks Section */}
-          <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center shadow-md">
+          {/* <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center shadow-md"> */}
+          <div className="p-3 mb-4 text-center rounded-xl shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white">
             <span className="text-sm">관심 종목</span>
           </div>
 
@@ -544,7 +544,8 @@ export default function Dashboard() {
           </div>
 
           {/* Purchased Stocks Section */}
-          <div className="bg-[#f0f0f0] rounded-xl p-3 my-4 text-center shadow-md">
+          {/* <div className="bg-[#f0f0f0] rounded-xl p-3 my-4 text-center shadow-md"> */}
+          <div className="p-3 my-4 text-center rounded-xl shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white">
             <span className="text-sm">내가 구매한 종목</span>
           </div>
 
@@ -767,7 +768,7 @@ export default function Dashboard() {
                   name={selectedInfo.name}
                   price={selectedInfo.price}
                   totalAssets={portfolioData.totalAssets}
-                  cyberDollar={cyberDollars}
+                  cyberDollar={cyberDollar}
                   investmentAmount={portfolioData.investmentAmount}
                   profitLoss={portfolioData.profitLoss}
                   returnRate={portfolioData.returnRate}
@@ -786,7 +787,7 @@ export default function Dashboard() {
                   name={selectedInfo.name}
                   price={selectedInfo.price}
                   totalAssets={portfolioData.totalAssets}
-                  cyberDollar={cyberDollars}
+                  cyberDollar={cyberDollar}
                   investmentAmount={portfolioData.investmentAmount}
                   profitLoss={portfolioData.profitLoss}
                   returnRate={portfolioData.returnRate}

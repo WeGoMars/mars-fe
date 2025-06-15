@@ -70,8 +70,9 @@ export default function SearchBar({ onSelectStock }: SearchBarProps) {
 
   return (
     <div className="relative w-full max-w-2xl" ref={wrapperRef}>
-      <div className="flex items-center bg-[#f0f0f0] rounded-full px-4 py-3 shadow-md">
-        <Search className="text-gray-500 w-5 h-5 mr-3" />
+      {/* <div className="flex items-center bg-[#f0f0f0] rounded-full px-4 py-3 shadow-md"> */}
+       <div className=" hidden md:flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 px-4 py-3">
+        <Search className="text-white w-5 h-5 mr-3" />
         <input
           type="text"
           placeholder="종목 검색"
@@ -81,7 +82,7 @@ export default function SearchBar({ onSelectStock }: SearchBarProps) {
             setShowResults(true)
           }}
           onFocus={() => setShowResults(true)}
-          className="flex-1 bg-transparent border-0 focus:outline-none text-base text-gray-700 placeholder-gray-500"
+          className="flex-1 bg-transparent border-0 focus:outline-none text-base text-white placeholder-white"
         />
       </div>
 

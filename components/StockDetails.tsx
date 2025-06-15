@@ -7,8 +7,8 @@ import type { StockDetails, NewsItem, Stock, RiskLevel, PreferredStrategy, Prefe
 import { Check, ChevronDown, ChevronLeft, Heart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import mockPortfolio from "@/lib/mock/mockportfolio";
 import { TrendingUp, TrendingDown } from "lucide-react"
+import { useGetOverallPortfolioQuery, useGetWalletQuery } from "@/lib/api";  
 import { mutate } from 'swr';
 
 // 주식 상세 정보를 보여주는 컴포넌트(종목정보 상세, 내 계좌, AI 추천 탭)
@@ -31,7 +31,10 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
   const [showReasonDetail, setShowReasonDetail] = useState(false);
   const [aiSubmitted, setAiSubmitted] = useState(false);
   const [isHeartFilled, setIsHeartFilled] = useState(false);
-  const [portfolioData, setPortfolioData] = useState(mockPortfolio);
+
+  const { data: portfolioData, isLoading: isPortfolioLoading } = useGetOverallPortfolioQuery();
+  const { data: walletData, isLoading: isWalletLoading } = useGetWalletQuery();
+
   const [selectedRiskLevel, setSelectedRiskLevel] = useState<RiskLevel | null>(null);
   const [selectedStrategies, setSelectedStrategies] = useState<PreferredStrategy[]>([]);
   const [selectedSectors, setSelectedSectors] = useState<PreferredSector[]>([]);
@@ -429,85 +432,91 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
       {activeTab === '내 계좌' ? (
         isLoggedIn ? (
           <div className="flex-1 flex flex-col mt-12">
-            {/* Financial Information */}
-            <div className="space-y-8">
-              {/* Total Assets */}
-              <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">총자산</span>
-                <div className="text-xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
-                  <span className="text-[#197bbd] text-xs mr-1">$</span>
-                  {portfolioData.totalAssets.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </div>
+            {isPortfolioLoading || isWalletLoading ? (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-gray-400">데이터 로딩 중...</div>
               </div>
-              {/* 시드머니 */}
-              <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">시드머니</span>
-                <div className="text-xl font-bold group-hover:text-[#1565a0] transition-colors">
+            ) : (
+              <div className="space-y-8">
+                {/* Total Assets */}
+                <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                  <span className="text-sm ">총자산</span>
+                  <div className="text-xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
+                    <span className="text-[#197bbd] text-xs mr-1">$</span>
+                    {portfolioData?.data?.totalAsset?.toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }) ?? '-'}
+                  </div>
+                </div>
+                {/* 시드머니 */}
+                <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
+                  <span className="text-sm">시드머니</span>
+                  <div className="text-xl font-bold group-hover:text-[#1565a0] transition-colors">
+                    <span className="text-xs mr-1">$</span>
+                    {walletData?.data?.cyberDollar?.toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }) ?? '-'}
+                  </div>
+                </div>
+                {/* Investment Amount */}
+                <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
+                  <span className="text-sm text-gray-500">투자금액</span>
+                  <div>
                   <span className="text-xs mr-1">$</span>
-                  {portfolioData.seedMoney.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                  <span className="text-xl font-bold ">
+                    {portfolioData?.data?.investedAmount?.toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }) ?? '-'}
+                  </span>
                 </div>
-              </div>
-              {/* Investment Amount */}
-              <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">투자금액</span>
-                <div>
-                <span className="text-[#439a86] text-xs mr-1">$</span>
-                <span className="text-xl font-bold text-[#439a86] ">
-                  {portfolioData.investmentAmount.toLocaleString("en-US", {
+                </div>
+                {/* Unrealized P&L */}
+                <div className="flex justify-between items-center p-3 bg-emerald-50 rounded-lg">
+                  <span className="text-sm text-gray-500">평가손익</span>
+                    <div
+                      className={`flex items-center text-xl font-bold transition-colors 
+                        ${(portfolioData?.data?.evalGain ?? 0) >= 0 
+                          ? "text-[#41c3a9] group-hover:text-[#4caf50]" 
+                          : "text-[#e74c3c] group-hover:text-[#a73d2a]"}
+                      `}
+                    >
+                <span className="text-xs mr-1">$</span>
+                <span>
+                  {(portfolioData?.data?.evalGain ?? 0) >= 0 ? "+" : "-"}
+                  {Math.abs(portfolioData?.data?.evalGain ?? 0).toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
                 </span>
               </div>
-              </div>
-              {/* Unrealized P&L */}
-              <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">평가손익</span>
-                  <div
-                    className={`flex items-center text-xl font-bold transition-colors 
-                      ${portfolioData.profitLoss >= 0 
-                        ? "text-[#e74c3c] group-hover:text-[#c0392b]" 
-                        : "text-[#3498db] group-hover:text-[#2c80b4]"}
+                </div>
+                {/* Return Rate */}
+                <div className="flex justify-between items-center p-3 bg-emerald-50 rounded-lg">
+                  <span className="text-sm text-gray-500">수익률</span>
+                  <span className="text-sm font-medium">
+                    <div
+                    className={`text-xl font-bold transition-colors flex items-center gap-1 
+                      ${(portfolioData?.data?.returnRate ?? 0) >= 0 
+                        ? "text-[#41c3a9] group-hover:text-[#4caf50]" 
+                        : "text-[#e74c3c] group-hover:text-[#a73d2a]"}
                     `}
-                  >
-              <span className="text-xs mr-1">$</span>
-              <span>
-                {portfolioData.profitLoss >= 0 ? "+" : "-"}
-                {Math.abs(portfolioData.profitLoss).toLocaleString("en-US", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </span>
-            </div>
-              </div>
-              {/* Return Rate */}
-              <div className="flex justify-between py-3 md:py-5 px-3 md:px-4 border rounded-full">
-                <span className="text-sm text-gray-500">수익률</span>
-                <span className="text-sm font-medium">
-                  <div
-                  className={`text-xl font-bold transition-colors flex items-center gap-1 
-                    ${portfolioData.returnRate >= 0 
-                      ? "text-[#e74c3c] group-hover:text-[#4caf50]" 
-                      : "text-[#3498db] group-hover:text-[#a73d2a]"}
-                  `}
-                  >
-                    {portfolioData.returnRate >= 0 ? (
-                    <TrendingUp className="h-5 w-5" />
-                  ) : (
-                    <TrendingDown className="h-5 w-5" />
-                  )}
-                  {portfolioData.returnRate >= 0 ? "+" : "-"}
-                  {Math.abs(portfolioData.returnRate).toFixed(2)}%
+                    >
+                      {(portfolioData?.data?.returnRate ?? 0) >= 0 ? (
+                      <TrendingUp className="h-5 w-5" />
+                    ) : (
+                      <TrendingDown className="h-5 w-5" />
+                    )}
+                    {(portfolioData?.data?.returnRate ?? 0) >= 0 ? "+" : "-"}
+                    {Math.abs((portfolioData?.data?.returnRate ?? 0)*1000).toFixed(2)}%
+                    
+                  </div>
+                  </span>
                 </div>
-                </span>
               </div>
-            </div>
+            )}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-full">
@@ -835,7 +844,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">ROE</span>
-                <span className="text-sm font-medium">{details.roe !== undefined ? `${details.roe.toFixed(2)}%` : '-'}</span>
+                <span className="text-sm font-medium">{details.roe !== undefined ? `${(details.roe*100).toFixed(2)}%` : '-'}</span>
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">EPS</span>
@@ -859,7 +868,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
               </div>
               <div className="flex justify-between py-2 md:py-3 px-3 md:px-4 border rounded-full">
                 <span className="text-sm text-gray-500">부채비율</span>
-                <span className="text-sm font-medium">{details.debtRatio !== undefined ? `${details.debtRatio.toFixed(2)}%` : '-'}</span>
+                <span className="text-sm font-medium">{details.debtRatio !== undefined ? `${(details.debtRatio * 100).toFixed(2)}%` : '-'}</span>
               </div>
             </div>
           </>

@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { X } from "lucide-react"
+import { X, User, } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image";
@@ -143,18 +143,29 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
         className="relative max-h-[90vh] w-full max-w-md overflow -auto rounded-lg bg-white shadow-lg"
         onClick={handleModalClick}
       >
-        <div className="p-8">
+        {/* <div className="p-8">
           <div className="mb-6 text-center">
-            {/* <div className="mb-4 text-3xl font-light text-[#bfdbfe]">Logo Here</div> */}
             <p className="text-sm text-[#3c3c43]">MARS 모의투자에 오신걸 환영합니다 !!!</p>
           </div>
 
-          <h1 className="mb-6 text-3xl font-bold text-[#000000] text-center">회원가입</h1>
-
+          <h1 className="mb-6 text-3xl font-bold text-[#000000] text-center">회원가입</h1> */}
+           <div className="relative p-8">
+          {/* Header */}
+          <div className="mb-8 text-center">
+            <div className="mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg mb-4">
+                <User className="w-8 h-8 text-white" />
+              </div>
+            </div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-2">
+              회원가입
+            </h1>
+            <p className="text-gray-600 text-sm">MARS 모의투자에 오신걸 환영합니다!</p>
+          </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="email" className="mb-1 block text-sm font-medium text-[#3c3c43]">
-                Email
+                email
               </label>
               <input
                 type="email"
@@ -162,8 +173,8 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="test@gmail.com"
-                className={`w-full rounded bg-[#bfdbfe]/30 p-3 outline-none ${errors.email ? "border border-red-500" : ""}`}
+                placeholder="이메일"
+                className={`w-full pl-4 pr-4 py-3 rounded-xl border-2 bg-white/70 backdrop-blur-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${errors.email ? "border border-red-500" : ""}`}
               />
               {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
             </div>
@@ -178,7 +189,8 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className={`w-full rounded bg-[#bfdbfe]/30 p-3 outline-none ${errors.password ? "border border-red-500" : ""}`}
+                placeholder="비밀번호 (8자 이상)입력해주세요"
+                className={`w-full pl-4 pr-12 py-3 rounded-xl border-2 bg-white/70 backdrop-blur-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${errors.password ? "border border-red-500" : ""}`}
               />
               {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password}</p>}
             </div>
@@ -193,7 +205,8 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
                 name="nickname"
                 value={formData.nickname}
                 onChange={handleChange}
-                className={`w-full rounded bg-[#bfdbfe]/30 p-3 outline-none ${errors.nickname ? "border border-red-500" : ""}`}
+                placeholder="닉네임 2자 이상 입력해주세요"
+                className={`w-full pl-4 pr-12 py-3 rounded-xl border-2 bg-white/70 backdrop-blur-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${errors.nickname ? "border border-red-500" : ""}`}
               />
               {errors.nickname && <p className="mt-1 text-xs text-red-500">{errors.nickname}</p>}
             </div>
@@ -201,14 +214,15 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
 
             <button
               type="submit"
-              className="mt-6 w-full rounded-full bg-[#5f80f8] py-3 text-white hover:bg-[#5f80f8]/90"
+              // className="mt-6 w-full rounded-full bg-[#5f80f8] py-3 text-white hover:bg-[#5f80f8]/90"
+              className ="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               회원가입
             </button>
           </form>
           {/* test */}
 
-          <div className="text-center text-sm">
+          <div className="mt-5 text-center text-sm">
             <span className="text-[#747480] dark:text-gray-400">이미 계정이 있으신가요?</span>{" "}
             <button
               type="button"
