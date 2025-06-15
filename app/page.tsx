@@ -53,14 +53,6 @@ export default function FinanceDashboard() {
         })
     );
 
-    const { data: favoriteStocksData } = useSWR(
-        ['favoriteStocks'],
-        () => getStockList({
-            option: 'liked',
-            limit: 10
-        })
-    );
-
     useEffect(() => {
         const checkLoginStatus = () => {
             try {
@@ -377,8 +369,6 @@ export default function FinanceDashboard() {
                             if (!open) clearModalQuery()
                         }}
                     />
-                    {/* <RegistrationModal isOpen={registerOpen} onClose={() => setRegisterOpen(false)} /> */}
-                    {/* <RegistrationModal isOpen={registerOpen} onClose={() => router.back()} /> */}
                     <RegistrationModal
                         isOpen={registerOpen}
                         onClose={clearModalQuery}
