@@ -469,7 +469,8 @@ export default function FinanceDashboard() {
                 {/* Left Column - Hidden on mobile, visible on lg screens */}
                 <div className="hidden lg:flex lg:w-64 flex-col">
                     {/* 오늘의 핫 종목 목록 */}
-                    <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center shadow-md">
+                    {/* <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center shadow-md"> */}
+                    <div className="p-3 mb-4 text-center rounded-xl shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white">
                         <span className="text-sm">오늘의 핫 종목</span>
                     </div>
 

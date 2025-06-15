@@ -470,7 +470,8 @@ export default function Dashboard() {
         {/* Left Column - Hidden on mobile, visible on lg screens */}
         <div className="hidden lg:flex lg:w-64 flex-col">
           {/* Interest Stocks Section */}
-          <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center shadow-md">
+          {/* <div className="bg-[#f0f0f0] rounded-xl p-3 mb-4 text-center shadow-md"> */}
+          <div className="p-3 mb-4 text-center rounded-xl shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white">
             <span className="text-sm">관심 종목</span>
           </div>
 
