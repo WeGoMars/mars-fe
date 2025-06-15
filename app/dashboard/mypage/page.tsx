@@ -3,7 +3,7 @@ import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp, TrendingDown, ChevronRight, Menu, PieChart, BarChart3,Wallet } from "lucide-react"
+import { TrendingUp, TrendingDown, ChevronRight, Menu, PieChart, BarChart3, Wallet,DollarSign } from "lucide-react"
 import Image from "next/image";
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -275,7 +275,7 @@ export default function MyPage() {
 
         {/* Main Content */}
         {/* <div className="flex-1 max-w-4xl mx-auto px-4"> */}
-        <div className="flex-1 max-w-6xl mx-auto px-4">
+        <div className="flex-1 max-w-9xl mx-auto px-4">
 
           <div className="text-center mb-8">
             <span className="text-2xl font-bold text-[#1c2730] mb-2">
@@ -296,9 +296,12 @@ export default function MyPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {/* 총자산 */}
 
-                  <div className="p-4 rounded-lg border border-[#e8e8e8] hover:border-[#197bbd] hover:shadow-md transition-all duration-200 cursor-pointer">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="text-sm font-medium text-[#8f9098]">총자산</div>
+                  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 p-6 border border-blue-200/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-400/20 to-indigo-500/20 rounded-full -translate-y-10 translate-x-10"></div>
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="text-sm font-semibold text-blue-700">총자산</div>
+                      <DollarSign className="w-5 h-5 text-blue-600" />
                     </div>
                     <div className="text-2xl font-bold text-[#197bbd] group-hover:text-[#1565a0] transition-colors">
                       ${" "}
@@ -309,143 +312,138 @@ export default function MyPage() {
                     </div>
                     <div className="text-xs text-[#8f9098] mt-1">Total Assets</div>
                   </div>
+                  </div>
 
 
                   {/* 투자금액 */}
 
                   <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-50 to-pink-100 p-6 border border-purple-200/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-purple-400/20 to-pink-500/20 rounded-full -translate-y-10 translate-x-10"></div>
-                  <div className="relative">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="text-sm font-semibold text-purple-700">투자금액</div>
-                      <BarChart3 className="w-5 h-5 text-purple-600" />
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-purple-400/20 to-pink-500/20 rounded-full -translate-y-10 translate-x-10"></div>
+                    <div className="relative">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="text-sm font-semibold text-purple-700">투자금액</div>
+                        <BarChart3 className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <div className="text-3xl font-bold text-purple-800 mb-2">
+                        ${" "}
+                        {portfolioData.investmentAmount.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </div>
+                      <div className="text-xs text-purple-600 font-medium">Investment Amount</div>
                     </div>
-                    <div className="ttext-3xl font-bold text-purple-800 mb-2">
-                      ${" "}
-                      {portfolioData.investmentAmount.toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </div>
-                    <div className="text-xs text-purple-600 font-medium">Investment Amount</div>
                   </div>
-                </div>
 
                   {/* 평가손익 */}
 
-                     <div
-                  className={`group relative overflow-hidden rounded-2xl p-6 border hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
-                    portfolioData.profitLoss >= 0
-                      ? "bg-gradient-to-br from-emerald-50 to-teal-100 border-emerald-200/50"
-                      : "bg-gradient-to-br from-red-50 to-rose-100 border-red-200/50"
-                  }`}
-                >
                   <div
-                    className={`absolute top-0 right-0 w-20 h-20 rounded-full -translate-y-10 translate-x-10 ${
-                      portfolioData.profitLoss >= 0
-                        ? "bg-gradient-to-br from-emerald-400/20 to-teal-500/20"
-                        : "bg-gradient-to-br from-red-400/20 to-rose-500/20"
-                    }`}
-                  ></div>
-                  <div className="relative">
-                    <div className="flex items-center justify-between mb-4">
-                      <div
-                        className={`text-sm font-semibold ${portfolioData.profitLoss >= 0 ? "text-emerald-700" : "text-red-700"}`}
-                      >
-                        평가손익
-                      </div>
-                      {portfolioData.profitLoss >= 0 ? (
-                        <TrendingUp className="w-5 h-5 text-emerald-600" />
-                      ) : (
-                        <TrendingDown className="w-5 h-5 text-red-600" />
-                      )}
-                    </div>
-                    <div
-                      className={`text-3xl font-bold mb-2 ${
-                        portfolioData.profitLoss >= 0 ? "text-emerald-800" : "text-red-800"
+                    className={`group relative overflow-hidden rounded-2xl p-6 border hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${portfolioData.profitLoss >= 0
+                        ? "bg-gradient-to-br from-emerald-50 to-teal-100 border-emerald-200/50"
+                        : "bg-gradient-to-br from-red-50 to-rose-100 border-red-200/50"
                       }`}
-                    >
-                      {portfolioData.profitLoss >= 0 ? "+$" : "-$"}
-                      {Math.abs(portfolioData.profitLoss).toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </div>
+                  >
                     <div
-                      className={`text-xs font-medium ${portfolioData.profitLoss >= 0 ? "text-emerald-600" : "text-red-600"}`}
-                    >
-                      Profit & Loss
+                      className={`absolute top-0 right-0 w-20 h-20 rounded-full -translate-y-10 translate-x-10 ${portfolioData.profitLoss >= 0
+                          ? "bg-gradient-to-br from-emerald-400/20 to-teal-500/20"
+                          : "bg-gradient-to-br from-red-400/20 to-rose-500/20"
+                        }`}
+                    ></div>
+                    <div className="relative">
+                      <div className="flex items-center justify-between mb-4">
+                        <div
+                          className={`text-sm font-semibold ${portfolioData.profitLoss >= 0 ? "text-emerald-700" : "text-red-700"}`}
+                        >
+                          평가손익
+                        </div>
+                        {portfolioData.profitLoss >= 0 ? (
+                          <TrendingUp className="w-5 h-5 text-emerald-600" />
+                        ) : (
+                          <TrendingDown className="w-5 h-5 text-red-600" />
+                        )}
+                      </div>
+                      <div
+                        className={`text-3xl font-bold mb-2 ${portfolioData.profitLoss >= 0 ? "text-emerald-800" : "text-red-800"
+                          }`}
+                      >
+                        {portfolioData.profitLoss >= 0 ? "+$" : "-$"}
+                        {Math.abs(portfolioData.profitLoss).toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </div>
+                      <div
+                        className={`text-xs font-medium ${portfolioData.profitLoss >= 0 ? "text-emerald-600" : "text-red-600"}`}
+                      >
+                        Profit & Loss
+                      </div>
                     </div>
                   </div>
-                </div>
 
                   {/* 수익률 */}
 
-                   <div
-                  className={`group relative overflow-hidden rounded-2xl p-6 border hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
-                    portfolioData.returnRate >= 0
-                      ? "bg-gradient-to-br from-green-50 to-emerald-100 border-green-200/50"
-                      : "bg-gradient-to-br from-orange-50 to-red-100 border-orange-200/50"
-                  }`}
-                >
                   <div
-                    className={`absolute top-0 right-0 w-20 h-20 rounded-full -translate-y-10 translate-x-10 ${
-                      portfolioData.returnRate >= 0
-                        ? "bg-gradient-to-br from-green-400/20 to-emerald-500/20"
-                        : "bg-gradient-to-br from-orange-400/20 to-red-500/20"
-                    }`}
-                  ></div>
-                  <div className="relative">
-                    <div className="flex items-center justify-between mb-4">
-                      <div
-                        className={`text-sm font-semibold ${portfolioData.returnRate >= 0 ? "text-green-700" : "text-orange-700"}`}
-                      >
-                        수익률
-                      </div>
-                      {portfolioData.returnRate >= 0 ? (
-                        <TrendingUp className="w-5 h-5 text-green-600" />
-                      ) : (
-                        <TrendingDown className="w-5 h-5 text-orange-600" />
-                      )}
-                    </div>
-                    <div
-                      className={`text-3xl font-bold mb-2 flex items-center gap-2 ${
-                        portfolioData.returnRate >= 0 ? "text-green-800" : "text-orange-800"
+                    className={`group relative overflow-hidden rounded-2xl p-6 border hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${portfolioData.returnRate >= 0
+                        ? "bg-gradient-to-br from-green-50 to-emerald-100 border-green-200/50"
+                        : "bg-gradient-to-br from-orange-50 to-red-100 border-orange-200/50"
                       }`}
-                    >
-                      {portfolioData.returnRate >= 0 ? "+" : "-"}
-                      {Math.abs(portfolioData.returnRate * 100).toFixed(2)}%
-                    </div>
+                  >
                     <div
-                      className={`text-xs font-medium ${portfolioData.returnRate >= 0 ? "text-green-600" : "text-orange-600"}`}
-                    >
-                      Return Rate
+                      className={`absolute top-0 right-0 w-20 h-20 rounded-full -translate-y-10 translate-x-10 ${portfolioData.returnRate >= 0
+                          ? "bg-gradient-to-br from-green-400/20 to-emerald-500/20"
+                          : "bg-gradient-to-br from-orange-400/20 to-red-500/20"
+                        }`}
+                    ></div>
+                    <div className="relative">
+                      <div className="flex items-center justify-between mb-4">
+                        <div
+                          className={`text-sm font-semibold ${portfolioData.returnRate >= 0 ? "text-green-700" : "text-orange-700"}`}
+                        >
+                          수익률
+                        </div>
+                        {portfolioData.returnRate >= 0 ? (
+                          <TrendingUp className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <TrendingDown className="w-5 h-5 text-orange-600" />
+                        )}
+                      </div>
+                      <div
+                        className={`text-3xl font-bold mb-2 flex items-center gap-2 ${portfolioData.returnRate >= 0 ? "text-green-800" : "text-orange-800"
+                          }`}
+                      >
+                        {portfolioData.returnRate >= 0 ? "+" : "-"}
+                        {Math.abs(portfolioData.returnRate * 100).toFixed(2)}%
+                      </div>
+                      <div
+                        className={`text-xs font-medium ${portfolioData.returnRate >= 0 ? "text-green-600" : "text-orange-600"}`}
+                      >
+                        Return Rate
+                      </div>
                     </div>
                   </div>
-                </div>
 
 
                   {/* 제공시드머니 */}
 
                   <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-50 to-blue-100 p-6 border border-cyan-200/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-cyan-400/20 to-blue-500/20 rounded-full -translate-y-10 translate-x-10"></div>
-                  <div className="relative">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="text-sm font-semibold text-cyan-700">제공시드머니</div>
-                      <Wallet className="w-5 h-5 text-cyan-600" />
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-cyan-400/20 to-blue-500/20 rounded-full -translate-y-10 translate-x-10"></div>
+                    <div className="relative">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="text-sm font-semibold text-cyan-700">제공시드머니</div>
+                        <Wallet className="w-5 h-5 text-cyan-600" />
+                      </div>
+                      <div className="text-3xl font-bold text-cyan-800 mb-2">
+                        {isLoading ? "Loading..." : isError || !walletData?.data ? (
+                          "$0.00"
+                        ) : (
+                          `$ ${walletData.data.cyberDollar.toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}`
+                        )}
+                      </div>
+                      <div className="text-xs text-cyan-600 font-medium">Provided Seed Money</div>
                     </div>
-                    <div className="text-3xl font-bold text-cyan-800 mb-2">
-                      {isLoading ? "Loading..." : isError || !walletData?.data ? (
-                        "$0.00"
-                      ) : (
-                        `$ ${walletData.data.cyberDollar.toLocaleString("en-US", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}`
-                      )}
-                    </div>
-                    <div className="ttext-xs text-cyan-600 font-medium">Provided Seed Money</div>
-                  </div>
                   </div>
 
 
@@ -456,7 +454,7 @@ export default function MyPage() {
                     <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-amber-400/20 to-orange-500/20 rounded-full -translate-y-10 translate-x-10"></div>
                     <div className="relative">
                       <div className="flex items-center justify-between mb-4">
-                        <div className="text-sm font-medium text-[#8f9098]">시드머니 문의</div>
+                        <div className="text-sm font-semibold text-amber-700">시드머니 문의</div>
                         <ChevronRight className="w-5 h-5 text-amber-600 group-hover:translate-x-1 transition-transform" />
                       </div>
                       <div className="text-lg font-semibold text-[#1c2730] group-hover:text-[#f99f01] transition-colors">
