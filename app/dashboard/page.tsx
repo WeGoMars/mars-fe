@@ -320,7 +320,7 @@ export default function Dashboard() {
     returnRate: (overallData?.data?.returnRate ?? 0) ,
   };
 
-  // 컴포넌트 마운트 시 실시간 데이터 가져오기
+  // 컴포넌트 마운트 시 실시간 데이터 가져오기.
   useEffect(() => {
     const fetchInitialStockData = async () => {
       try {

@@ -513,7 +513,7 @@ export default function StockDetails({ symbol, activeTab, onTabChange, favoriteS
                         <TrendingDown className="h-5 w-5" />
                       )}
                       {(portfolioData?.data?.returnRate ?? 0) >= 0 ? "+" : "-"}
-                      {Math.abs((portfolioData?.data?.returnRate ?? 0) * 1000).toFixed(2)}%
+                      {Math.abs((portfolioData?.data?.returnRate ?? 0) * 100).toFixed(2)}%
 
                     </div>
                   </span>
