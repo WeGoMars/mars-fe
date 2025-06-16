@@ -121,7 +121,7 @@ export default function MyPage() {
     totalAssets: data.data.totalAsset, //총자산
     investmentAmount: data.data.investedAmount, //투자금액
     profitLoss: data.data.evalGain,   //평가손익
-    returnRate: data.data.returnRate * 10, // %로 보기 좋게
+    returnRate: data.data.returnRate , // %로 보기 좋게
     investRatio: data.data.investRatio * 100, // 총 투자비율
     cash: data.data.cash,// 현금자산
   };
