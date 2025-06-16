@@ -317,7 +317,7 @@ export default function Dashboard() {
     totalAssets: overallData?.data?.totalAsset ?? 0,
     investmentAmount: overallData?.data?.investedAmount ?? 0,
     profitLoss: overallData?.data?.evalGain ?? 0,
-    returnRate: (overallData?.data?.returnRate ?? 0) * 10,
+    returnRate: (overallData?.data?.returnRate ?? 0) ,
   };
 
   // 컴포넌트 마운트 시 실시간 데이터 가져오기
